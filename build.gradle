@@ -11,7 +11,9 @@ subprojects {
 	}
 	
 	dependencies {
-		testCompile group: 'org.spockframework', name: 'spock-core', version: spockVersion
+		compile group: 'ch.qos.logback', name: 'logback-classic', version: logbackVersion
+		
+		testCompile group: 'org.spockframework', name: 'spock-core', version: spockVersion		
 	}
 }
 
