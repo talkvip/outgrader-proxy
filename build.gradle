@@ -9,6 +9,10 @@ subprojects {
 	repositories {
 		mavenCentral()
 	}
+	
+	dependencies {
+		testCompile group: 'org.spockframework', name: 'spock-core', version: spockVersion
+	}
 }
 
 task wrapper(type: Wrapper) {

@@ -1,0 +1,4 @@
+dependencies {
+	compile group: 'io.netty', 			name: 'netty-all',	version: nettyIOVersion
+	compile group: 'com.google.inject',	name: 'guice',		version: guiceVersion
+}
