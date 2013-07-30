@@ -1,3 +1,18 @@
+buildscript {
+	repositories {
+		mavenCentral()
+		maven {
+			url gsRepoURL
+		}
+	}
+	
+	dependencies {
+		classpath group: 'com.gersis-software.gradle', name: 'gs-sonar',	version: gsSonarVersion
+		classpath group: 'com.gersis-software.gradle', name: 'gs-jacoco',	version: gsJacocoVersion
+		classpath group: 'com.gersis-software.gradle', name: 'gs-ide',		version: gsIDEVersion
+	}
+}
+
 subprojects {
 	apply plugin: 'java'
 	apply plugin: 'groovy'
