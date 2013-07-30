@@ -6,17 +6,17 @@ buildscript {
 		}
 	}
 	
-	dependencies {
-		classpath group: 'com.gersis-software.gradle', name: 'gs-sonar',	version: gsSonarVersion
+	dependencies {		
 		classpath group: 'com.gersis-software.gradle', name: 'gs-jacoco',	version: gsJacocoVersion
-		classpath group: 'com.gersis-software.gradle', name: 'gs-ide',		version: gsIDEVersion
+		classpath group: 'com.gersis-software.gradle', name: 'gs-ide',		version: gsIDEVersion		
 	}
 }
 
+apply plugin: 'gs-eclipse'
+apply plugin: 'gs-jacoco'
+
 subprojects {
-	apply plugin: 'java'
-	apply plugin: 'groovy'
-	apply plugin: 'eclipse'
+	apply plugin: 'groovy'	
 
 	sourceCompatibility = 1.7
 	targetCompatibility = 1.7
