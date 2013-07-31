@@ -1,4 +1,3 @@
 dependencies {
 	compile project(':outgrader-proxy-core')
-	compile project(':outgrader-proxy-properties')
 }

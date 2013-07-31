@@ -1,1 +1,2 @@
-include 'outgrader-proxy-core', 'outgrader-proxy'
+include 'outgrader-proxy-core', 'outgrader-proxy', 
+'outgrader-proxy-properties'

@@ -3,6 +3,12 @@ package com.outgrader.proxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.outgrader.proxy.properties.module.OutgraderPropertiesModule;
+import com.outgrager.proxy.core.IOutgraderProxy;
+import com.outgrager.proxy.core.module.OutgraderCoreModule;
+
 /**
  * Main entry point to application
  * 
@@ -10,12 +16,19 @@ import org.slf4j.LoggerFactory;
  * @since 0.1.0
  */
 public class Outgrader {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(Outgrader.class);
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		LOGGER.info("Starting Ougrader-Runner application");
-		
+
+		LOGGER.info("Initializing Guice environment");
+		Injector injector = Guice.createInjector(new OutgraderCoreModule(), new OutgraderPropertiesModule());
+
+		LOGGER.info("Creating instance of Outgrader Proxy and start it");
+		IOutgraderProxy proxy = injector.getInstance(IOutgraderProxy.class);
+		proxy.start();
+
 		LOGGER.info("Closing Outgrader-Runner application");
 	}
 
