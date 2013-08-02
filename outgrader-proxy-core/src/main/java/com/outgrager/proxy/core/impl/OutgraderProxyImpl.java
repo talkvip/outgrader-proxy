@@ -2,7 +2,6 @@ package com.outgrager.proxy.core.impl;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -32,14 +31,14 @@ public class OutgraderProxyImpl implements IOutgraderProxy {
 	public void start() {
 		LOGGER.info("Starting netty.io server");
 
-		EventLoopGroup bossGroup = new NioEventLoopGroup(5);
-		EventLoopGroup workerGroup = new NioEventLoopGroup(5);
+		EventLoopGroup bossGroup = new NioEventLoopGroup(1);
+		EventLoopGroup workerGroup = new NioEventLoopGroup(1);
 
 		try {
 			ServerBootstrap server = new ServerBootstrap();
 			server.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class);
 			server.childHandler(new OutraderChannelInitializer());
-			server.childOption(ChannelOption.AUTO_READ, false);
+			// server.childOption(ChannelOption.AUTO_READ, false);
 
 			Channel channel = server.bind(properties.getPort()).sync().channel();
 

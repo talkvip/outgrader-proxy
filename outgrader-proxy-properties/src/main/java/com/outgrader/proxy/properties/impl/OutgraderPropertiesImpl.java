@@ -12,7 +12,7 @@ public class OutgraderPropertiesImpl implements IOutgraderProperties {
 	@Override
 	public int getPort() {
 		// TODO Auto-generated method stub
-		return 8888;
+		return 8080;
 	}
 
 }
