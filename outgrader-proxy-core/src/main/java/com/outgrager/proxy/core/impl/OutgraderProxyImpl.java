@@ -1,6 +1,11 @@
 package com.outgrager.proxy.core.impl;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 import javax.inject.Inject;
 
@@ -8,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.outgrager.proxy.core.IOutgraderProxy;
+import com.outgrager.proxy.core.impl.initializer.OutraderChannelInitializer;
 import com.outgrager.proxy.core.properties.IOutgraderProperties;
 
 /**
@@ -26,14 +32,25 @@ public class OutgraderProxyImpl implements IOutgraderProxy {
 	public void start() {
 		LOGGER.info("Starting netty.io server");
 
-		for (int port : properties.getPorts()) {
+		EventLoopGroup bossGroup = new NioEventLoopGroup(5);
+		EventLoopGroup workerGroup = new NioEventLoopGroup(5);
 
+		try {
+			ServerBootstrap server = new ServerBootstrap();
+			server.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class);
+			server.childHandler(new OutraderChannelInitializer());
+			server.childOption(ChannelOption.AUTO_READ, false);
+
+			Channel channel = server.bind(properties.getPort()).sync().channel();
+
+			LOGGER.info("Outgrader started at port <" + properties.getPort() + ">");
+
+			channel.closeFuture().sync();
+		} catch (InterruptedException e) {
+			LOGGER.error("An exception occured during Proxy work", e);
+		} finally {
+			bossGroup.shutdownGracefully();
+			workerGroup.shutdownGracefully();
 		}
 	}
-
-	private void validate() {
-		checkNotNull(properties.getPorts(), "Array of supported post cannot be null");
-		// TODO: LN, 1.08.2013, check not empty array
-	}
-
 }

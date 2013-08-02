@@ -10,9 +10,9 @@ import com.outgrager.proxy.core.properties.IOutgraderProperties;
 public class OutgraderPropertiesImpl implements IOutgraderProperties {
 
 	@Override
-	public int[] getPorts() {
+	public int getPort() {
 		// TODO Auto-generated method stub
-		return null;
+		return 8888;
 	}
 
 }

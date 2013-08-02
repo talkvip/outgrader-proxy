@@ -12,6 +12,6 @@ public interface IOutgraderProperties {
 	/**
 	 * Array of Ports a Proxy will be bind to
 	 */
-	int[] getPorts();
+	int getPort();
 
 }
