@@ -1,6 +1,11 @@
 package com.outgrager.proxy.core.impl;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import javax.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.outgrager.proxy.core.IOutgraderProxy;
 import com.outgrager.proxy.core.properties.IOutgraderProperties;
@@ -12,13 +17,23 @@ import com.outgrager.proxy.core.properties.IOutgraderProperties;
  */
 public class OutgraderProxyImpl implements IOutgraderProxy {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(OutgraderProxyImpl.class);
+
 	@Inject
 	private IOutgraderProperties properties;
 
 	@Override
 	public void start() {
-		// TODO Auto-generated method stub
+		LOGGER.info("Starting netty.io server");
 
+		for (int port : properties.getPorts()) {
+
+		}
+	}
+
+	private void validate() {
+		checkNotNull(properties.getPorts(), "Array of supported post cannot be null");
+		// TODO: LN, 1.08.2013, check not empty array
 	}
 
 }
