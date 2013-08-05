@@ -1,5 +1,6 @@
 package com.outgrader.proxy.core.handler.impl;
 
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.HttpRequest;
@@ -21,6 +22,7 @@ import com.outgrader.proxy.core.statistics.IStatisticsHandler;
  * 
  */
 @Singleton
+@Sharable
 public class OutgraderFrontendHandler extends SimpleChannelInboundHandler<Object> implements IOutgraderFrontendHandler {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(OutgraderFrontendHandler.class);

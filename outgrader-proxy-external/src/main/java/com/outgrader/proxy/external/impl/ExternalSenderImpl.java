@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import com.outgrader.proxy.core.exceptions.AbstractOutgraderException;
 import com.outgrader.proxy.core.external.IExternalSender;
 import com.outgrader.proxy.external.impl.exceptions.ExternalSenderException;
-import com.outgrader.proxy.external.scope.ThreadScope;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
@@ -36,12 +35,11 @@ import com.outgrader.proxy.external.scope.ThreadScope;
  * 
  */
 @NotThreadSafe
-@ThreadScope
 public class ExternalSenderImpl implements IExternalSender {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExternalSenderImpl.class);
 
-	private HttpClient client;
+	private static final ThreadLocal<HttpClient> CLIENT_THREAD_POOL = new ThreadLocal<>();
 
 	@Override
 	public HttpResponse send(final HttpRequest request) throws AbstractOutgraderException {
@@ -101,11 +99,14 @@ public class ExternalSenderImpl implements IExternalSender {
 	}
 
 	private HttpClient getClient() {
-		if (client == null) {
-			client = new DefaultHttpClient();
+		HttpClient result = CLIENT_THREAD_POOL.get();
+		if (result == null) {
+			result = new DefaultHttpClient();
+
+			CLIENT_THREAD_POOL.set(result);
 		}
 
-		return client;
+		return result;
 	}
 
 	private void copyHeaders(final HttpRequestBase external, final HttpRequest original) {
