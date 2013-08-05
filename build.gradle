@@ -35,10 +35,3 @@ subprojects {
 task wrapper(type: Wrapper) {
 	gradleVersion = gradleWrapperVersion
 }
-
-gs_extension {
-	ide {
-		username = user
-		userEmail = email
-	}
-}

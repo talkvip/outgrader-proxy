@@ -5,4 +5,4 @@
 .gs
 /build
 
-gradle.properties
+gs_ide.properties
