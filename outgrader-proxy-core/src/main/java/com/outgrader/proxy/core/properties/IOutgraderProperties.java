@@ -24,4 +24,9 @@ public interface IOutgraderProperties {
 	 */
 	int getWorkerThreadNumber();
 
+	/**
+	 * Number of threads to handle statistics
+	 */
+	int getStatisticsThreadNumber();
+
 }

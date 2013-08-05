@@ -9,6 +9,8 @@ import io.netty.handler.codec.http.HttpResponseStatus;
  */
 public interface IStatisticsHandler {
 
+	void initialize();
+
 	void onRequestHandled(String uri);
 
 	void onResponseHandled(String uri, HttpResponseStatus status);

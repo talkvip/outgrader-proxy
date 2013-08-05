@@ -26,6 +26,8 @@ public class OutgraderPropertiesImpl implements IOutgraderProperties {
 
 	private static final String WORKER_THREADS = "outgrader.proxy.worker_threads";
 
+	private static final String STATISTICS_THREADS = "outgrader.proxy.statistics_threads";
+
 	private Configuration configuration;
 
 	@Inject
@@ -67,5 +69,10 @@ public class OutgraderPropertiesImpl implements IOutgraderProperties {
 	@Override
 	public int getWorkerThreadNumber() {
 		return getConfiguration().getInt(WORKER_THREADS);
+	}
+
+	@Override
+	public int getStatisticsThreadNumber() {
+		return getConfiguration().getInt(STATISTICS_THREADS);
 	}
 }

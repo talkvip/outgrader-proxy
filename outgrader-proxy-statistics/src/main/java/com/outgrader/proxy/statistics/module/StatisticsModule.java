@@ -2,7 +2,7 @@ package com.outgrader.proxy.statistics.module;
 
 import com.google.inject.AbstractModule;
 import com.outgrader.proxy.core.statistics.IStatisticsHandler;
-import com.outgrader.proxy.statistics.StatisticsHandlerImpl;
+import com.outgrader.proxy.statistics.impl.StatisticsHandlerImpl;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
