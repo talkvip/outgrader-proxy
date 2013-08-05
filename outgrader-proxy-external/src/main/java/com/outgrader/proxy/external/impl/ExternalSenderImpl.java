@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import com.outgrader.proxy.core.exceptions.AbstractOutgraderException;
 import com.outgrader.proxy.core.external.IExternalSender;
 import com.outgrader.proxy.external.impl.exceptions.ExternalSenderException;
+import com.outgrader.proxy.external.scope.ThreadScope;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
@@ -35,6 +36,7 @@ import com.outgrader.proxy.external.impl.exceptions.ExternalSenderException;
  * 
  */
 @NotThreadSafe
+@ThreadScope
 public class ExternalSenderImpl implements IExternalSender {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExternalSenderImpl.class);
