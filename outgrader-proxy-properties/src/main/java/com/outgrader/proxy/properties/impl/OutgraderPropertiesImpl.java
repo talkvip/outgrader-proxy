@@ -22,6 +22,10 @@ public class OutgraderPropertiesImpl implements IOutgraderProperties {
 
 	private static final String PROXY_PORT = "outgrader.proxy.port";
 
+	private static final String BOSS_THREADS = "outgrader.proxy.boss_threads";
+
+	private static final String WORKER_THREADS = "outgrader.proxy.worker_threads";
+
 	private Configuration configuration;
 
 	@Inject
@@ -53,5 +57,15 @@ public class OutgraderPropertiesImpl implements IOutgraderProperties {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("finish initialize()");
 		}
+	}
+
+	@Override
+	public int getBossThreadNumber() {
+		return getConfiguration().getInt(BOSS_THREADS);
+	}
+
+	@Override
+	public int getWorkerThreadNumber() {
+		return getConfiguration().getInt(WORKER_THREADS);
 	}
 }

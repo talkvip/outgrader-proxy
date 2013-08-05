@@ -34,8 +34,8 @@ public class OutgraderProxyImpl implements IOutgraderProxy {
 	public void start() {
 		LOGGER.info("Starting netty.io server");
 
-		EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-		EventLoopGroup workerGroup = new NioEventLoopGroup(1);
+		EventLoopGroup bossGroup = new NioEventLoopGroup(properties.getBossThreadNumber());
+		EventLoopGroup workerGroup = new NioEventLoopGroup(properties.getWorkerThreadNumber());
 
 		try {
 			ServerBootstrap server = new ServerBootstrap();
