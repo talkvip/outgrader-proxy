@@ -24,7 +24,7 @@ public abstract class AbstractStatisticsExporter implements IStatisticsExporter 
 
 		LOGGER.info("Starting statistics export");
 
-		for (StatisticsEntry entry : StatisticsManager.getInstance().getStatistics()) {
+		for (StatisticsEntry entry : StatisticsManager.getInstance().exportStatistics()) {
 			exportEntry(entry);
 		}
 

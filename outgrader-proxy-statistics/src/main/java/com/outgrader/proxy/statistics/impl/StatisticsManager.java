@@ -44,7 +44,7 @@ public class StatisticsManager {
 		private static volatile StatisticsManager instance = new StatisticsManager();
 	}
 
-	private static class InternalStatisticsEntry {
+	static class InternalStatisticsEntry {
 
 		private final AtomicInteger requestCount = new AtomicInteger();
 
@@ -133,7 +133,7 @@ public class StatisticsManager {
 		}
 	}
 
-	public Iterable<StatisticsEntry> getStatistics() {
+	public Iterable<StatisticsEntry> exportStatistics() {
 		return Iterables.transform(Collections.unmodifiableMap(statistics).entrySet(), new STATISTICS_CONVERTER());
 	}
 }
