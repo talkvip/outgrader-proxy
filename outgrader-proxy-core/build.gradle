@@ -2,7 +2,4 @@ dependencies {
 	compile group: 'io.netty', 			name: 'netty-all',	version: nettyIOVersion
 	compile group: 'com.google.inject',	name: 'guice',		version: guiceVersion
 	compile group: 'com.google.guava',	name: 'guava',		version: guavaVersion
-	compile 'org.apache.httpcomponents:httpclient:4.2.5'
-	compile 'commons-io:commons-io:2.4'
-	
 }
