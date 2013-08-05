@@ -34,9 +34,9 @@ public class StatisticsHandlerImpl implements IStatisticsHandler {
 	@Inject
 	IStatisticsExporter exporter;
 
-	private ExecutorService updateExecutor;
+	ExecutorService updateExecutor;
 
-	private ScheduledExecutorService exportExecutor;
+	ScheduledExecutorService exportExecutor;
 
 	@Override
 	public void onRequestHandled(final String uri) {
@@ -48,7 +48,7 @@ public class StatisticsHandlerImpl implements IStatisticsHandler {
 		handleEvent(new ResponseEvent(uri, duration));
 	}
 
-	protected void handleEvent(final IStatisticsEvent event) {
+	private void handleEvent(final IStatisticsEvent event) {
 		updateExecutor.submit(new StatisticsTask(event));
 	}
 
@@ -61,6 +61,10 @@ public class StatisticsHandlerImpl implements IStatisticsHandler {
 		LOGGER.info("Initializing Statistics module");
 		initializeExecutor();
 		initializeExportTask();
+
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("finish initialize()");
+		}
 	}
 
 	private void initializeExecutor() {
