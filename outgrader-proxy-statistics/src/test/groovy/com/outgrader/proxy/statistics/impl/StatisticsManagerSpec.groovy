@@ -2,6 +2,8 @@ package com.outgrader.proxy.statistics.impl
 
 import spock.lang.Specification
 
+import com.outgrader.proxy.statistics.events.IStatisticsEvent
+import com.outgrader.proxy.statistics.events.StatisticsEventType
 import com.outgrader.proxy.statistics.events.impl.RequestEvent
 import com.outgrader.proxy.statistics.events.impl.ResponseEvent
 import com.outgrader.proxy.statistics.impl.StatisticsManager.InternalStatisticsEntry
@@ -19,7 +21,11 @@ class StatisticsManagerSpec extends Specification {
 
 	InternalStatisticsEntry entry = Mock(InternalStatisticsEntry)
 
-	StatisticsManager manager = new StatisticsManager()
+	StatisticsManager manager = StatisticsManager.getInstance()
+
+	def cleanup() {
+		manager.statistics.clear()
+	}
 
 	def "check statistics entry updated on RequestEvent"() {
 		when:
@@ -48,5 +54,27 @@ class StatisticsManagerSpec extends Specification {
 		then:
 		manager.statistics.size() == 1
 		manager.statistics.containsKey(URI)
+	}
+
+	def "check manager supports statistics of any type"() {
+		when:
+		manager.statistics.put(URI, entry)
+		and:
+		StatisticsEventType.each { type ->
+			IStatisticsEvent event = null
+
+			switch (type){
+				case StatisticsEventType.REQUEST:
+					event = new RequestEvent(URI)
+					break
+				case StatisticsEventType.RESPONSE:
+					event = new ResponseEvent(URI, DURATION)
+					break
+			}
+			manager.updateStatistics(event)
+		}
+
+		then:
+		2 * entry._
 	}
 }

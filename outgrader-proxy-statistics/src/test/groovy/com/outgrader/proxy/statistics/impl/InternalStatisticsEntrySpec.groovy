@@ -11,13 +11,13 @@ import com.outgrader.proxy.statistics.impl.StatisticsManager.InternalStatisticsE
  */
 class InternalStatisticsEntrySpec extends Specification {
 
-	static final VALUES = [100, 200, 300, 400, 500]
+	static final VALUES = [500, 400, 300, 200, 100]
 
 	def "check maximum duration calculation"() {
 		when:
 		def InternalStatisticsEntry entry = new InternalStatisticsEntry()
 		and:
-		VALUES.each { value -> entry.updateResponse(value) }
+		VALUES.sort(false).each { value -> entry.updateResponse(value) }
 
 		then:
 		entry.maxDuration.get() == VALUES.max()

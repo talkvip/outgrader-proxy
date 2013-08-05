@@ -130,6 +130,8 @@ public class StatisticsManager {
 
 			entry.updateResponse(responseEvent.getDuration());
 			break;
+		default:
+			// TODO: throw exception
 		}
 	}
 
