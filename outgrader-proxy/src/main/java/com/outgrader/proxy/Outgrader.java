@@ -7,6 +7,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.outgrader.proxy.core.IOutgraderProxy;
 import com.outgrader.proxy.core.module.OutgraderCoreModule;
+import com.outgrader.proxy.core.statistics.IStatisticsHandler;
 import com.outgrader.proxy.external.module.ExternalSenderModule;
 import com.outgrader.proxy.properties.module.OutgraderPropertiesModule;
 import com.outgrader.proxy.statistics.module.StatisticsModule;
@@ -27,6 +28,9 @@ public class Outgrader {
 		LOGGER.info("Initializing Guice environment");
 		Injector injector = Guice.createInjector(new OutgraderCoreModule(), new OutgraderPropertiesModule(), new ExternalSenderModule(),
 				new StatisticsModule());
+
+		LOGGER.info("Initializing Statistics module");
+		injector.getInstance(IStatisticsHandler.class).initialize();
 
 		LOGGER.info("Creating instance of Outgrader Proxy and start it");
 		IOutgraderProxy proxy = injector.getInstance(IOutgraderProxy.class);
