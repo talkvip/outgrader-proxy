@@ -24,6 +24,7 @@ logbackVersion=1.0.13
 #proxy-core dependencies versions
 guiceVersion = 3.0
 nettyIOVersion = 4.0.3.Final
+guavaVersion = 14.0.1
 
 #proxy-properties dependencies versions
 commonsConfigurationVersion = 1.9
@@ -31,3 +32,6 @@ commonsConfigurationVersion = 1.9
 #proxy-external dependencies versions
 httpClientVersion = 4.2.5
 commonsIOVersion = 2.4
+
+#proxy-statistics dependencies versions
+superCSVVersion = 2.1.0
