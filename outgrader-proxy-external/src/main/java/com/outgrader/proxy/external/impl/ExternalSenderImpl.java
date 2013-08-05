@@ -12,6 +12,8 @@ import io.netty.handler.codec.http.HttpVersion;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.inject.Singleton;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -35,6 +37,7 @@ import com.outgrader.proxy.external.impl.exceptions.ExternalSenderException;
  * 
  */
 @NotThreadSafe
+@Singleton
 public class ExternalSenderImpl implements IExternalSender {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExternalSenderImpl.class);
