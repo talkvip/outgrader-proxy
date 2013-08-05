@@ -27,3 +27,7 @@ nettyIOVersion = 4.0.3.Final
 
 #proxy-properties dependencies versions
 commonsConfigurationVersion = 1.9
+
+#proxy-external dependencies versions
+httpClientVersion = 4.2.5
+commonsIOVersion = 2.4

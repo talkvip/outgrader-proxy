@@ -1,0 +1,6 @@
+dependencies {
+	compile project(':outgrader-proxy-core')
+	
+	compile group: 'org.apache.httpcomponents',	name: 'httpclient', version: httpClientVersion
+	compile group: 'commons-io', 				name: 'commons-io', version: commonsIOVersion
+}

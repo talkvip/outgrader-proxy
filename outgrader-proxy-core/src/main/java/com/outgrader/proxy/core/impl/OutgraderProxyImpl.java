@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.outgrader.proxy.core.IOutgraderProxy;
-import com.outgrader.proxy.core.impl.initializer.OutraderChannelInitializer;
+import com.outgrader.proxy.core.initializer.IOutgraderChannelInitializer;
 import com.outgrader.proxy.core.properties.IOutgraderProperties;
 
 /**
@@ -25,7 +25,10 @@ public class OutgraderProxyImpl implements IOutgraderProxy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(OutgraderProxyImpl.class);
 
 	@Inject
-	private IOutgraderProperties properties;
+	IOutgraderProperties properties;
+
+	@Inject
+	IOutgraderChannelInitializer channelInitializer;
 
 	@Override
 	public void start() {
@@ -37,8 +40,7 @@ public class OutgraderProxyImpl implements IOutgraderProxy {
 		try {
 			ServerBootstrap server = new ServerBootstrap();
 			server.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class);
-			server.childHandler(new OutraderChannelInitializer());
-			// server.childOption(ChannelOption.AUTO_READ, false);
+			server.childHandler(channelInitializer);
 
 			Channel channel = server.bind(properties.getPort()).sync().channel();
 
