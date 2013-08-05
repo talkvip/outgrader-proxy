@@ -9,4 +9,8 @@ public class AbstractOutgraderException extends Exception {
 
 	private static final long serialVersionUID = -8884610378580133650L;
 
+	protected AbstractOutgraderException(final String message, final Exception cause) {
+		super(message, cause);
+	}
+
 }

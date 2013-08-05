@@ -2,7 +2,7 @@ package com.outgrader.proxy.external.module;
 
 import com.google.inject.AbstractModule;
 import com.outgrader.proxy.core.external.IExternalSender;
-import com.outgrader.proxy.external.impl.ExternalSender;
+import com.outgrader.proxy.external.impl.ExternalSenderImpl;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
@@ -13,6 +13,6 @@ public class ExternalSenderModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		bind(IExternalSender.class).to(ExternalSender.class);
+		bind(IExternalSender.class).to(ExternalSenderImpl.class);
 	}
 }

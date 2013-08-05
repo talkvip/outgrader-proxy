@@ -1,5 +1,7 @@
 package com.outgrader.proxy.core.external;
 
+import com.outgrader.proxy.core.exceptions.AbstractOutgraderException;
+
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 
@@ -10,6 +12,6 @@ import io.netty.handler.codec.http.HttpResponse;
  */
 public interface IExternalSender {
 
-	HttpResponse send(HttpRequest request);
+	HttpResponse send(HttpRequest request) throws AbstractOutgraderException;
 
 }
