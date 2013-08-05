@@ -9,23 +9,16 @@ import com.outgrader.proxy.statistics.events.StatisticsEventType;
  */
 public class ResponseEvent extends AbstractStatisticsEvent {
 
-	private final String uri;
+	private final long duration;
 
-	private final int code;
+	public ResponseEvent(final String uri, final long duration) {
+		super(StatisticsEventType.RESPONSE, uri);
 
-	public ResponseEvent(final String uri, final int code) {
-		super(StatisticsEventType.REQUEST);
-
-		this.uri = uri;
-		this.code = code;
+		this.duration = duration;
 	}
 
-	public String getURI() {
-		return uri;
-	}
-
-	public int getCode() {
-		return code;
+	public long getDuration() {
+		return duration;
 	}
 
 }

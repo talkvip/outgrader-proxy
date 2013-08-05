@@ -1,6 +1,5 @@
 package com.outgrader.proxy.core.statistics;
 
-import io.netty.handler.codec.http.HttpResponseStatus;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
@@ -13,6 +12,8 @@ public interface IStatisticsHandler {
 
 	void onRequestHandled(String uri);
 
-	void onResponseHandled(String uri, HttpResponseStatus status);
+	void onResponseHandled(String uri, long duration);
+
+	void finish();
 
 }

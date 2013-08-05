@@ -28,6 +28,8 @@ public class OutgraderPropertiesImpl implements IOutgraderProperties {
 
 	private static final String STATISTICS_THREADS = "outgrader.proxy.statistics_threads";
 
+	private static final String STATISTICS_EXPORT_PERIOD = "outgrader.proxy.statistics.export_period";
+
 	private Configuration configuration;
 
 	@Inject
@@ -74,5 +76,10 @@ public class OutgraderPropertiesImpl implements IOutgraderProperties {
 	@Override
 	public int getStatisticsThreadNumber() {
 		return getConfiguration().getInt(STATISTICS_THREADS);
+	}
+
+	@Override
+	public int getStatisticsExportPeriod() {
+		return getConfiguration().getInt(STATISTICS_EXPORT_PERIOD);
 	}
 }

@@ -12,13 +12,21 @@ public abstract class AbstractStatisticsEvent implements IStatisticsEvent {
 
 	private final StatisticsEventType type;
 
-	protected AbstractStatisticsEvent(final StatisticsEventType type) {
+	private final String uri;
+
+	protected AbstractStatisticsEvent(final StatisticsEventType type, final String uri) {
 		this.type = type;
+		this.uri = uri;
 	}
 
 	@Override
 	public StatisticsEventType getType() {
 		return type;
+	}
+
+	@Override
+	public String getURI() {
+		return uri;
 	}
 
 }

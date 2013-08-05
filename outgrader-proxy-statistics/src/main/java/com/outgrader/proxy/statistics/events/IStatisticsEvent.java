@@ -9,4 +9,6 @@ public interface IStatisticsEvent {
 
 	StatisticsEventType getType();
 
+	String getURI();
+
 }

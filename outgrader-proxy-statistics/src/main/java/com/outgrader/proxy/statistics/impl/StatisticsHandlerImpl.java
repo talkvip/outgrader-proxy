@@ -1,17 +1,22 @@
 package com.outgrader.proxy.statistics.impl;
 
-import io.netty.handler.codec.http.HttpResponseStatus;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.outgrader.proxy.core.properties.IOutgraderProperties;
 import com.outgrader.proxy.core.statistics.IStatisticsHandler;
 import com.outgrader.proxy.statistics.events.IStatisticsEvent;
 import com.outgrader.proxy.statistics.events.impl.RequestEvent;
+import com.outgrader.proxy.statistics.events.impl.ResponseEvent;
+import com.outgrader.proxy.statistics.export.IStatisticsExporter;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
@@ -21,10 +26,17 @@ import com.outgrader.proxy.statistics.events.impl.RequestEvent;
 @Singleton
 public class StatisticsHandlerImpl implements IStatisticsHandler {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsHandlerImpl.class);
+
 	@Inject
 	IOutgraderProperties properties;
 
-	private ExecutorService executor;
+	@Inject
+	IStatisticsExporter exporter;
+
+	private ExecutorService updateExecutor;
+
+	private ScheduledExecutorService exportExecutor;
 
 	@Override
 	public void onRequestHandled(final String uri) {
@@ -32,18 +44,50 @@ public class StatisticsHandlerImpl implements IStatisticsHandler {
 	}
 
 	@Override
-	public void onResponseHandled(final String uri, final HttpResponseStatus status) {
-		// TODO Auto-generated method stub
-
+	public void onResponseHandled(final String uri, final long duration) {
+		handleEvent(new ResponseEvent(uri, duration));
 	}
 
 	protected void handleEvent(final IStatisticsEvent event) {
-		executor.submit(new StatisticsTask(event));
+		updateExecutor.submit(new StatisticsTask(event));
 	}
 
 	@Override
 	public void initialize() {
-		executor = Executors.newFixedThreadPool(properties.getStatisticsThreadNumber());
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("start initialize()");
+		}
+
+		LOGGER.info("Initializing Statistics module");
+		initializeExecutor();
+		initializeExportTask();
 	}
 
+	private void initializeExecutor() {
+		LOGGER.info("Initializing Executor service for " + properties.getStatisticsThreadNumber() + " threads");
+
+		updateExecutor = Executors.newFixedThreadPool(properties.getStatisticsThreadNumber());
+
+		LOGGER.info("Executor service initialized");
+	}
+
+	private void initializeExportTask() {
+		LOGGER.info("Initializing Export statistics Task");
+
+		exportExecutor = Executors.newSingleThreadScheduledExecutor();
+		exportExecutor.scheduleAtFixedRate(exporter, properties.getStatisticsExportPeriod(), properties.getStatisticsExportPeriod(),
+				TimeUnit.MINUTES);
+
+		LOGGER.info("Export statistics task initialized and scheduled");
+	}
+
+	@Override
+	public void finish() {
+		if (updateExecutor != null) {
+			updateExecutor.shutdownNow();
+		}
+		if (exportExecutor != null) {
+			exportExecutor.shutdownNow();
+		}
+	}
 }

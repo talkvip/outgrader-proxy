@@ -9,16 +9,8 @@ import com.outgrader.proxy.statistics.events.StatisticsEventType;
  */
 public class RequestEvent extends AbstractStatisticsEvent {
 
-	private final String uri;
-
 	public RequestEvent(final String uri) {
-		super(StatisticsEventType.REQUEST);
-
-		this.uri = uri;
-	}
-
-	public String getURI() {
-		return uri;
+		super(StatisticsEventType.REQUEST, uri);
 	}
 
 }

@@ -30,13 +30,16 @@ public class Outgrader {
 				new StatisticsModule());
 
 		LOGGER.info("Initializing Statistics module");
-		injector.getInstance(IStatisticsHandler.class).initialize();
+		IStatisticsHandler statisticsModule = injector.getInstance(IStatisticsHandler.class);
+		statisticsModule.initialize();
 
 		LOGGER.info("Creating instance of Outgrader Proxy and start it");
 		IOutgraderProxy proxy = injector.getInstance(IOutgraderProxy.class);
-		proxy.start();
+		proxy.run();
+
+		LOGGER.info("Finalize statistics module");
+		statisticsModule.finish();
 
 		LOGGER.info("Closing Outgrader-Runner application");
 	}
-
 }

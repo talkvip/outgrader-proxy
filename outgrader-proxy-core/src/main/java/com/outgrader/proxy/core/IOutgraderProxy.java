@@ -7,6 +7,6 @@ package com.outgrader.proxy.core;
  */
 public interface IOutgraderProxy {
 
-	void start();
+	void run();
 
 }

@@ -31,7 +31,7 @@ public class OutgraderProxyImpl implements IOutgraderProxy {
 	IOutgraderChannelInitializer channelInitializer;
 
 	@Override
-	public void start() {
+	public void run() {
 		LOGGER.info("Starting netty.io server");
 
 		EventLoopGroup bossGroup = new NioEventLoopGroup(properties.getBossThreadNumber());

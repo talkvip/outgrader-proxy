@@ -29,4 +29,9 @@ public interface IOutgraderProperties {
 	 */
 	int getStatisticsThreadNumber();
 
+	/**
+	 * Period (in minutes) to run statistics export
+	 */
+	int getStatisticsExportPeriod();
+
 }
