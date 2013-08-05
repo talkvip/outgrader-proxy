@@ -1,4 +1,4 @@
-package com.outgrager.proxy.core.properties;
+package com.outgrader.proxy.core.properties;
 
 /**
  * Describes configuration of Proxy

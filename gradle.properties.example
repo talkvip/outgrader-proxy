@@ -25,3 +25,5 @@ logbackVersion=1.0.13
 guiceVersion = 3.0
 nettyIOVersion = 4.0.3.Final
 
+#proxy-properties dependencies versions
+commonsConfigurationVersion = 1.9

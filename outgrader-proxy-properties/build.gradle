@@ -1,3 +1,5 @@
 dependencies {
 	compile project(':outgrader-proxy-core')
+	
+	compile group: 'commons-configuration', name: 'commons-configuration', version: commonsConfigurationVersion
 }

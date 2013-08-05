@@ -1,4 +1,4 @@
-package com.outgrager.proxy.core.impl.handler;
+package com.outgrader.proxy.core.impl.handler;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

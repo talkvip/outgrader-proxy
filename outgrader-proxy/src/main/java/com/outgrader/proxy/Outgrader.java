@@ -5,9 +5,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.outgrader.proxy.core.IOutgraderProxy;
+import com.outgrader.proxy.core.module.OutgraderCoreModule;
 import com.outgrader.proxy.properties.module.OutgraderPropertiesModule;
-import com.outgrager.proxy.core.IOutgraderProxy;
-import com.outgrager.proxy.core.module.OutgraderCoreModule;
 
 /**
  * Main entry point to application

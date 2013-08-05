@@ -2,7 +2,7 @@ package com.outgrader.proxy.core.impl
 
 import spock.lang.Specification
 
-import com.outgrager.proxy.core.properties.IOutgraderProperties
+import com.outgrader.proxy.core.properties.IOutgraderProperties
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)

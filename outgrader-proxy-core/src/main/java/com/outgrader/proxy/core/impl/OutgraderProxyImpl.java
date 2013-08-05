@@ -1,4 +1,4 @@
-package com.outgrager.proxy.core.impl;
+package com.outgrader.proxy.core.impl;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -11,9 +11,9 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.outgrager.proxy.core.IOutgraderProxy;
-import com.outgrager.proxy.core.impl.initializer.OutraderChannelInitializer;
-import com.outgrager.proxy.core.properties.IOutgraderProperties;
+import com.outgrader.proxy.core.IOutgraderProxy;
+import com.outgrader.proxy.core.impl.initializer.OutraderChannelInitializer;
+import com.outgrader.proxy.core.properties.IOutgraderProperties;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)

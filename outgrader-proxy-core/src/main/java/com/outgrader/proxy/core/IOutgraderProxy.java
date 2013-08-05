@@ -1,4 +1,4 @@
-package com.outgrager.proxy.core;
+package com.outgrader.proxy.core;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)

@@ -1,2 +1,2 @@
 include 'outgrader-proxy-core', 'outgrader-proxy', 
-'outgrader-proxy-properties'
+'outgrader-proxy-properties', 'outgrader-proxy-external', 'outgrader-proxy-statistics'

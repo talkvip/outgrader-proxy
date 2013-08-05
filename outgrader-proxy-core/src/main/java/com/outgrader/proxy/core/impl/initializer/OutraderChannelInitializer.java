@@ -1,4 +1,4 @@
-package com.outgrager.proxy.core.impl.initializer;
+package com.outgrader.proxy.core.impl.initializer;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -6,7 +6,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 
-import com.outgrager.proxy.core.impl.handler.OutgraderFrontendHandler;
+import com.outgrader.proxy.core.impl.handler.OutgraderFrontendHandler;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)

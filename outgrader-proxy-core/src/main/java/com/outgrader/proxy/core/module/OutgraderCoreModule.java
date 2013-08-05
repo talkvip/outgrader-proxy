@@ -1,8 +1,8 @@
-package com.outgrager.proxy.core.module;
+package com.outgrader.proxy.core.module;
 
 import com.google.inject.AbstractModule;
-import com.outgrager.proxy.core.IOutgraderProxy;
-import com.outgrager.proxy.core.impl.OutgraderProxyImpl;
+import com.outgrader.proxy.core.IOutgraderProxy;
+import com.outgrader.proxy.core.impl.OutgraderProxyImpl;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
