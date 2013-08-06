@@ -11,13 +11,19 @@ class StatisticsTask implements Runnable {
 
 	private final IStatisticsEvent event;
 
+	private final StatisticsManager manager;
+
 	public StatisticsTask(final IStatisticsEvent event) {
+		this(event, StatisticsManager.getInstance());
+	}
+
+	protected StatisticsTask(final IStatisticsEvent event, final StatisticsManager manager) {
 		this.event = event;
+		this.manager = manager;
 	}
 
 	@Override
 	public void run() {
-		StatisticsManager.getInstance().updateStatistics(event);
+		manager.updateStatistics(event);
 	}
-
 }

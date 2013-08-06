@@ -17,7 +17,7 @@ class StatisticsManagerSpec extends Specification {
 
 	final static URI = 'uri'
 
-	final int DURATION = 100
+	final static int DURATION = 100
 
 	InternalStatisticsEntry entry = Mock(InternalStatisticsEntry)
 
@@ -76,5 +76,32 @@ class StatisticsManagerSpec extends Specification {
 
 		then:
 		2 * entry._
+	}
+
+	def "check calculated statistics"() {
+		when:
+		updateStatistics(URI)
+		updateStatistics(URI + 2)
+
+		and:
+		def statistics = manager.exportStatistics()
+
+		then:
+		statistics.toList().size() == 2
+		statistics.each { entry ->
+			entry.uri == URI || entry.uri == URI + 2
+			entry.requestCount == 2
+			entry.responseCount == 2
+			entry.maxDuration == DURATION * 2
+			entry.minDuration == DURATION
+			entry.averageDuration == DURATION * 1.5
+		}
+	}
+
+	private void updateStatistics(String uri) {
+		manager.updateStatistics(new RequestEvent(uri))
+		manager.updateStatistics(new ResponseEvent(uri, DURATION))
+		manager.updateStatistics(new RequestEvent(uri))
+		manager.updateStatistics(new ResponseEvent(uri, DURATION * 2))
 	}
 }

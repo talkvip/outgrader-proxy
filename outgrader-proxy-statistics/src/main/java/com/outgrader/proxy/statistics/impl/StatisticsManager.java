@@ -105,7 +105,7 @@ public class StatisticsManager {
 
 	private final ConcurrentHashMap<String, InternalStatisticsEntry> statistics = new ConcurrentHashMap<>();
 
-	private StatisticsManager() {
+	protected StatisticsManager() {
 
 	}
 
