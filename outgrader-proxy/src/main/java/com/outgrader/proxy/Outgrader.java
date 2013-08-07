@@ -18,27 +18,51 @@ import com.outgrader.proxy.statistics.module.StatisticsModule;
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
  * @since 0.1.0
  */
-public class Outgrader {
+public final class Outgrader {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Outgrader.class);
 
-	public static void main(final String[] args) {
-		LOGGER.info("Starting Ougrader-Runner application");
+	private Injector injector;
 
-		LOGGER.info("Initializing Guice environment");
-		Injector injector = Guice.createInjector(new OutgraderCoreModule(), new OutgraderPropertiesModule(), new ExternalSenderModule(),
-				new StatisticsModule());
+	private Outgrader() {
 
+	}
+
+	/**
+	 * For tests only
+	 */
+	protected Outgrader(final Injector injector) {
+		this.injector = injector;
+	}
+
+	public void run() {
 		LOGGER.info("Initializing Statistics module");
-		IStatisticsHandler statisticsModule = injector.getInstance(IStatisticsHandler.class);
+		IStatisticsHandler statisticsModule = getInjector().getInstance(IStatisticsHandler.class);
 		statisticsModule.initialize();
 
 		LOGGER.info("Creating instance of Outgrader Proxy and start it");
-		IOutgraderProxy proxy = injector.getInstance(IOutgraderProxy.class);
+		IOutgraderProxy proxy = getInjector().getInstance(IOutgraderProxy.class);
 		proxy.run();
 
 		LOGGER.info("Finalize statistics module");
 		statisticsModule.finish();
+	}
+
+	protected Injector getInjector() {
+		LOGGER.info("Initializing Guice environment");
+
+		if (injector == null) {
+			injector = Guice.createInjector(new OutgraderCoreModule(), new OutgraderPropertiesModule(), new ExternalSenderModule(),
+					new StatisticsModule());
+		}
+
+		return injector;
+	}
+
+	public static void main(final String[] args) {
+		LOGGER.info("Starting Ougrader-Runner application");
+
+		new Outgrader().run();
 
 		LOGGER.info("Closing Outgrader-Runner application");
 	}
