@@ -11,6 +11,7 @@ import io.netty.handler.codec.http.HttpResponse
 import io.netty.handler.codec.http.HttpResponseStatus
 import io.netty.handler.codec.http.HttpVersion
 
+import org.apache.commons.io.Charsets
 import org.apache.http.Header
 import org.apache.http.StatusLine
 import org.apache.http.client.HttpClient
@@ -116,8 +117,11 @@ class ExternalSenderImplSpec extends Specification {
 	}
 
 	def "check buffer created on NULL HttpEntity"() {
+		setup:
+		httpResponse.setEntity(null)
+
 		when:
-		def result = sender.convertContent(null)
+		def result = sender.processContent(httpResponse)
 
 		then:
 		noExceptionThrown()
@@ -125,12 +129,15 @@ class ExternalSenderImplSpec extends Specification {
 	}
 
 	def "check converted HTTPEntity content"() {
-		when:
+		setup:
 		def content = 'some content'
-		def result = sender.convertContent(new StringEntity(content))
+		httpResponse.setEntity(new StringEntity(content))
+
+		when:
+		def result = sender.processContent(httpResponse)
 
 		then:
-		result == Unpooled.wrappedBuffer(content.getBytes())
+		result == Unpooled.wrappedBuffer(content.getBytes(Charsets.UTF_8))
 	}
 
 	def "check no loss on converting netty headers to http"() {
