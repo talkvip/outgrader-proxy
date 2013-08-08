@@ -121,7 +121,8 @@ public class StatisticsManager {
 		String uri = event.getURI();
 		InternalStatisticsEntry entry = statistics.get(uri);
 		if (entry == null) {
-			entry = statistics.putIfAbsent(uri, new InternalStatisticsEntry());
+			entry = new InternalStatisticsEntry();
+			statistics.put(uri, entry);
 		}
 
 		switch (event.getType()) {
