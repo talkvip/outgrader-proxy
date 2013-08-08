@@ -23,35 +23,28 @@ import com.outgrader.proxy.core.statistics.IStatisticsHandler;
  */
 @Singleton
 @Sharable
-public class OutgraderFrontendHandler extends SimpleChannelInboundHandler<Object> implements IOutgraderFrontendHandler {
+public class OutgraderFrontendHandler extends
+		SimpleChannelInboundHandler<Object> implements
+		IOutgraderFrontendHandler {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(OutgraderFrontendHandler.class);
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(OutgraderFrontendHandler.class);
 
 	@Inject
-	IExternalSender externalSender;
+	protected IExternalSender externalSender;
 
 	@Inject
-	IStatisticsHandler statisticsHandler;
+	protected IStatisticsHandler statisticsHandler;
 
 	@Override
-	protected void channelRead0(final ChannelHandlerContext ctx, final Object msg) throws Exception {
+	protected void channelRead0(final ChannelHandlerContext ctx,
+			final Object msg) throws Exception {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("start channelRead0(<" + ctx + ">, <" + msg + ">)");
 		}
 
 		if (msg instanceof HttpRequest) {
-			HttpRequest request = (HttpRequest) msg;
-
-			String uri = request.getUri();
-			statisticsHandler.onRequestHandled(uri);
-
-			long before = System.currentTimeMillis();
-			HttpResponse response = externalSender.send(request);
-			long after = System.currentTimeMillis();
-
-			statisticsHandler.onResponseHandled(uri, after - before);
-
-			ctx.writeAndFlush(response);
+			handleHttpRequest(ctx, (HttpRequest) msg);
 		} else {
 			LOGGER.error("Cannot handle message <" + msg + ">");
 		}
@@ -59,5 +52,19 @@ public class OutgraderFrontendHandler extends SimpleChannelInboundHandler<Object
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("finish channelRead0()");
 		}
+	}
+
+	protected void handleHttpRequest(final ChannelHandlerContext ctx,
+			final HttpRequest request) throws Exception {
+		String uri = request.getUri();
+		statisticsHandler.onRequestHandled(uri);
+
+		long before = System.currentTimeMillis();
+		HttpResponse response = externalSender.send(request);
+		long after = System.currentTimeMillis();
+
+		statisticsHandler.onResponseHandled(uri, after - before);
+
+		ctx.writeAndFlush(response);
 	}
 }
