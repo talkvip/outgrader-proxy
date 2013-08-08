@@ -13,9 +13,12 @@ import io.netty.handler.codec.http.HttpVersion
 
 import org.apache.commons.io.Charsets
 import org.apache.http.Header
+import org.apache.http.HttpEntity
+import org.apache.http.HttpStatus
 import org.apache.http.StatusLine
 import org.apache.http.client.HttpClient
 import org.apache.http.client.methods.HttpGet
+import org.apache.http.entity.ContentType
 import org.apache.http.entity.StringEntity
 import org.apache.http.message.BasicHeader
 import org.apache.http.message.BasicHttpResponse
@@ -23,6 +26,7 @@ import org.apache.http.message.BasicStatusLine
 
 import spock.lang.Specification
 
+import com.outgrader.proxy.core.statistics.advertisment.response.IAdvertismentProcessor
 import com.outgrader.proxy.external.impl.exceptions.ExternalSenderException
 
 
@@ -49,13 +53,16 @@ class ExternalSenderImplSpec extends Specification {
 
 	org.apache.http.HttpResponse httpResponse = new BasicHttpResponse(statusLine)
 
+	IAdvertismentProcessor processor = Mock(IAdvertismentProcessor)
+
 	def setup() {
 		sender.client >> httpClient
+		sender.responseProcessor = processor
 	}
 
 	def "exception should be thrown on HTTP send exception"() {
 		when:
-		httpClient.execute(_) >> {throw new IOException() }
+		httpClient.execute(_) >> { throw new IOException() }
 		and:
 		sender.send(nettyRequest)
 
@@ -180,5 +187,76 @@ class ExternalSenderImplSpec extends Specification {
 		}
 
 		headers
+	}
+
+	def "check processor was used for OK response with text/html content"() {
+		def stream = Mock(InputStream)
+		def entity = Mock(HttpEntity)
+
+		setup:
+		entity.getContentType() >> new BasicHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, ContentType.TEXT_HTML.getMimeType())
+		httpResponse.setStatusLine(new BasicStatusLine(org.apache.http.HttpVersion.HTTP_1_1, HttpStatus.SC_OK, 'phrase'))
+
+		entity.getContent() >> stream
+
+		httpResponse.setEntity(entity)
+
+		when:
+		sender.processContent(httpResponse)
+
+		then:
+		1 * processor.process(stream, _)
+	}
+
+	def "check processor now used for non-ok response"(){
+		def entity = new StringEntity('non-ok')
+
+		setup:
+		entity.setContentType(new BasicHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, ContentType.TEXT_HTML.getMimeType()))
+		httpResponse.setStatusLine(new BasicStatusLine(org.apache.http.HttpVersion.HTTP_1_1, HttpStatus.SC_NOT_FOUND, 'phrase'))
+
+		httpResponse.setEntity(entity)
+
+		when:
+		def result = sender.processContent(httpResponse)
+
+		then:
+		0 * processor.process(_, _)
+		result != null
+	}
+
+	def "check processor now used for non-html response"(){
+		def entity = new StringEntity('non-html')
+
+		setup:
+		entity.setContentType(new BasicHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, ContentType.DEFAULT_TEXT.getMimeType()))
+		httpResponse.setStatusLine(new BasicStatusLine(org.apache.http.HttpVersion.HTTP_1_1, HttpStatus.SC_OK, 'phrase'))
+
+		httpResponse.setEntity(entity)
+
+		when:
+		def result = sender.processContent(httpResponse)
+
+		then:
+		0 * processor.process(_, _)
+		result != null
+	}
+
+	def "check exception occured on processing"() {
+		def entity = new StringEntity('non-html')
+
+		setup:
+		entity.setContentType(new BasicHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, ContentType.TEXT_HTML.getMimeType()))
+		httpResponse.setStatusLine(new BasicStatusLine(org.apache.http.HttpVersion.HTTP_1_1, HttpStatus.SC_OK, 'phrase'))
+
+		httpResponse.setEntity(entity)
+
+		processor.process(_, _) >> {throw new ExternalSenderException("test") }
+
+		when:
+		sender.processContent(httpResponse)
+
+		then:
+		thrown(ExternalSenderException)
 	}
 }

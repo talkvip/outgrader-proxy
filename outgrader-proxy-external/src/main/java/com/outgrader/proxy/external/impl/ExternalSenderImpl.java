@@ -12,11 +12,12 @@ import io.netty.handler.codec.http.HttpVersion;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
+import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.annotation.NotThreadSafe;
 import org.apache.http.client.HttpClient;
@@ -29,12 +30,14 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpTrace;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.outgrader.proxy.core.exceptions.AbstractOutgraderException;
 import com.outgrader.proxy.core.external.IExternalSender;
+import com.outgrader.proxy.core.statistics.advertisment.response.IAdvertismentProcessor;
 import com.outgrader.proxy.external.impl.exceptions.ExternalSenderException;
 
 /**
@@ -49,6 +52,9 @@ public class ExternalSenderImpl implements IExternalSender {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExternalSenderImpl.class);
 
 	private static final ThreadLocal<HttpClient> CLIENT_THREAD_POOL = new ThreadLocal<>();
+
+	@Inject
+	protected IAdvertismentProcessor responseProcessor;
 
 	@Override
 	public HttpResponse send(final HttpRequest request) throws AbstractOutgraderException {
@@ -86,7 +92,8 @@ public class ExternalSenderImpl implements IExternalSender {
 		return result;
 	}
 
-	private HttpResponse convertResponse(final org.apache.http.HttpResponse response, final HttpVersion httpVersion) throws IOException {
+	private HttpResponse convertResponse(final org.apache.http.HttpResponse response, final HttpVersion httpVersion) throws IOException,
+			AbstractOutgraderException {
 		HttpResponse result = new DefaultFullHttpResponse(httpVersion, convertStatus(response.getStatusLine()), processContent(response));
 
 		copyHeaders(response, result);
@@ -100,11 +107,20 @@ public class ExternalSenderImpl implements IExternalSender {
 		}
 	}
 
-	protected ByteBuf processContent(final org.apache.http.HttpResponse response) throws IOException {
+	protected ByteBuf processContent(final org.apache.http.HttpResponse response) throws IOException, AbstractOutgraderException {
 		if (response.getEntity() != null) {
-			String content = IOUtils.toString(response.getEntity().getContent(), Charsets.UTF_8);
+			int code = response.getStatusLine().getStatusCode();
+			ContentType contentType = ContentType.get(response.getEntity());
 
-			return Unpooled.copiedBuffer(content.getBytes(Charsets.UTF_8));
+			ByteBuf content = null;
+
+			if ((code == HttpStatus.SC_OK) && contentType.getMimeType().equals(ContentType.TEXT_HTML.getMimeType())) {
+				content = responseProcessor.process(response.getEntity().getContent(), contentType.getCharset());
+			} else {
+				content = Unpooled.copiedBuffer(IOUtils.toByteArray(response.getEntity().getContent()));
+			}
+
+			return content;
 		}
 
 		return Unpooled.EMPTY_BUFFER;
