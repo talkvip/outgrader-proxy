@@ -24,6 +24,7 @@ import spock.lang.Specification
 
 import com.outgrader.proxy.external.impl.exceptions.ExternalSenderException
 
+
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
  * @since 0.2.0-SNAPSHOT
@@ -100,7 +101,9 @@ class ExternalSenderImplSpec extends Specification {
 		value != null
 
 		where:
-		method << HttpMethod.methodMap.values()
+		method << HttpMethod.methodMap.values().findAll{ methodType ->
+			methodType != HttpMethod.CONNECT
+		}
 	}
 
 	def "check actions on status convert"() {
@@ -132,12 +135,24 @@ class ExternalSenderImplSpec extends Specification {
 
 	def "check no loss on converting netty headers to http"() {
 		when:
-		httpRequest.setHeaders(getHTTPHeaders() as Header[])
+		nettyRequest.headers().set(getNettyHeaders())
 		and:
 		sender.copyHeaders(httpRequest, nettyRequest)
 
 		then:
-		nettyRequest.headers().entries() == getNettyHeaders().en
+		httpRequest.getAllHeaders().length == getHTTPHeaders().size()
+		getHTTPHeaders().join() == httpRequest.getAllHeaders().join()
+	}
+
+	def "check no loss on converting http headers to netty"() {
+		when:
+		httpResponse.setHeaders(getHTTPHeaders() as Header[])
+		and:
+		sender.copyHeaders(httpResponse, nettyResponse)
+
+		then:
+		nettyResponse.headers().entries().size() == getNettyHeaders().entries().size()
+		getNettyHeaders().entries().join() == nettyResponse.headers().entries().join()
 	}
 
 	def getNettyHeaders() {

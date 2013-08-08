@@ -46,12 +46,14 @@ import com.outgrader.proxy.external.impl.exceptions.ExternalSenderException;
 @Singleton
 public class ExternalSenderImpl implements IExternalSender {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ExternalSenderImpl.class);
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(ExternalSenderImpl.class);
 
 	private static final ThreadLocal<HttpClient> CLIENT_THREAD_POOL = new ThreadLocal<>();
 
 	@Override
-	public HttpResponse send(final HttpRequest request) throws AbstractOutgraderException {
+	public HttpResponse send(final HttpRequest request)
+			throws AbstractOutgraderException {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("start send(<" + request + ">)");
 		}
@@ -76,7 +78,9 @@ public class ExternalSenderImpl implements IExternalSender {
 			}
 		} catch (IOException e) {
 			LOGGER.error("HttpClient throwed exception for URI <" + uri + ">");
-			throw new ExternalSenderException("An exception occured during connection to external host", e);
+			throw new ExternalSenderException(
+					"An exception occured during connection to external host",
+					e);
 		}
 
 		if (LOGGER.isDebugEnabled()) {
@@ -86,8 +90,11 @@ public class ExternalSenderImpl implements IExternalSender {
 		return result;
 	}
 
-	private HttpResponse convertResponse(final org.apache.http.HttpResponse response, final HttpVersion httpVersion) throws IOException {
-		HttpResponse result = new DefaultFullHttpResponse(httpVersion, convertStatus(response.getStatusLine()),
+	private HttpResponse convertResponse(
+			final org.apache.http.HttpResponse response,
+			final HttpVersion httpVersion) throws IOException {
+		HttpResponse result = new DefaultFullHttpResponse(httpVersion,
+				convertStatus(response.getStatusLine()),
 				convertContent(response.getEntity()));
 
 		copyHeaders(response, result);
@@ -95,22 +102,26 @@ public class ExternalSenderImpl implements IExternalSender {
 		return result;
 	}
 
-	protected void copyHeaders(final org.apache.http.HttpResponse external, final HttpResponse target) {
+	protected void copyHeaders(final org.apache.http.HttpResponse external,
+			final HttpResponse target) {
 		for (Header header : external.getAllHeaders()) {
 			target.headers().add(header.getName(), header.getValue());
 		}
 	}
 
-	protected ByteBuf convertContent(final HttpEntity entity) throws IOException {
+	protected ByteBuf convertContent(final HttpEntity entity)
+			throws IOException {
 		if (entity != null) {
-			return Unpooled.copiedBuffer(IOUtils.toByteArray(entity.getContent()));
+			return Unpooled.copiedBuffer(IOUtils.toByteArray(entity
+					.getContent()));
 		}
 
 		return Unpooled.EMPTY_BUFFER;
 	}
 
 	protected HttpResponseStatus convertStatus(final StatusLine status) {
-		return new HttpResponseStatus(status.getStatusCode(), status.getReasonPhrase());
+		return new HttpResponseStatus(status.getStatusCode(),
+				status.getReasonPhrase());
 	}
 
 	protected HttpClient getClient() {
@@ -124,21 +135,21 @@ public class ExternalSenderImpl implements IExternalSender {
 		return result;
 	}
 
-	protected void copyHeaders(final HttpRequestBase external, final HttpRequest original) {
+	protected void copyHeaders(final HttpRequestBase external,
+			final HttpRequest original) {
 		for (Map.Entry<String, String> header : original.headers().entries()) {
 			external.addHeader(header.getKey(), header.getValue());
 		}
 	}
 
-	protected HttpRequestBase getRequest(final HttpMethod method, final String uri) {
+	protected HttpRequestBase getRequest(final HttpMethod method,
+			final String uri) {
 		HttpRequestBase result = null;
 
 		if (method.equals(HttpMethod.GET)) {
 			result = new HttpGet();
 		} else if (method.equals(HttpMethod.POST)) {
 			result = new HttpPost(uri);
-		} else if (method.equals(HttpMethod.CONNECT)) {
-			return null;
 		} else if (method.equals(HttpMethod.DELETE)) {
 			result = new HttpDelete();
 		} else if (method.equals(HttpMethod.HEAD)) {
@@ -152,7 +163,8 @@ public class ExternalSenderImpl implements IExternalSender {
 		} else if (method.equals(HttpMethod.TRACE)) {
 			result = new HttpTrace();
 		} else {
-			throw new IllegalArgumentException("Unsupported HTTP Method <" + method + ">");
+			throw new IllegalArgumentException("Unsupported HTTP Method <"
+					+ method + ">");
 		}
 
 		return result;
