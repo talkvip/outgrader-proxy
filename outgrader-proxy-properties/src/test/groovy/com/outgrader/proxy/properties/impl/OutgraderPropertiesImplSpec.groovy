@@ -74,7 +74,8 @@ class OutgraderPropertiesImplSpec extends Specification {
 			'bossThreadNumber',
 			'workerThreadNumber',
 			'statisticsThreadNumber',
-			'statisticsExportPeriod'
+			'statisticsExportPeriod',
+			'statisticsExportDirectory'
 		]
 	}
 }

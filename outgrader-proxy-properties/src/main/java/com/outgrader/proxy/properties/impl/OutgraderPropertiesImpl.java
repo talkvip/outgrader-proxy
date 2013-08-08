@@ -18,8 +18,7 @@ import com.outgrader.proxy.properties.source.IPropertiesSource;
  */
 public class OutgraderPropertiesImpl implements IOutgraderProperties {
 
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(OutgraderPropertiesImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(OutgraderPropertiesImpl.class);
 
 	private static final String PROXY_PORT = "outgrader.proxy.port";
 
@@ -30,6 +29,8 @@ public class OutgraderPropertiesImpl implements IOutgraderProperties {
 	private static final String STATISTICS_THREADS = "outgrader.proxy.statistics_threads";
 
 	private static final String STATISTICS_EXPORT_PERIOD = "outgrader.proxy.statistics.export_period";
+
+	private static final String STATISTICS_EXPORT_DIRECTORY = "outgrader.proxy.statistics.export_directory";
 
 	Configuration configuration;
 
@@ -82,5 +83,10 @@ public class OutgraderPropertiesImpl implements IOutgraderProperties {
 	@Override
 	public int getStatisticsExportPeriod() {
 		return getConfiguration().getInt(STATISTICS_EXPORT_PERIOD);
+	}
+
+	@Override
+	public String getStatisticsExportDirectory() {
+		return getConfiguration().getString(STATISTICS_EXPORT_DIRECTORY);
 	}
 }

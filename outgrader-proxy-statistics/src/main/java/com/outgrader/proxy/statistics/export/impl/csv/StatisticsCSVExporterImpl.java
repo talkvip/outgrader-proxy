@@ -1,12 +1,17 @@
 package com.outgrader.proxy.statistics.export.impl.csv;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import javax.inject.Inject;
+
+import org.apache.commons.io.FileUtils;
 import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 
+import com.outgrader.proxy.core.properties.IOutgraderProperties;
 import com.outgrader.proxy.statistics.exceptions.StatisticsExportException;
 import com.outgrader.proxy.statistics.export.impl.AbstractStatisticsExporter;
 import com.outgrader.proxy.statistics.impl.StatisticsEntry;
@@ -18,26 +23,32 @@ import com.outgrader.proxy.statistics.impl.StatisticsEntry;
  */
 public class StatisticsCSVExporterImpl extends AbstractStatisticsExporter {
 
-	private static final String[] HEADERS = { "uri", "requestCount",
-			"responseCount", "minDuration", "averageDuration", "maxDuration" };
+	private static final String[] HEADERS = { "uri", "requestCount", "responseCount", "minDuration", "averageDuration", "maxDuration" };
 
 	private ICsvBeanWriter writer;
 
+	@Inject
+	protected IOutgraderProperties properties;
+
 	@Override
-	protected void exportEntry(final StatisticsEntry entry)
-			throws StatisticsExportException {
+	protected void exportEntry(final StatisticsEntry entry) throws StatisticsExportException {
 		try {
 			getWriter().write(entry, HEADERS);
 		} catch (IOException e) {
-			throw new StatisticsExportException(
-					"An exception occured during writing statistics entry", e);
+			throw new StatisticsExportException("An exception occured during writing statistics entry", e);
 		}
 	}
 
 	protected ICsvBeanWriter getWriter() throws IOException {
 		if (writer == null) {
-			writer = new CsvBeanWriter(new FileWriter("statistics.csv"),
-					CsvPreference.STANDARD_PREFERENCE);
+			File output = new File(properties.getStatisticsExportDirectory(), "statistics.csv");
+
+			if (!output.exists()) {
+				FileUtils.forceMkdir(output.getParentFile());
+				output.createNewFile();
+			}
+
+			writer = new CsvBeanWriter(new FileWriter(output), CsvPreference.STANDARD_PREFERENCE);
 
 			writer.writeHeader(HEADERS);
 		}
@@ -50,8 +61,7 @@ public class StatisticsCSVExporterImpl extends AbstractStatisticsExporter {
 		try {
 			getWriter().close();
 		} catch (IOException e) {
-			throw new StatisticsExportException(
-					"An exception occured during closing Writer", e);
+			throw new StatisticsExportException("An exception occured during closing Writer", e);
 		}
 	}
 }

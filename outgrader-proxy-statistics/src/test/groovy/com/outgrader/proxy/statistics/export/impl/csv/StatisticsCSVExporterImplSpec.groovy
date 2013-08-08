@@ -1,9 +1,11 @@
 package com.outgrader.proxy.statistics.export.impl.csv
 
+import org.apache.commons.io.FileUtils
 import org.supercsv.io.ICsvBeanWriter
 
 import spock.lang.Specification
 
+import com.outgrader.proxy.core.properties.IOutgraderProperties
 import com.outgrader.proxy.statistics.exceptions.StatisticsExportException
 import com.outgrader.proxy.statistics.impl.StatisticsEntry
 
@@ -15,6 +17,20 @@ import com.outgrader.proxy.statistics.impl.StatisticsEntry
 class StatisticsCSVExporterImplSpec extends Specification {
 
 	StatisticsCSVExporterImpl exporter = Spy(StatisticsCSVExporterImpl)
+
+	IOutgraderProperties properties = Mock(IOutgraderProperties)
+
+	File exportDirectory = new File("/tmp/outgrader")
+
+	def setup() {
+		exporter.properties = properties
+
+		properties.getStatisticsExportDirectory() >> exportDirectory.getAbsolutePath()
+	}
+
+	def cleanup() {
+		FileUtils.deleteQuietly(exportDirectory)
+	}
 
 	def "check writer was created"() {
 		when:
@@ -71,5 +87,14 @@ class StatisticsCSVExporterImplSpec extends Specification {
 
 		then:
 		thrown(StatisticsExportException)
+	}
+
+	def "check file created in corresponding directory"() {
+		when:
+		exporter.getWriter()
+
+		then:
+		exportDirectory.exists()
+		new File(exportDirectory, "statistics.csv").exists()
 	}
 }

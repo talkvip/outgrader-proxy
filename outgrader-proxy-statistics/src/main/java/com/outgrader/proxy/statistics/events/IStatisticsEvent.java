@@ -11,4 +11,6 @@ public interface IStatisticsEvent {
 
 	String getURI();
 
+	long getTimestamp();
+
 }

@@ -34,4 +34,8 @@ public interface IOutgraderProperties {
 	 */
 	int getStatisticsExportPeriod();
 
+	/**
+	 * Folder to store statistics
+	 */
+	String getStatisticsExportDirectory();
 }

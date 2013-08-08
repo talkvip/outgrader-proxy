@@ -14,9 +14,12 @@ public abstract class AbstractStatisticsEvent implements IStatisticsEvent {
 
 	private final String uri;
 
+	private final long timestamp;
+
 	protected AbstractStatisticsEvent(final StatisticsEventType type, final String uri) {
 		this.type = type;
 		this.uri = uri;
+		this.timestamp = System.currentTimeMillis();
 	}
 
 	@Override
@@ -27,6 +30,11 @@ public abstract class AbstractStatisticsEvent implements IStatisticsEvent {
 	@Override
 	public String getURI() {
 		return uri;
+	}
+
+	@Override
+	public long getTimestamp() {
+		return timestamp;
 	}
 
 }
