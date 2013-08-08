@@ -20,9 +20,15 @@ import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
 import org.apache.http.annotation.NotThreadSafe;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpOptions;
+import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.HttpTrace;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +56,9 @@ public class ExternalSenderImpl implements IExternalSender {
 			LOGGER.debug("start send(<" + request + ">)");
 		}
 
-		HttpRequestBase externalRequest = getRequest(request.getMethod(), request.getUri());
+		String uri = request.getUri();
+
+		HttpRequestBase externalRequest = getRequest(request.getMethod(), uri);
 
 		copyHeaders(externalRequest, request);
 
@@ -62,8 +70,12 @@ public class ExternalSenderImpl implements IExternalSender {
 
 			if (response != null) {
 				result = convertResponse(response, request.getProtocolVersion());
+			} else {
+				LOGGER.error("HttpClient returned NULL for URI <" + uri + ">");
+				throw new ExternalSenderException("Got a NULL response");
 			}
 		} catch (IOException e) {
+			LOGGER.error("HttpClient throwed exception for URI <" + uri + ">");
 			throw new ExternalSenderException("An exception occured during connection to external host", e);
 		}
 
@@ -83,13 +95,13 @@ public class ExternalSenderImpl implements IExternalSender {
 		return result;
 	}
 
-	private void copyHeaders(final org.apache.http.HttpResponse external, final HttpResponse target) {
+	protected void copyHeaders(final org.apache.http.HttpResponse external, final HttpResponse target) {
 		for (Header header : external.getAllHeaders()) {
 			target.headers().add(header.getName(), header.getValue());
 		}
 	}
 
-	private ByteBuf convertContent(final HttpEntity entity) throws IOException {
+	protected ByteBuf convertContent(final HttpEntity entity) throws IOException {
 		if (entity != null) {
 			return Unpooled.copiedBuffer(IOUtils.toByteArray(entity.getContent()));
 		}
@@ -97,11 +109,11 @@ public class ExternalSenderImpl implements IExternalSender {
 		return Unpooled.EMPTY_BUFFER;
 	}
 
-	private HttpResponseStatus convertStatus(final StatusLine status) {
+	protected HttpResponseStatus convertStatus(final StatusLine status) {
 		return new HttpResponseStatus(status.getStatusCode(), status.getReasonPhrase());
 	}
 
-	private HttpClient getClient() {
+	protected HttpClient getClient() {
 		HttpClient result = CLIENT_THREAD_POOL.get();
 		if (result == null) {
 			result = new DefaultHttpClient();
@@ -112,20 +124,37 @@ public class ExternalSenderImpl implements IExternalSender {
 		return result;
 	}
 
-	private void copyHeaders(final HttpRequestBase external, final HttpRequest original) {
+	protected void copyHeaders(final HttpRequestBase external, final HttpRequest original) {
 		for (Map.Entry<String, String> header : original.headers().entries()) {
 			external.addHeader(header.getKey(), header.getValue());
 		}
 	}
 
-	private HttpRequestBase getRequest(final HttpMethod method, final String uri) {
+	protected HttpRequestBase getRequest(final HttpMethod method, final String uri) {
+		HttpRequestBase result = null;
+
 		if (method.equals(HttpMethod.GET)) {
-			return new HttpGet(uri);
+			result = new HttpGet();
 		} else if (method.equals(HttpMethod.POST)) {
-			return new HttpPost(uri);
+			result = new HttpPost(uri);
+		} else if (method.equals(HttpMethod.CONNECT)) {
+			return null;
+		} else if (method.equals(HttpMethod.DELETE)) {
+			result = new HttpDelete();
+		} else if (method.equals(HttpMethod.HEAD)) {
+			result = new HttpHead();
+		} else if (method.equals(HttpMethod.OPTIONS)) {
+			result = new HttpOptions();
+		} else if (method.equals(HttpMethod.PATCH)) {
+			result = new HttpPatch();
+		} else if (method.equals(HttpMethod.PUT)) {
+			result = new HttpPut();
+		} else if (method.equals(HttpMethod.TRACE)) {
+			result = new HttpTrace();
+		} else {
+			throw new IllegalArgumentException("Unsupported HTTP Method <" + method + ">");
 		}
 
-		return null;
+		return result;
 	}
-
 }

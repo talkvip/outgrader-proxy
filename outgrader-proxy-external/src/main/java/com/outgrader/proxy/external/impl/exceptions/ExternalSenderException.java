@@ -17,4 +17,8 @@ public class ExternalSenderException extends AbstractOutgraderException {
 		super(message, cause);
 	}
 
+	public ExternalSenderException(final String message) {
+		super(message);
+	}
+
 }
