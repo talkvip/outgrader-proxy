@@ -18,7 +18,8 @@ import com.outgrader.proxy.properties.source.IPropertiesSource;
  */
 public class OutgraderPropertiesImpl implements IOutgraderProperties {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(OutgraderPropertiesImpl.class);
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(OutgraderPropertiesImpl.class);
 
 	private static final String PROXY_PORT = "outgrader.proxy.port";
 
@@ -30,17 +31,12 @@ public class OutgraderPropertiesImpl implements IOutgraderProperties {
 
 	private static final String STATISTICS_EXPORT_PERIOD = "outgrader.proxy.statistics.export_period";
 
-	private Configuration configuration;
+	Configuration configuration;
 
 	@Inject
-	private IPropertiesSource propertiesSource;
+	IPropertiesSource propertiesSource;
 
-	@Override
-	public int getPort() {
-		return getConfiguration().getInt(PROXY_PORT);
-	}
-
-	private Configuration getConfiguration() {
+	protected Configuration getConfiguration() {
 		if (configuration == null) {
 			initialize();
 		}
@@ -61,6 +57,11 @@ public class OutgraderPropertiesImpl implements IOutgraderProperties {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("finish initialize()");
 		}
+	}
+
+	@Override
+	public int getPort() {
+		return getConfiguration().getInt(PROXY_PORT);
 	}
 
 	@Override
