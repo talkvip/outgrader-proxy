@@ -20,9 +20,11 @@ import com.outgrader.proxy.properties.source.IPropertiesSource;
  */
 public class FilePropertiesSource implements IPropertiesSource {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(FilePropertiesSource.class);
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(FilePropertiesSource.class);
 
-	private static final String[] PROPERTIES_LOCATIONS = { "/outgrader.properties", "/test-outgrader.properties",
+	private static final String[] PROPERTIES_LOCATIONS = {
+			"/outgrader.properties", "/test-outgrader.properties",
 			"/default-outgrader.properties" };
 
 	@Override
@@ -40,7 +42,8 @@ public class FilePropertiesSource implements IPropertiesSource {
 
 			result = new PropertiesConfiguration(location);
 		} catch (ConfigurationException e) {
-			LOGGER.error("An exception occured during processing Properties file", e);
+			LOGGER.error(
+					"An exception occured during processing Properties file", e);
 
 			throw new RuntimeException(e);
 		}
@@ -57,12 +60,13 @@ public class FilePropertiesSource implements IPropertiesSource {
 
 		LOGGER.info("Determining config file location");
 
-		for (String locationCandidate : PROPERTIES_LOCATIONS) {
+		for (String locationCandidate : getLocationCandidates()) {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Check properties file location at <" + locationCandidate + ">");
+				LOGGER.debug("Check properties file location at <"
+						+ locationCandidate + ">");
 			}
 
-			result = OutgraderPropertiesImpl.class.getResource(locationCandidate);
+			result = toURL(locationCandidate);
 
 			if (result != null) {
 				break;
@@ -76,5 +80,13 @@ public class FilePropertiesSource implements IPropertiesSource {
 		}
 
 		return result;
+	}
+
+	protected String[] getLocationCandidates() {
+		return PROPERTIES_LOCATIONS;
+	}
+
+	protected URL toURL(final String location) {
+		return OutgraderPropertiesImpl.class.getResource(location);
 	}
 }

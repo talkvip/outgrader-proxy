@@ -31,6 +31,50 @@ class OutgraderPropertiesImplSpec extends Specification {
 		def secondAttempt = properties.getConfiguration()
 
 		then:
+		firstAttempt != null
+		secondAttempt != null
 		firstAttempt == secondAttempt
+	}
+
+	def "check properties initialization"() {
+		when:
+		source.getConfiguration() >> config
+		and:
+		properties.initialize()
+
+		then:
+		1 * source.getConfiguration() >> config
+		properties.getConfiguration().is(config)
+	}
+
+	def "check NPE if Configuration is null"() {
+		when:
+		source.getConfiguration() >> null
+		and:
+		properties.initialize()
+
+		then:
+		1 * source.getConfiguration()
+		thrown(NullPointerException)
+	}
+
+	def "check all properties came from config"(def method) {
+		setup:
+		source.getConfiguration() >> config
+
+		when: "call method <${method}>"
+		properties."get${method.capitalize()}"()
+
+		then:
+		1 * config./get.*/(_)
+
+		where:
+		method << [
+			'port',
+			'bossThreadNumber',
+			'workerThreadNumber',
+			'statisticsThreadNumber',
+			'statisticsExportPeriod'
+		]
 	}
 }

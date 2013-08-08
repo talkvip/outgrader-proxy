@@ -28,7 +28,7 @@ class OutgraderSpec extends Specification {
 		injector.getInstance(IStatisticsHandler.class) >> statistics
 	}
 
-	def "check injector cachec"() {
+	def "check injector cache"() {
 		when:
 		def attempt1 = outgrader.getInjector()
 		def attempt2 = outgrader.getInjector()
