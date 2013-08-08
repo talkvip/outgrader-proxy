@@ -35,9 +35,9 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.outgrader.proxy.core.advertisment.response.IAdvertismentProcessor;
 import com.outgrader.proxy.core.exceptions.AbstractOutgraderException;
 import com.outgrader.proxy.core.external.IExternalSender;
-import com.outgrader.proxy.core.statistics.advertisment.response.IAdvertismentProcessor;
 import com.outgrader.proxy.external.impl.exceptions.ExternalSenderException;
 
 /**
