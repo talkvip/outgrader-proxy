@@ -1,8 +1,8 @@
-package com.outgrader.proxy.core.advertisment.response.impl;
+package com.outgrader.proxy.core.advertisment.module;
 
 import com.google.inject.AbstractModule;
-import com.outgrader.proxy.core.advertisment.module.AdvertismentProcessorImpl;
 import com.outgrader.proxy.core.advertisment.response.IAdvertismentProcessor;
+import com.outgrader.proxy.core.advertisment.response.impl.AdvertismentProcessorImpl;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
