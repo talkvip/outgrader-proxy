@@ -8,7 +8,7 @@ package com.outgrader.proxy.core.advertisment.response.internal;
 public interface ITag {
 
 	public enum TagType {
-		OPENING, CLOSING;
+		OPENING, CLOSING, OPEN_AND_CLOSING;
 	}
 
 	ITag getParent();
@@ -16,5 +16,7 @@ public interface ITag {
 	String getText();
 
 	TagType getTagType();
+
+	boolean isAnalysable();
 
 }

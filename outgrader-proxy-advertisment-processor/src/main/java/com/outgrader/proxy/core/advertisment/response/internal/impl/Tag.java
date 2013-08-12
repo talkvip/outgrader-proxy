@@ -13,22 +13,41 @@ public class Tag implements ITag {
 
 		private final Tag tag;
 
-		private TagBuilder(final String text) {
+		private TagBuilder() {
 			tag = new Tag();
-			tag.text = text;
 		}
 
-		public static TagBuilder withText(final String text) {
-			return new TagBuilder(text);
+		public TagBuilder withText(final String text) {
+			tag.setText(text);
+
+			return this;
+		}
+
+		public static TagBuilder create() {
+			return new TagBuilder();
+		}
+
+		public static TagBuilder createSpaceTag() {
+			TagBuilder result = new TagBuilder();
+
+			result.getTag().setAnalysable(false);
+
+			return result;
 		}
 
 		public Tag build() {
+			return tag;
+		}
+		
+		private Tag getTag() {
 			return tag;
 		}
 
 	}
 
 	private String text;
+
+	private boolean isAnalysable = true;
 
 	protected Tag() {
 
@@ -44,6 +63,10 @@ public class Tag implements ITag {
 		return null;
 	}
 
+	public void setText(final String text) {
+		this.text = text;
+	}
+
 	@Override
 	public String getText() {
 		return text;
@@ -55,4 +78,17 @@ public class Tag implements ITag {
 		return null;
 	}
 
+	public void setAnalysable(final boolean isAnalysable) {
+		this.isAnalysable = isAnalysable;
+	}
+
+	@Override
+	public boolean isAnalysable() {
+		return isAnalysable;
+	}
+
+	@Override
+	public String toString() {
+		return getText();
+	}
 }

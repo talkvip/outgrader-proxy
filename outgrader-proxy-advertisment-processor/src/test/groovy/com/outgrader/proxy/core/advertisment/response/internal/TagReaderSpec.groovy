@@ -20,20 +20,85 @@ class TagReaderSpec extends Specification {
 		result != null
 	}
 
-	def "check exceptions when no tag start found"() {
+	def "check remove operation not supported"() {
 		when:
-		createTagReader("tag").first()
+		createTagReader("lalala").remove()
 
 		then:
-		thrown(TagReaderException)
+		thrown(UnsupportedOperationException)
 	}
 
-	def "check exception when no end tag found"() {
+	def "check tag collection size on line with more than one block size"() {
 		when:
-		createTagReader("<tag").first()
+		def result = createTagReader("<tag01>" * 100).toList()
 
 		then:
-		thrown(TagReaderException)
+		result.size() == 100
+	}
+
+	def "check input stream was closed"() {
+		setup:
+		def stream = Mock(InputStream)
+
+		when:
+		def reader = new TagReader(stream, Charsets.UTF_8)
+		and:
+		reader.close()
+
+		then:
+		1 * stream.close()
+	}
+
+	def "check tag collection size on line with more than one block size with spaces"() {
+		when:
+		def result = createTagReader("  <tag01>" * 100).toList()
+
+		then:
+		result.size() == 200
+	}
+
+	def "check no exception but no hasNext if error occured"() {
+		setup:
+		def stream = Mock(InputStream)
+		stream.read(_, _) >> { throw new IOException() }
+
+		when:
+		def reader = new TagReader(stream, Charsets.UTF_8)
+		and:
+		def hasNext = reader.hasNext()
+
+		then:
+		noExceptionThrown()
+		!hasNext
+	}
+
+	def "check hasNext was called"() {
+		setup:
+		def reader = Spy(TagReader, constructorArgs: [
+			IOUtils.toInputStream("some line"),
+			Charsets.UTF_8
+		])
+
+		when:
+		reader.next()
+
+		then:
+		1 * reader.hasNext()
+	}
+
+	def "check nosuchelement exception"() {
+		setup:
+		def reader = Spy(TagReader, constructorArgs: [
+			IOUtils.toInputStream("some line"),
+			Charsets.UTF_8
+		])
+
+		when:
+		reader.next()
+
+		then:
+		1 * reader.hasNext() >> false
+		thrown(NoSuchElementException)
 	}
 
 
