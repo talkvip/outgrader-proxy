@@ -19,4 +19,6 @@ public interface ITag {
 
 	boolean isAnalysable();
 
+	ITag getOpeningTag();
+
 }

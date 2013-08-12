@@ -20,6 +20,14 @@ public class Tag implements ITag {
 		public TagBuilder withText(final String text) {
 			tag.setText(text);
 
+			if (text.startsWith("</")) {
+				tag.setTagType(TagType.CLOSING);
+			} else if (text.endsWith("/>")) {
+				tag.setTagType(TagType.OPEN_AND_CLOSING);
+			} else {
+				tag.setTagType(TagType.OPENING);
+			}
+
 			return this;
 		}
 
@@ -38,7 +46,7 @@ public class Tag implements ITag {
 		public Tag build() {
 			return tag;
 		}
-		
+
 		private Tag getTag() {
 			return tag;
 		}
@@ -48,6 +56,8 @@ public class Tag implements ITag {
 	private String text;
 
 	private boolean isAnalysable = true;
+
+	private TagType type;
 
 	protected Tag() {
 
@@ -72,10 +82,13 @@ public class Tag implements ITag {
 		return text;
 	}
 
+	public void setTagType(final TagType type) {
+		this.type = type;
+	}
+
 	@Override
 	public TagType getTagType() {
-		// TODO Auto-generated method stub
-		return null;
+		return type;
 	}
 
 	public void setAnalysable(final boolean isAnalysable) {
@@ -90,5 +103,11 @@ public class Tag implements ITag {
 	@Override
 	public String toString() {
 		return getText();
+	}
+
+	@Override
+	public ITag getOpeningTag() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

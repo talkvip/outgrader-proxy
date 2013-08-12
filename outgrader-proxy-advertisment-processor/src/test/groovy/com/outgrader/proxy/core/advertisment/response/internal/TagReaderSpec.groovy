@@ -5,6 +5,8 @@ import org.apache.commons.io.IOUtils
 
 import spock.lang.Specification
 
+import com.outgrader.proxy.core.advertisment.response.internal.ITag.TagType
+
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
  * @since 0.3.0-SNAPSHOT
@@ -101,6 +103,52 @@ class TagReaderSpec extends Specification {
 		thrown(NoSuchElementException)
 	}
 
+	def "check open/close tags"() {
+		when:
+		def reader = createTagReader("<tag></tag>")
+
+		then:
+		def first = reader.first()
+		def last = reader.last()
+		first.getTagType() == TagType.OPENING
+		last.getTagType() == TagType.CLOSING
+		last.getOpeningTag() == first
+	}
+
+	def "check not same opening tag"() {
+		when:
+		def reader = createTagReader("<tag></another_tag>")
+
+		then:
+		def first = reader.first()
+		def last = reader.last()
+		first.getTagType() == TagType.OPENING
+		last.getTagType() == TagType.CLOSING
+		last.getOpeningTag() != first
+	}
+
+	def "check open and close tag"() {
+		when:
+		def reader = createTagReader("<tag/>")
+
+		then:
+		reader.first().getTagType() == TagType.OPEN_AND_CLOSING
+	}
+
+	def "check parent"() {
+		when:
+		def result = createTagReader("<first><second/><second/><second/></first>").toList()
+
+		then:
+		result.each { tag ->
+			if (tag == result.first() || tag == result.last()) {
+				assert tag.getParent() == null
+			} else {
+				assert tag.getParent() != null
+				assert tag.getParent() == result.first()
+			}
+		}
+	}
 
 	private TagReader createTagReader(String line) {
 		return new TagReader(IOUtils.toInputStream(line), Charsets.UTF_8)
