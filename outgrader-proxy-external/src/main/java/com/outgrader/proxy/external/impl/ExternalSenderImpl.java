@@ -10,8 +10,10 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -118,7 +120,15 @@ public class ExternalSenderImpl implements IExternalSender {
 			ByteBuf content = null;
 
 			if ((code == HttpStatus.SC_OK) && contentType.getMimeType().equals(ContentType.TEXT_HTML.getMimeType())) {
-				content = responseProcessor.process(uri, response.getEntity().getContent(), contentType.getCharset());
+				boolean zipped = response.getEntity().getContentEncoding().getValue().contains("gzip")
+						|| response.getEntity().getContentEncoding().getValue().contains("deflate");
+
+				InputStream stream = response.getEntity().getContent();
+				if (zipped) {
+					stream = new GZIPInputStream(stream);
+				}
+
+				content = responseProcessor.process(uri, stream, contentType.getCharset());
 			} else {
 				content = Unpooled.copiedBuffer(IOUtils.toByteArray(response.getEntity().getContent()));
 			}
