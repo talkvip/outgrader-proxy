@@ -50,7 +50,7 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 	public ByteBuf process(final String uri, final InputStream stream, final Charset charset) throws AbstractOutgraderException {
 		ByteBuf result = Unpooled.EMPTY_BUFFER;
 
-		try (TagReader reader = createTagReader(stream, charset)) {
+		try (TagReader reader = createTagReader(stream, charset == null ? Charset.defaultCharset() : charset)) {
 			for (ITag tag : reader) {
 				if (tag.isAnalysable()) {
 					boolean isRewritten = false;
@@ -86,5 +86,4 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 	protected TagReader createTagReader(final InputStream stream, final Charset charset) {
 		return new TagReader(stream, charset);
 	}
-
 }

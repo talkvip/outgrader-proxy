@@ -11,7 +11,6 @@ import spock.lang.Specification
 import com.outgrader.proxy.core.advertisment.IAdvertismentRule
 import com.outgrader.proxy.core.advertisment.response.IAdvertismentProcessor
 import com.outgrader.proxy.core.advertisment.response.IAdvertismentRewriter
-import com.outgrader.proxy.core.advertisment.response.impl.AdvertismentProcessorImpl
 import com.outgrader.proxy.core.advertisment.response.internal.ITag
 import com.outgrader.proxy.core.advertisment.response.internal.TagReader
 import com.outgrader.proxy.core.advertisment.storage.IAdvertismentRuleStorage
@@ -172,5 +171,13 @@ class AdvertismentProcessorImplSpec extends Specification {
 
 		then:
 		1 * rewriter.rewrite(tag, rule, CHARSET) >> Unpooled.EMPTY_BUFFER
+	}
+
+	def "check default charset is used when no charset given"() {
+		when:
+		processor.process(URI, stream, null)
+
+		then:
+		1 * processor.createTagReader(stream, Charset.defaultCharset()) >> tagReader
 	}
 }
