@@ -1,4 +1,4 @@
-package com.outgrader.proxy.core.advertisment.response;
+package com.outgrader.proxy.core.advertisment.processor;
 
 import io.netty.buffer.ByteBuf;
 

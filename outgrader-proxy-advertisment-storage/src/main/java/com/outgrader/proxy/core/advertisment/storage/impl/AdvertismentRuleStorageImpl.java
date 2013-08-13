@@ -3,8 +3,8 @@ package com.outgrader.proxy.core.advertisment.storage.impl;
 import java.util.Collection;
 import java.util.Collections;
 
-import com.outgrader.proxy.core.advertisment.IAdvertismentRule;
-import com.outgrader.proxy.core.advertisment.storage.IAdvertismentRuleStorage;
+import com.outgrader.proxy.advertisment.rule.IAdvertismentRule;
+import com.outgrader.proxy.advertisment.storage.IAdvertismentRuleStorage;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)

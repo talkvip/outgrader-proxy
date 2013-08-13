@@ -4,8 +4,8 @@ import java.util.regex.Pattern
 
 import spock.lang.Specification
 
-import com.outgrader.proxy.core.advertisment.IAdvertismentRule
-import com.outgrader.proxy.core.advertisment.response.internal.ITag
+import com.outgrader.proxy.advertisment.processor.internal.ITag
+import com.outgrader.proxy.advertisment.rule.IAdvertismentRule
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)

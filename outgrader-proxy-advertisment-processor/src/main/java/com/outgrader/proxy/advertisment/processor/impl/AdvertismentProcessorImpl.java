@@ -1,4 +1,4 @@
-package com.outgrader.proxy.core.advertisment.response.impl;
+package com.outgrader.proxy.advertisment.processor.impl;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -13,12 +13,12 @@ import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.outgrader.proxy.core.advertisment.IAdvertismentRule;
-import com.outgrader.proxy.core.advertisment.response.IAdvertismentProcessor;
-import com.outgrader.proxy.core.advertisment.response.IAdvertismentRewriter;
-import com.outgrader.proxy.core.advertisment.response.internal.ITag;
-import com.outgrader.proxy.core.advertisment.response.internal.TagReader;
-import com.outgrader.proxy.core.advertisment.storage.IAdvertismentRuleStorage;
+import com.outgrader.proxy.advertisment.processor.IAdvertismentRewriter;
+import com.outgrader.proxy.advertisment.processor.internal.ITag;
+import com.outgrader.proxy.advertisment.processor.internal.TagReader;
+import com.outgrader.proxy.advertisment.rule.IAdvertismentRule;
+import com.outgrader.proxy.advertisment.storage.IAdvertismentRuleStorage;
+import com.outgrader.proxy.core.advertisment.processor.IAdvertismentProcessor;
 import com.outgrader.proxy.core.exceptions.AbstractOutgraderException;
 import com.outgrader.proxy.core.statistics.IStatisticsHandler;
 

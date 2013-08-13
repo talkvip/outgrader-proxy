@@ -1,11 +1,11 @@
-package com.outgrader.proxy.core.advertisment.response.internal
+package com.outgrader.proxy.advertisment.processor.internal
 
 import org.apache.commons.io.Charsets
 import org.apache.commons.io.IOUtils
 
 import spock.lang.Specification
 
-import com.outgrader.proxy.core.advertisment.response.internal.ITag.TagType
+import com.outgrader.proxy.advertisment.processor.internal.ITag.TagType
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)

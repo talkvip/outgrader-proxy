@@ -2,7 +2,7 @@ package com.outgrader.proxy.core.advertisment.rule.impl.internal;
 
 import java.util.regex.Pattern;
 
-import com.outgrader.proxy.core.advertisment.IAdvertismentRule;
+import com.outgrader.proxy.advertisment.rule.IAdvertismentRule;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)

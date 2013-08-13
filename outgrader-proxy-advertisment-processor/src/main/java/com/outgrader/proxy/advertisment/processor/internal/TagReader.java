@@ -1,4 +1,4 @@
-package com.outgrader.proxy.core.advertisment.response.internal;
+package com.outgrader.proxy.advertisment.processor.internal;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
@@ -16,7 +16,7 @@ import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.outgrader.proxy.core.advertisment.response.internal.impl.Tag.TagBuilder;
+import com.outgrader.proxy.advertisment.processor.internal.impl.Tag.TagBuilder;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)

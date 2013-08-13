@@ -1,7 +1,7 @@
 package com.outgrader.proxy.core.advertisment.storage.module;
 
 import com.google.inject.AbstractModule;
-import com.outgrader.proxy.core.advertisment.storage.IAdvertismentRuleStorage;
+import com.outgrader.proxy.advertisment.storage.IAdvertismentRuleStorage;
 import com.outgrader.proxy.core.advertisment.storage.impl.AdvertismentRuleStorageImpl;
 
 /**

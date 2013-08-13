@@ -1,8 +1,8 @@
-package com.outgrader.proxy.core.advertisment.storage;
+package com.outgrader.proxy.advertisment.storage;
 
 import java.util.Collection;
 
-import com.outgrader.proxy.core.advertisment.IAdvertismentRule;
+import com.outgrader.proxy.advertisment.rule.IAdvertismentRule;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)

@@ -1,4 +1,4 @@
-package com.outgrader.proxy.core.advertisment.response.internal;
+package com.outgrader.proxy.advertisment.processor.internal;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)

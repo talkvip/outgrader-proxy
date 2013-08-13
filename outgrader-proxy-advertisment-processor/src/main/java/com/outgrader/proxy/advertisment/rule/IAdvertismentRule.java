@@ -1,6 +1,6 @@
-package com.outgrader.proxy.core.advertisment;
+package com.outgrader.proxy.advertisment.rule;
 
-import com.outgrader.proxy.core.advertisment.response.internal.ITag;
+import com.outgrader.proxy.advertisment.processor.internal.ITag;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)

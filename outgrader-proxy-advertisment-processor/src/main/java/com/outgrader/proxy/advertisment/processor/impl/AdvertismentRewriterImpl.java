@@ -1,13 +1,13 @@
-package com.outgrader.proxy.core.advertisment.response.impl;
+package com.outgrader.proxy.advertisment.processor.impl;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 import java.nio.charset.Charset;
 
-import com.outgrader.proxy.core.advertisment.IAdvertismentRule;
-import com.outgrader.proxy.core.advertisment.response.IAdvertismentRewriter;
-import com.outgrader.proxy.core.advertisment.response.internal.ITag;
+import com.outgrader.proxy.advertisment.processor.IAdvertismentRewriter;
+import com.outgrader.proxy.advertisment.processor.internal.ITag;
+import com.outgrader.proxy.advertisment.rule.IAdvertismentRule;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)

@@ -26,7 +26,7 @@ import org.apache.http.message.BasicStatusLine
 
 import spock.lang.Specification
 
-import com.outgrader.proxy.core.advertisment.response.IAdvertismentProcessor
+import com.outgrader.proxy.core.advertisment.processor.IAdvertismentProcessor
 import com.outgrader.proxy.external.impl.exceptions.ExternalSenderException
 
 

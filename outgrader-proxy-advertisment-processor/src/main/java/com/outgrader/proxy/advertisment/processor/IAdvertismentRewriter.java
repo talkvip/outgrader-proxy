@@ -1,11 +1,11 @@
-package com.outgrader.proxy.core.advertisment.response;
+package com.outgrader.proxy.advertisment.processor;
 
 import java.nio.charset.Charset;
 
 import io.netty.buffer.ByteBuf;
 
-import com.outgrader.proxy.core.advertisment.IAdvertismentRule;
-import com.outgrader.proxy.core.advertisment.response.internal.ITag;
+import com.outgrader.proxy.advertisment.processor.internal.ITag;
+import com.outgrader.proxy.advertisment.rule.IAdvertismentRule;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)

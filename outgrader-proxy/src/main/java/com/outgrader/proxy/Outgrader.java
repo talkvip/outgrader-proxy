@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.outgrader.proxy.advertisment.module.AdvertismentProcessorModule;
 import com.outgrader.proxy.core.IOutgraderProxy;
-import com.outgrader.proxy.core.advertisment.module.AdvertismentProcessorModule;
 import com.outgrader.proxy.core.advertisment.storage.module.AdvertismentRuleStorageModule;
 import com.outgrader.proxy.core.module.OutgraderCoreModule;
 import com.outgrader.proxy.core.statistics.IStatisticsHandler;
