@@ -111,6 +111,8 @@ public class TagReader implements Iterable<ITag>, Iterator<ITag>, Closeable {
 		ITag result = currentTag;
 		currentTag = null;
 
+		System.out.println(result.getText());
+
 		return result;
 	}
 
