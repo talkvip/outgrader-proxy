@@ -14,6 +14,6 @@ import com.outgrader.proxy.core.exceptions.AbstractOutgraderException;
  */
 public interface IAdvertismentProcessor {
 
-	public ByteBuf process(InputStream stream, Charset charset) throws AbstractOutgraderException;
+	public ByteBuf process(String uri, InputStream stream, Charset charset) throws AbstractOutgraderException;
 
 }

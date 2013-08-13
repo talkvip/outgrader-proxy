@@ -12,6 +12,7 @@ import javax.inject.Singleton;
 import com.outgrader.proxy.core.advertisment.response.IAdvertismentProcessor;
 import com.outgrader.proxy.core.advertisment.storage.IAdvertismentRuleStorage;
 import com.outgrader.proxy.core.exceptions.AbstractOutgraderException;
+import com.outgrader.proxy.core.statistics.IStatisticsHandler;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
@@ -24,8 +25,11 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 	@Inject
 	IAdvertismentRuleStorage ruleStorage;
 
+	@Inject
+	IStatisticsHandler statisticsHandler;
+
 	@Override
-	public ByteBuf process(final InputStream stream, final Charset charset) throws AbstractOutgraderException {
+	public ByteBuf process(String uri, final InputStream stream, final Charset charset) throws AbstractOutgraderException {
 		ByteBuf result = Unpooled.EMPTY_BUFFER;
 
 		return result;

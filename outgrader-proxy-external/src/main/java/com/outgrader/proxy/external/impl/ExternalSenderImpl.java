@@ -75,7 +75,7 @@ public class ExternalSenderImpl implements IExternalSender {
 			response = getClient().execute(externalRequest);
 
 			if (response != null) {
-				result = convertResponse(response, request.getProtocolVersion());
+				result = convertResponse(uri, response, request.getProtocolVersion());
 			} else {
 				LOGGER.error("HttpClient returned NULL for URI <" + uri + ">");
 				throw new ExternalSenderException("Got a NULL response");
@@ -92,9 +92,10 @@ public class ExternalSenderImpl implements IExternalSender {
 		return result;
 	}
 
-	private HttpResponse convertResponse(final org.apache.http.HttpResponse response, final HttpVersion httpVersion) throws IOException,
-			AbstractOutgraderException {
-		HttpResponse result = new DefaultFullHttpResponse(httpVersion, convertStatus(response.getStatusLine()), processContent(response));
+	private HttpResponse convertResponse(final String uri, final org.apache.http.HttpResponse response, final HttpVersion httpVersion)
+			throws IOException, AbstractOutgraderException {
+		HttpResponse result = new DefaultFullHttpResponse(httpVersion, convertStatus(response.getStatusLine()), processContent(uri,
+				response));
 
 		copyHeaders(response, result);
 
@@ -107,7 +108,8 @@ public class ExternalSenderImpl implements IExternalSender {
 		}
 	}
 
-	protected ByteBuf processContent(final org.apache.http.HttpResponse response) throws IOException, AbstractOutgraderException {
+	protected ByteBuf processContent(final String uri, final org.apache.http.HttpResponse response) throws IOException,
+			AbstractOutgraderException {
 		if (response.getEntity() != null) {
 			int code = response.getStatusLine().getStatusCode();
 			ContentType contentType = ContentType.get(response.getEntity());
@@ -115,7 +117,7 @@ public class ExternalSenderImpl implements IExternalSender {
 			ByteBuf content = null;
 
 			if ((code == HttpStatus.SC_OK) && contentType.getMimeType().equals(ContentType.TEXT_HTML.getMimeType())) {
-				content = responseProcessor.process(response.getEntity().getContent(), contentType.getCharset());
+				content = responseProcessor.process(uri, response.getEntity().getContent(), contentType.getCharset());
 			} else {
 				content = Unpooled.copiedBuffer(IOUtils.toByteArray(response.getEntity().getContent()));
 			}

@@ -128,7 +128,7 @@ class ExternalSenderImplSpec extends Specification {
 		httpResponse.setEntity(null)
 
 		when:
-		def result = sender.processContent(httpResponse)
+		def result = sender.processContent(_ as String, httpResponse)
 
 		then:
 		noExceptionThrown()
@@ -141,7 +141,7 @@ class ExternalSenderImplSpec extends Specification {
 		httpResponse.setEntity(new StringEntity(content))
 
 		when:
-		def result = sender.processContent(httpResponse)
+		def result = sender.processContent(_ as String, httpResponse)
 
 		then:
 		result == Unpooled.wrappedBuffer(content.getBytes(Charsets.UTF_8))
@@ -202,10 +202,10 @@ class ExternalSenderImplSpec extends Specification {
 		httpResponse.setEntity(entity)
 
 		when:
-		sender.processContent(httpResponse)
+		sender.processContent(_ as String, httpResponse)
 
 		then:
-		1 * processor.process(stream, _)
+		1 * processor.process(_ as String, stream, _)
 	}
 
 	def "check processor now used for non-ok response"(){
@@ -218,7 +218,7 @@ class ExternalSenderImplSpec extends Specification {
 		httpResponse.setEntity(entity)
 
 		when:
-		def result = sender.processContent(httpResponse)
+		def result = sender.processContent(_ as String, httpResponse)
 
 		then:
 		0 * processor.process(_, _)
@@ -235,10 +235,10 @@ class ExternalSenderImplSpec extends Specification {
 		httpResponse.setEntity(entity)
 
 		when:
-		def result = sender.processContent(httpResponse)
+		def result = sender.processContent(_ as String, httpResponse)
 
 		then:
-		0 * processor.process(_, _)
+		0 * processor.process(_, _, _)
 		result != null
 	}
 
@@ -251,10 +251,10 @@ class ExternalSenderImplSpec extends Specification {
 
 		httpResponse.setEntity(entity)
 
-		processor.process(_, _) >> {throw new ExternalSenderException("test") }
+		processor.process(_, _, _) >> { throw new ExternalSenderException("test") }
 
 		when:
-		sender.processContent(httpResponse)
+		sender.processContent(_ as String, httpResponse)
 
 		then:
 		thrown(ExternalSenderException)
