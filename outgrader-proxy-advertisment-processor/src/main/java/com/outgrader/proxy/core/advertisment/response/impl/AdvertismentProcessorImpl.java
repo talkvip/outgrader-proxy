@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import com.outgrader.proxy.core.advertisment.IAdvertismentRule;
 import com.outgrader.proxy.core.advertisment.response.IAdvertismentProcessor;
+import com.outgrader.proxy.core.advertisment.response.IAdvertismentRewriter;
 import com.outgrader.proxy.core.advertisment.response.internal.ITag;
 import com.outgrader.proxy.core.advertisment.response.internal.TagReader;
 import com.outgrader.proxy.core.advertisment.storage.IAdvertismentRuleStorage;
@@ -35,10 +36,14 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 
 	private final IStatisticsHandler statisticsHandler;
 
+	private final IAdvertismentRewriter rewriter;
+
 	@Inject
-	public AdvertismentProcessorImpl(final IAdvertismentRuleStorage ruleStorage, final IStatisticsHandler statisticsHandler) {
+	public AdvertismentProcessorImpl(final IAdvertismentRuleStorage ruleStorage, final IStatisticsHandler statisticsHandler,
+			final IAdvertismentRewriter rewriter) {
 		this.ruleStorage = ruleStorage;
 		this.statisticsHandler = statisticsHandler;
+		this.rewriter = rewriter;
 	}
 
 	@Override
@@ -48,14 +53,25 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 		try (TagReader reader = createTagReader(stream, charset)) {
 			for (ITag tag : reader) {
 				if (tag.isAnalysable()) {
+					boolean isRewritten = false;
 					for (IAdvertismentRule rule : ruleStorage.getRules()) {
 						if (rule.matches(tag)) {
 
 							statisticsHandler.onAdvertismentCandidateFound(uri, rule.toString());
 
+							isRewritten = true;
+
+							result = Unpooled.copiedBuffer(result, rewriter.rewrite(tag, rule, charset));
+
 							break;
 						}
 					}
+
+					if (!isRewritten) {
+						result = Unpooled.copiedBuffer(result, rewriter.rewrite(tag, charset));
+					}
+				} else {
+					result = Unpooled.copiedBuffer(result, rewriter.rewrite(tag, charset));
 				}
 			}
 		} catch (IOException e) {

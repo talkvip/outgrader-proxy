@@ -1,5 +1,7 @@
 package com.outgrader.proxy.core.advertisment.module
 
+import io.netty.buffer.Unpooled
+
 import java.nio.charset.Charset
 
 import org.apache.commons.io.Charsets
@@ -8,6 +10,7 @@ import spock.lang.Specification
 
 import com.outgrader.proxy.core.advertisment.IAdvertismentRule
 import com.outgrader.proxy.core.advertisment.response.IAdvertismentProcessor
+import com.outgrader.proxy.core.advertisment.response.IAdvertismentRewriter
 import com.outgrader.proxy.core.advertisment.response.impl.AdvertismentProcessorImpl
 import com.outgrader.proxy.core.advertisment.response.internal.ITag
 import com.outgrader.proxy.core.advertisment.response.internal.TagReader
@@ -35,6 +38,8 @@ class AdvertismentProcessorImplSpec extends Specification {
 
 	InputStream stream = Mock(InputStream)
 
+	IAdvertismentRewriter rewriter = Mock(IAdvertismentRewriter)
+
 	IAdvertismentProcessor processor
 
 	TagReader tagReader
@@ -42,7 +47,8 @@ class AdvertismentProcessorImplSpec extends Specification {
 	def setup() {
 		processor = Spy(AdvertismentProcessorImpl, constructorArgs: [
 			ruleStorage,
-			statisticsHandler
+			statisticsHandler,
+			rewriter
 		])
 
 		tagReader = Mock(TagReader, constructorArgs: [stream, CHARSET])
@@ -53,6 +59,9 @@ class AdvertismentProcessorImplSpec extends Specification {
 		processor.createTagReader(stream, CHARSET) >> tagReader
 
 		ruleStorage.getRules() >> [rule]
+
+		rewriter.rewrite(_, _) >> Unpooled.EMPTY_BUFFER
+		rewriter.rewrite(_, _, _) >> Unpooled.EMPTY_BUFFER
 	}
 
 	def "check all tags was read"() {
@@ -128,5 +137,40 @@ class AdvertismentProcessorImplSpec extends Specification {
 
 		then:
 		1 * statisticsHandler.onError(processor, _ as String, exception)
+	}
+
+	def "check rewriter on empty tag"() {
+		setup:
+		tag.analysable >> false
+
+		when:
+		processor.process(URI, stream, CHARSET)
+
+		then:
+		1 * rewriter.rewrite(tag, CHARSET) >> Unpooled.EMPTY_BUFFER
+	}
+
+	def "check rewriter on non-matched tag"() {
+		setup:
+		tag.analysable >> true
+		rule.matches(tag) >> false
+
+		when:
+		processor.process(URI, stream, CHARSET)
+
+		then:
+		1 * rewriter.rewrite(tag, CHARSET) >> Unpooled.EMPTY_BUFFER
+	}
+
+	def "check rewriter on matched tag"() {
+		setup:
+		tag.analysable >> true
+		rule.matches(tag) >> true
+
+		when:
+		processor.process(URI, stream, CHARSET)
+
+		then:
+		1 * rewriter.rewrite(tag, rule, CHARSET) >> Unpooled.EMPTY_BUFFER
 	}
 }
