@@ -94,4 +94,16 @@ public class StatisticsHandlerImpl implements IStatisticsHandler {
 			exportExecutor.shutdownNow();
 		}
 	}
+
+	@Override
+	public void onAdvertismentCandidateFound(final String uri, final String ruleText) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onError(final Object source, final String errorText, final Exception error) {
+		// TODO Auto-generated method stub
+
+	}
 }

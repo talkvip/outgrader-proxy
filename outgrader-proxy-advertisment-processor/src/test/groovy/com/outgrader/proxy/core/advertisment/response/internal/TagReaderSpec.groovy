@@ -62,7 +62,7 @@ class TagReaderSpec extends Specification {
 	def "check no exception but no hasNext if error occured"() {
 		setup:
 		def stream = Mock(InputStream)
-		stream.read(_, _) >> { throw new IOException() }
+		stream.read(_, _, _) >> { throw new IOException() }
 
 		when:
 		def reader = new TagReader(stream, Charsets.UTF_8)
