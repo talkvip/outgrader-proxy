@@ -32,10 +32,10 @@ public class OutgraderPropertiesImpl implements IOutgraderProperties {
 
 	private static final String STATISTICS_EXPORT_DIRECTORY = "outgrader.proxy.statistics.export_directory";
 
-	Configuration configuration;
+	private Configuration configuration;
 
 	@Inject
-	IPropertiesSource propertiesSource;
+	private IPropertiesSource propertiesSource;
 
 	protected Configuration getConfiguration() {
 		if (configuration == null) {

@@ -35,8 +35,6 @@ class StatisticsHandlerImplSpec extends Specification {
 
 	ScheduledExecutorService exportExecutor = Mock(ScheduledExecutorService)
 
-	StatisticsHandlerImpl handlerSpy = Spy(StatisticsHandlerImpl)
-
 	def setup() {
 		properties.getStatisticsThreadNumber() >> UPDATE_THREAD_COUNT
 		properties.getStatisticsExportPeriod() >> EXPORT_PERIOD

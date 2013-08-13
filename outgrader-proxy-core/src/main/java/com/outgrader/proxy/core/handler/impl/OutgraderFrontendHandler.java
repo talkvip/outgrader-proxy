@@ -27,11 +27,15 @@ public class OutgraderFrontendHandler extends SimpleChannelInboundHandler<Object
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(OutgraderFrontendHandler.class);
 
-	@Inject
-	protected IExternalSender externalSender;
+	private final IExternalSender externalSender;
+
+	private final IStatisticsHandler statisticsHandler;
 
 	@Inject
-	protected IStatisticsHandler statisticsHandler;
+	public OutgraderFrontendHandler(final IExternalSender externalSender, final IStatisticsHandler statisticsHandler) {
+		this.externalSender = externalSender;
+		this.statisticsHandler = statisticsHandler;
+	}
 
 	@Override
 	protected void channelRead0(final ChannelHandlerContext ctx, final Object msg) throws Exception {

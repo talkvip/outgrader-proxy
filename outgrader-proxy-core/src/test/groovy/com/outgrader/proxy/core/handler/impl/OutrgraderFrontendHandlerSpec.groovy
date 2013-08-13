@@ -17,7 +17,7 @@ class OutrgraderFrontendHandlerSpec extends Specification {
 
 	final static URI = 'uri'
 
-	OutgraderFrontendHandler handler = Spy(OutgraderFrontendHandler)
+	OutgraderFrontendHandler handler
 
 	ChannelHandlerContext context = Mock(ChannelHandlerContext)
 
@@ -30,8 +30,7 @@ class OutrgraderFrontendHandlerSpec extends Specification {
 	IExternalSender sender = Mock(IExternalSender)
 
 	def setup() {
-		handler.statisticsHandler = statistics
-		handler.externalSender = sender
+		handler = Spy(OutgraderFrontendHandler, constructorArgs: [sender, statistics])
 	}
 
 	def "check no actions on non-http request"() {

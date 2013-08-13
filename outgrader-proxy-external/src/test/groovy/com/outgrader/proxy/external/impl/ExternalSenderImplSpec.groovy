@@ -41,7 +41,7 @@ class ExternalSenderImplSpec extends Specification {
 
 	HttpClient httpClient = Mock(HttpClient)
 
-	ExternalSenderImpl sender = Spy(ExternalSenderImpl)
+	ExternalSenderImpl sender
 
 	HttpRequest nettyRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "uri")
 
@@ -56,8 +56,9 @@ class ExternalSenderImplSpec extends Specification {
 	IAdvertismentProcessor processor = Mock(IAdvertismentProcessor)
 
 	def setup() {
+		sender = Spy(ExternalSenderImpl, constructorArgs: [processor])
+
 		sender.client >> httpClient
-		sender.responseProcessor = processor
 	}
 
 	def "exception should be thrown on HTTP send exception"() {

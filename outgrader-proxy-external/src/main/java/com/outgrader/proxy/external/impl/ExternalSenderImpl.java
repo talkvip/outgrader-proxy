@@ -56,8 +56,12 @@ public class ExternalSenderImpl implements IExternalSender {
 
 	private static final ThreadLocal<HttpClient> CLIENT_THREAD_POOL = new ThreadLocal<>();
 
+	private final IAdvertismentProcessor responseProcessor;
+
 	@Inject
-	protected IAdvertismentProcessor responseProcessor;
+	public ExternalSenderImpl(final IAdvertismentProcessor responseProcessor) {
+		this.responseProcessor = responseProcessor;
+	}
 
 	@Override
 	public HttpResponse send(final HttpRequest request) throws AbstractOutgraderException {

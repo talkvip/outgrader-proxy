@@ -27,7 +27,7 @@ public class OutgraderChannelInitializer extends ChannelInitializer<SocketChanne
 	private static final Logger LOGGER = LoggerFactory.getLogger(OutgraderChannelInitializer.class);
 
 	@Inject
-	IOutgraderFrontendHandler frontendHandler;
+	private IOutgraderFrontendHandler frontendHandler;
 
 	@Override
 	protected void initChannel(final SocketChannel ch) throws Exception {

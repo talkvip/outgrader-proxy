@@ -29,14 +29,14 @@ public class StatisticsHandlerImpl implements IStatisticsHandler {
 	private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsHandlerImpl.class);
 
 	@Inject
-	IOutgraderProperties properties;
+	private IOutgraderProperties properties;
 
 	@Inject
-	IStatisticsExporter exporter;
+	private IStatisticsExporter exporter;
 
-	ExecutorService updateExecutor;
+	private ExecutorService updateExecutor;
 
-	ScheduledExecutorService exportExecutor;
+	private ScheduledExecutorService exportExecutor;
 
 	@Override
 	public void onRequestHandled(final String uri) {

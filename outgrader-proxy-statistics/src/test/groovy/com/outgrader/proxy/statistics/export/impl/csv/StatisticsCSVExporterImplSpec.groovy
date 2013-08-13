@@ -16,14 +16,14 @@ import com.outgrader.proxy.statistics.impl.StatisticsEntry
  */
 class StatisticsCSVExporterImplSpec extends Specification {
 
-	StatisticsCSVExporterImpl exporter = Spy(StatisticsCSVExporterImpl)
+	StatisticsCSVExporterImpl exporter
 
 	IOutgraderProperties properties = Mock(IOutgraderProperties)
 
 	File exportDirectory = new File("/tmp/outgrader")
 
 	def setup() {
-		exporter.properties = properties
+		exporter = Spy(StatisticsCSVExporterImpl, constructorArgs: [properties])
 
 		properties.getStatisticsExportDirectory() >> exportDirectory.getAbsolutePath()
 	}

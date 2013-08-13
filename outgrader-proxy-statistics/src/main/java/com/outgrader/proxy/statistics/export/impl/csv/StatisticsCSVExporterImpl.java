@@ -27,8 +27,12 @@ public class StatisticsCSVExporterImpl extends AbstractStatisticsExporter {
 
 	private ICsvBeanWriter writer;
 
+	private final IOutgraderProperties properties;
+
 	@Inject
-	protected IOutgraderProperties properties;
+	public StatisticsCSVExporterImpl(final IOutgraderProperties properties) {
+		this.properties = properties;
+	}
 
 	@Override
 	protected void exportEntry(final StatisticsEntry entry) throws StatisticsExportException {

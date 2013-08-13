@@ -25,10 +25,10 @@ public class OutgraderProxyImpl implements IOutgraderProxy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(OutgraderProxyImpl.class);
 
 	@Inject
-	IOutgraderProperties properties;
+	private IOutgraderProperties properties;
 
 	@Inject
-	IOutgraderChannelInitializer channelInitializer;
+	private IOutgraderChannelInitializer channelInitializer;
 
 	@Override
 	public void run() {
