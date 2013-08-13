@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.outgrader.proxy.core.handler.IOutgraderFrontendHandler;
 import com.outgrader.proxy.core.initializer.IOutgraderChannelInitializer;
+import com.outgrader.proxy.core.util.OutgraderHttpContentCompressor;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
@@ -37,6 +38,7 @@ public class OutgraderChannelInitializer extends ChannelInitializer<SocketChanne
 		ChannelPipeline pipeline = ch.pipeline();
 
 		pipeline.addLast("http-codec", new HttpServerCodec());
+		pipeline.addLast("http-compressor", new OutgraderHttpContentCompressor());
 		pipeline.addLast("aggregator", new HttpObjectAggregator(65536));
 		pipeline.addLast("handler", frontendHandler);
 
@@ -44,5 +46,4 @@ public class OutgraderChannelInitializer extends ChannelInitializer<SocketChanne
 			LOGGER.debug("finish initChannel()");
 		}
 	}
-
 }

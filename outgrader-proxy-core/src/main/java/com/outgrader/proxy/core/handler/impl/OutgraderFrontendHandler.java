@@ -23,12 +23,9 @@ import com.outgrader.proxy.core.statistics.IStatisticsHandler;
  */
 @Singleton
 @Sharable
-public class OutgraderFrontendHandler extends
-		SimpleChannelInboundHandler<Object> implements
-		IOutgraderFrontendHandler {
+public class OutgraderFrontendHandler extends SimpleChannelInboundHandler<Object> implements IOutgraderFrontendHandler {
 
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(OutgraderFrontendHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(OutgraderFrontendHandler.class);
 
 	@Inject
 	protected IExternalSender externalSender;
@@ -37,8 +34,7 @@ public class OutgraderFrontendHandler extends
 	protected IStatisticsHandler statisticsHandler;
 
 	@Override
-	protected void channelRead0(final ChannelHandlerContext ctx,
-			final Object msg) throws Exception {
+	protected void channelRead0(final ChannelHandlerContext ctx, final Object msg) throws Exception {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("start channelRead0(<" + ctx + ">, <" + msg + ">)");
 		}
@@ -54,8 +50,7 @@ public class OutgraderFrontendHandler extends
 		}
 	}
 
-	protected void handleHttpRequest(final ChannelHandlerContext ctx,
-			final HttpRequest request) throws Exception {
+	protected void handleHttpRequest(final ChannelHandlerContext ctx, final HttpRequest request) throws Exception {
 		String uri = request.getUri();
 		statisticsHandler.onRequestHandled(uri);
 

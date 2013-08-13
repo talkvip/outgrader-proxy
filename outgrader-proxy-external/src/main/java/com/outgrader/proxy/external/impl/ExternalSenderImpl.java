@@ -116,12 +116,12 @@ public class ExternalSenderImpl implements IExternalSender {
 		if (response.getEntity() != null) {
 			int code = response.getStatusLine().getStatusCode();
 			ContentType contentType = ContentType.get(response.getEntity());
+			Header contentEncoding = response.getEntity().getContentEncoding();
 
 			ByteBuf content = null;
 
 			if ((code == HttpStatus.SC_OK) && contentType.getMimeType().equals(ContentType.TEXT_HTML.getMimeType())) {
-				boolean zipped = response.getEntity().getContentEncoding().getValue().contains("gzip")
-						|| response.getEntity().getContentEncoding().getValue().contains("deflate");
+				boolean zipped = (contentEncoding != null) && contentEncoding.getValue().contains("gzip");
 
 				InputStream stream = response.getEntity().getContent();
 				if (zipped) {
