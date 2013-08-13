@@ -1,6 +1,7 @@
 package com.outgrader.proxy.core.advertisment.response.impl;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 import java.nio.charset.Charset;
 
@@ -22,8 +23,7 @@ public class AdvertismentRewriterImpl implements IAdvertismentRewriter {
 
 	@Override
 	public ByteBuf rewrite(final ITag tag, final Charset charset) {
-		// TODO Auto-generated method stub
-		return null;
+		return Unpooled.wrappedBuffer(tag.getText().getBytes(charset));
 	}
 
 }

@@ -1,4 +1,4 @@
-package com.outgrader.proxy.core.advertisment.module
+package com.outgrader.proxy.core.advertisment.response.impl
 
 import io.netty.buffer.Unpooled
 
