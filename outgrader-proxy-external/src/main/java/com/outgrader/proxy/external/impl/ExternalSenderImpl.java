@@ -10,6 +10,7 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -171,6 +172,8 @@ public class ExternalSenderImpl implements IExternalSender {
 		} else {
 			throw new IllegalArgumentException("Unsupported HTTP Method <" + method + ">");
 		}
+
+		result.setURI(URI.create(uri));
 
 		return result;
 	}

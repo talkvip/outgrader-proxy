@@ -114,6 +114,19 @@ class ExternalSenderImplSpec extends Specification {
 		}
 	}
 
+	def "check http request contains uri"(def method) {
+		when:
+		def value = sender.getRequest(method, 'http://example.com')
+
+		then:
+		value.getURI().toString() == 'http://example.com'
+
+		where:
+		method << HttpMethod.methodMap.values().findAll{ methodType ->
+			methodType != HttpMethod.CONNECT
+		}
+	}
+
 	def "check actions on status convert"() {
 		when:
 		def result = sender.convertStatus(statusLine)
