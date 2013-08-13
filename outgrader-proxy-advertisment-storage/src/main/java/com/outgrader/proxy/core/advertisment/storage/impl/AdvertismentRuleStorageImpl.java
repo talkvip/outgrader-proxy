@@ -82,8 +82,8 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 					case BASIC:
 						result.add(new BasicRule(line, Pattern.compile(formatRegexpLine(line))));
 						break;
-					case COMMENT:
-						// skip comments
+					default:
+						// skip
 						break;
 					}
 				}
