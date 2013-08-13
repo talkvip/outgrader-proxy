@@ -11,6 +11,10 @@ public interface ITag {
 		OPENING, CLOSING, OPEN_AND_CLOSING;
 	}
 
+	void setParent(ITag tag);
+
+	void setOpeningTag(ITag tag);
+
 	ITag getParent();
 
 	String getText();
@@ -20,5 +24,7 @@ public interface ITag {
 	boolean isAnalysable();
 
 	ITag getOpeningTag();
+
+	String getName();
 
 }

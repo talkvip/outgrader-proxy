@@ -132,7 +132,9 @@ class TagReaderSpec extends Specification {
 		def reader = createTagReader("<tag/>")
 
 		then:
-		reader.first().getTagType() == TagType.OPEN_AND_CLOSING
+		def element = reader.first()
+		element.getTagType() == TagType.OPEN_AND_CLOSING
+		element.getOpeningTag() == element
 	}
 
 	def "check parent"() {

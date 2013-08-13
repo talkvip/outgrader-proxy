@@ -20,13 +20,43 @@ public class Tag implements ITag {
 		public TagBuilder withText(final String text) {
 			tag.setText(text);
 
+			int nameStart = -1;
+			int nameEnd = -1;
+
 			if (text.startsWith("</")) {
 				tag.setTagType(TagType.CLOSING);
+
+				nameStart = text.indexOf("</") + 2;
+				nameEnd = text.indexOf(">");
 			} else if (text.endsWith("/>")) {
 				tag.setTagType(TagType.OPEN_AND_CLOSING);
+
+				withOpeningTag(tag);
+
+				nameStart = text.indexOf("<") + 1;
+				nameEnd = text.indexOf(" ");
+				if (nameEnd < 0) {
+					nameEnd = text.indexOf("/>");
+				}
 			} else {
 				tag.setTagType(TagType.OPENING);
+
+				nameStart = text.indexOf("<") + 1;
+				nameEnd = text.indexOf(" ");
+				if (nameEnd < 0) {
+					nameEnd = text.indexOf(">");
+				}
 			}
+
+			if (tag.isAnalysable()) {
+				tag.setName(text.substring(nameStart, nameEnd));
+			}
+
+			return this;
+		}
+
+		public TagBuilder withOpeningTag(final ITag openingTag) {
+			tag.setOpeningTag(openingTag);
 
 			return this;
 		}
@@ -59,6 +89,12 @@ public class Tag implements ITag {
 
 	private TagType type;
 
+	private ITag openingTag;
+
+	private String name;
+
+	private ITag parent;
+
 	protected Tag() {
 
 	}
@@ -69,8 +105,7 @@ public class Tag implements ITag {
 
 	@Override
 	public ITag getParent() {
-		// TODO Auto-generated method stub
-		return null;
+		return parent;
 	}
 
 	public void setText(final String text) {
@@ -107,7 +142,25 @@ public class Tag implements ITag {
 
 	@Override
 	public ITag getOpeningTag() {
-		// TODO Auto-generated method stub
-		return null;
+		return openingTag;
+	}
+
+	@Override
+	public void setOpeningTag(final ITag openingTag) {
+		this.openingTag = openingTag;
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	public void setName(final String name) {
+		this.name = name;
+	}
+
+	@Override
+	public void setParent(final ITag tag) {
+		this.parent = tag;
 	}
 }

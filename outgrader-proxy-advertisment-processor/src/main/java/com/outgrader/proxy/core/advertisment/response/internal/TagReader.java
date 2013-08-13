@@ -8,7 +8,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.slf4j.Logger;
@@ -41,6 +43,10 @@ public class TagReader implements Iterable<ITag>, Iterator<ITag>, Closeable {
 
 	private boolean needMoreData = true;
 
+	private ITag parent;
+
+	private final Map<String, ITag> unclosedTags = new HashMap<>();
+
 	public TagReader(final InputStream source, final Charset charset) {
 		this.source = new BufferedReader(new InputStreamReader(source, charset), BUFFER_SIZE);
 	}
@@ -56,6 +62,32 @@ public class TagReader implements Iterable<ITag>, Iterator<ITag>, Closeable {
 			while ((currentTag == null) && !isFinished) {
 				try {
 					currentTag = getNextTag();
+
+					if ((currentTag != null) && currentTag.isAnalysable()) {
+						switch (currentTag.getTagType()) {
+						case OPENING:
+							currentTag.setParent(parent);
+
+							unclosedTags.put(currentTag.getName(), currentTag);
+
+							parent = currentTag;
+							break;
+						case CLOSING:
+							currentTag.setOpeningTag(unclosedTags.remove(currentTag.getName()));
+
+							if (currentTag.getOpeningTag() != null) {
+								parent = currentTag.getOpeningTag().getParent();
+							}
+
+							currentTag.setParent(parent);
+
+							break;
+						case OPEN_AND_CLOSING:
+							currentTag.setParent(parent);
+
+							break;
+						}
+					}
 				} catch (IOException e) {
 					LOGGER.error("An error occured during parsing next Tag", e);
 					return false;
