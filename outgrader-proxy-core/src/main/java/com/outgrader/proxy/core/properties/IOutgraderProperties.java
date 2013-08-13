@@ -38,4 +38,9 @@ public interface IOutgraderProperties {
 	 * Folder to store statistics
 	 */
 	String getStatisticsExportDirectory();
+
+	/**
+	 * Location of initial file with advertisment rules
+	 */
+	String getAdvertismentListLocation();
 }

@@ -32,6 +32,8 @@ public class OutgraderPropertiesImpl implements IOutgraderProperties {
 
 	private static final String STATISTICS_EXPORT_DIRECTORY = "outgrader.proxy.statistics.export_directory";
 
+	private static final String ADVERTISMENT_LIST_FILE = "outgrader.proxy.advertisments.file";
+
 	private Configuration configuration;
 
 	@Inject
@@ -88,5 +90,10 @@ public class OutgraderPropertiesImpl implements IOutgraderProperties {
 	@Override
 	public String getStatisticsExportDirectory() {
 		return getConfiguration().getString(STATISTICS_EXPORT_DIRECTORY);
+	}
+
+	@Override
+	public String getAdvertismentListLocation() {
+		return getConfiguration().getString(ADVERTISMENT_LIST_FILE);
 	}
 }
