@@ -1,5 +1,6 @@
 dependencies {
-	compile group: 'io.netty', 			name: 'netty-all',	version: nettyIOVersion
-	compile group: 'com.google.inject',	name: 'guice',		version: guiceVersion
-	compile group: 'com.google.guava',	name: 'guava',		version: guavaVersion
+	compile group: 'io.netty', 				name: 'netty-all',		version: nettyIOVersion
+	compile group: 'com.google.inject',		name: 'guice',			version: guiceVersion
+	compile group: 'com.google.guava',		name: 'guava',			version: guavaVersion
+	compile group: 'org.apache.commons',	name: 'commons-lang3', 	version: commonsLangVersion	
 }
