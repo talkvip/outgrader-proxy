@@ -33,9 +33,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpTrace;
-import org.apache.http.client.params.ClientPNames;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.HTTP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -168,8 +168,6 @@ public class ExternalSenderImpl implements IExternalSender {
 		HttpClient result = CLIENT_THREAD_POOL.get();
 		if (result == null) {
 			result = new DefaultHttpClient();
-			result.getParams().setParameter(
-					ClientPNames.ALLOW_CIRCULAR_REDIRECTS, true);
 
 			CLIENT_THREAD_POOL.set(result);
 		}
@@ -180,7 +178,11 @@ public class ExternalSenderImpl implements IExternalSender {
 	protected void copyHeaders(final HttpRequestBase external,
 			final HttpRequest original) {
 		for (Map.Entry<String, String> header : original.headers().entries()) {
-			external.addHeader(header.getKey(), header.getValue());
+
+			if (!header.getKey().equals(HTTP.CONTENT_LEN)
+					&& !header.getKey().equals(HTTP.TRANSFER_ENCODING)) {
+				external.addHeader(header.getKey(), header.getValue());
+			}
 		}
 	}
 
