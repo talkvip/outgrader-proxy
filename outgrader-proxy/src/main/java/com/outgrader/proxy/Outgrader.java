@@ -7,6 +7,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.outgrader.proxy.core.IOutgraderProxy;
 import com.outgrader.proxy.core.advertisment.module.AdvertismentProcessorModule;
+import com.outgrader.proxy.core.advertisment.storage.module.AdvertismentRuleStorageModule;
 import com.outgrader.proxy.core.module.OutgraderCoreModule;
 import com.outgrader.proxy.core.statistics.IStatisticsHandler;
 import com.outgrader.proxy.external.module.ExternalSenderModule;
@@ -54,7 +55,7 @@ public final class Outgrader {
 
 		if (injector == null) {
 			injector = Guice.createInjector(new OutgraderCoreModule(), new OutgraderPropertiesModule(), new ExternalSenderModule(),
-					new StatisticsModule(), new AdvertismentProcessorModule());
+					new StatisticsModule(), new AdvertismentProcessorModule(), new AdvertismentRuleStorageModule());
 		}
 
 		return injector;
