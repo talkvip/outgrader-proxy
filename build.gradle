@@ -28,7 +28,8 @@ subprojects {
 	dependencies {
 		compile group: 'ch.qos.logback', name: 'logback-classic', version: logbackVersion
 		
-		testCompile group: 'org.spockframework', name: 'spock-core', version: spockVersion		
+		testCompile group: 'org.spockframework', 	name: 'spock-core', version: spockVersion
+		testCompile group: 'org.objenesis',			name: 'objenesis',	version: objenesisVersion		
 	}
 }
 

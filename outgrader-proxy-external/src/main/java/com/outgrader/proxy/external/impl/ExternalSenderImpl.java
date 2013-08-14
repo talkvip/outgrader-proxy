@@ -125,6 +125,11 @@ public class ExternalSenderImpl implements IExternalSender {
 		}
 	}
 
+	protected InputStream gzipWrapper(final InputStream stream)
+			throws IOException {
+		return new GZIPInputStream(stream);
+	}
+
 	protected ByteBuf processContent(final String uri,
 			final org.apache.http.HttpResponse response) throws IOException,
 			AbstractOutgraderException {
@@ -143,7 +148,7 @@ public class ExternalSenderImpl implements IExternalSender {
 
 				InputStream stream = response.getEntity().getContent();
 				if (zipped) {
-					stream = new GZIPInputStream(stream);
+					stream = gzipWrapper(stream);
 				}
 
 				content = responseProcessor.process(uri, stream,

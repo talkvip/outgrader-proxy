@@ -97,4 +97,17 @@ class StatisticsCSVExporterImplSpec extends Specification {
 		exportDirectory.exists()
 		new File(exportDirectory, "statistics.csv").exists()
 	}
+
+	def "check bean written on export"() {
+		setup:
+		def entry = new StatisticsEntry()
+		ICsvBeanWriter writer = Mock(ICsvBeanWriter)
+		exporter.getWriter() >> writer
+
+		when:
+		exporter.exportEntry(entry)
+
+		then:
+		1 * writer.write(entry, _)
+	}
 }

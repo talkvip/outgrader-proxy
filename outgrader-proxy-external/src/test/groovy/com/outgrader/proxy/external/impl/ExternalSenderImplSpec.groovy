@@ -11,6 +11,8 @@ import io.netty.handler.codec.http.HttpResponse
 import io.netty.handler.codec.http.HttpResponseStatus
 import io.netty.handler.codec.http.HttpVersion
 
+import java.util.zip.GZIPInputStream
+
 import org.apache.commons.io.Charsets
 import org.apache.http.Header
 import org.apache.http.HttpEntity
@@ -272,5 +274,42 @@ class ExternalSenderImplSpec extends Specification {
 
 		then:
 		thrown(ExternalSenderException)
+	}
+
+	def "check zipped response content"() {
+		def entity = new StringEntity('zipped')
+		def gzipStream = Mock(GZIPInputStream)
+
+		setup:
+		entity.setContentType(new BasicHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, ContentType.TEXT_HTML.getMimeType()))
+		entity.setContentEncoding('gzip')
+
+		sender.gzipWrapper(_ as InputStream) >> gzipStream
+
+		httpResponse.setStatusLine(new BasicStatusLine(org.apache.http.HttpVersion.HTTP_1_1, HttpStatus.SC_OK, 'phrase'))
+		httpResponse.setEntity(entity)
+
+		when:
+		sender.processContent(_ as String, httpResponse)
+
+		then:
+		1 * processor.process(_ as String, gzipStream, _)
+	}
+
+	def "check non-zipped response content"() {
+		def entity = new StringEntity('non-zipped')
+
+		setup:
+		entity.setContentType(new BasicHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, ContentType.TEXT_HTML.getMimeType()))
+
+		httpResponse.setStatusLine(new BasicStatusLine(org.apache.http.HttpVersion.HTTP_1_1, HttpStatus.SC_OK, 'phrase'))
+		httpResponse.setEntity(entity)
+
+		when:
+		sender.processContent(_ as String, httpResponse)
+
+		then:
+		0 * processor.process(_ as String, _ as GZIPInputStream, _)
+		1 * processor.process(_ as String, _ as InputStream, _)
 	}
 }
