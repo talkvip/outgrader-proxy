@@ -77,7 +77,7 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 				}
 			}
 		} catch (IOException e) {
-			statisticsHandler.onError(this, "An exception occured during processing response", e);
+			statisticsHandler.onError(uri, this, "An exception occured during processing response", e);
 
 			LOGGER.error("An exception occured during processing response", e);
 		}

@@ -4,6 +4,8 @@ import spock.lang.Specification
 
 import com.outgrader.proxy.statistics.events.IStatisticsEvent
 import com.outgrader.proxy.statistics.events.StatisticsEventType
+import com.outgrader.proxy.statistics.events.impl.AdvertismentCandidateEvent
+import com.outgrader.proxy.statistics.events.impl.ErrorEvent
 import com.outgrader.proxy.statistics.events.impl.RequestEvent
 import com.outgrader.proxy.statistics.events.impl.ResponseEvent
 import com.outgrader.proxy.statistics.impl.StatisticsManager.InternalStatisticsEntry
@@ -15,7 +17,13 @@ import com.outgrader.proxy.statistics.impl.StatisticsManager.InternalStatisticsE
  */
 class StatisticsManagerSpec extends Specification {
 
+	static final MESSAGE = 'error'
+
+	static final ERROR = new UnsupportedOperationException()
+
 	final static URI = 'uri'
+
+	final static RULE = 'rule'
 
 	final static int DURATION = 100
 
@@ -69,6 +77,12 @@ class StatisticsManagerSpec extends Specification {
 					break
 				case StatisticsEventType.RESPONSE:
 					event = new ResponseEvent(URI, DURATION)
+					break
+				case StatisticsEventType.ADVERTISMENT_CANDIDATE:
+					event = new AdvertismentCandidateEvent(URI, RULE)
+					break
+				case StatisticsEventType.ERROR:
+					event = new ErrorEvent(URI, this, MESSAGE, ERROR)
 					break
 			}
 			manager.updateStatistics(event)

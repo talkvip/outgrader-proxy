@@ -6,5 +6,5 @@ package com.outgrader.proxy.statistics.events;
  * 
  */
 public enum StatisticsEventType {
-	REQUEST, RESPONSE;
+	REQUEST, RESPONSE, ADVERTISMENT_CANDIDATE, ERROR;
 }

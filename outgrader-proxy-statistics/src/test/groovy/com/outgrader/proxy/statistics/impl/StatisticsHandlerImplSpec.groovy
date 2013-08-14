@@ -17,6 +17,8 @@ import com.outgrader.proxy.statistics.export.IStatisticsExporter
  */
 class StatisticsHandlerImplSpec extends Specification {
 
+	static final RULE_TEXT = 'rule text'
+
 	static final UPDATE_THREAD_COUNT = 5
 
 	static final EXPORT_PERIOD = 3
@@ -24,6 +26,10 @@ class StatisticsHandlerImplSpec extends Specification {
 	static final String URI = 'some uri'
 
 	static final int DURATION = 100
+
+	static final MESSAGE = 'error'
+
+	static final ERROR = new UnsupportedOperationException()
 
 	StatisticsHandlerImpl handler = new StatisticsHandlerImpl()
 
@@ -137,6 +143,41 @@ class StatisticsHandlerImplSpec extends Specification {
 			it.event.URI == URI
 			it.event.duration == DURATION
 			it.event.type == StatisticsEventType.RESPONSE
+		})
+	}
+
+	def "check actions for onAdvertismentCandidate"() {
+		setup:
+		handler.updateExecutor = updateExecutor
+
+		when:
+		handler.onAdvertismentCandidateFound(URI, RULE_TEXT)
+
+		then:
+		1 * updateExecutor.submit({
+			it.event != null
+			it.event.URI == URI
+			it.event.rule == RULE_TEXT
+			it.event.type == StatisticsEventType.ADVERTISMENT_CANDIDATE
+		})
+	}
+
+	def "check actions for onError"() {
+		setup:
+		def source = this
+		handler.updateExecutor = updateExecutor
+
+		when:
+		handler.onError(URI, source, MESSAGE, ERROR)
+
+		then:
+		1 * updateExecutor.submit({
+			it.event != null
+			it.event.URI == URI
+			it.event.source == source
+			it.event.error == ERROR
+			it.event.message == MESSAGE
+			it.event.type == StatisticsEventType.ERROR
 		})
 	}
 }

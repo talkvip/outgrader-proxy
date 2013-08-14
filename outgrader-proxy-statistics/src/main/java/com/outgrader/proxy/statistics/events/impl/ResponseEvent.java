@@ -1,6 +1,7 @@
 package com.outgrader.proxy.statistics.events.impl;
 
 import com.outgrader.proxy.statistics.events.StatisticsEventType;
+import com.outgrader.proxy.statistics.events.impl.internal.AbstractStatisticsEvent;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)

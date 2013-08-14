@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import com.outgrader.proxy.core.properties.IOutgraderProperties;
 import com.outgrader.proxy.core.statistics.IStatisticsHandler;
 import com.outgrader.proxy.statistics.events.IStatisticsEvent;
+import com.outgrader.proxy.statistics.events.impl.AdvertismentCandidateEvent;
+import com.outgrader.proxy.statistics.events.impl.ErrorEvent;
 import com.outgrader.proxy.statistics.events.impl.RequestEvent;
 import com.outgrader.proxy.statistics.events.impl.ResponseEvent;
 import com.outgrader.proxy.statistics.export.IStatisticsExporter;
@@ -97,13 +99,12 @@ public class StatisticsHandlerImpl implements IStatisticsHandler {
 
 	@Override
 	public void onAdvertismentCandidateFound(final String uri, final String ruleText) {
-		// TODO Auto-generated method stub
-
+		handleEvent(new AdvertismentCandidateEvent(uri, ruleText));
 	}
 
 	@Override
-	public void onError(final Object source, final String errorText, final Exception error) {
-		// TODO Auto-generated method stub
+	public void onError(final String uri, final Object source, final String errorText, final Exception error) {
+		handleEvent(new ErrorEvent(uri, source, errorText, error));
 
 	}
 }

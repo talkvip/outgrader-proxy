@@ -1,4 +1,4 @@
-package com.outgrader.proxy.statistics.events.impl;
+package com.outgrader.proxy.statistics.events.impl.internal;
 
 import com.outgrader.proxy.statistics.events.IStatisticsEvent;
 import com.outgrader.proxy.statistics.events.StatisticsEventType;
