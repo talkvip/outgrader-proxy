@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -18,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import com.outgrader.proxy.advertisment.rule.IAdvertismentRule;
 import com.outgrader.proxy.advertisment.storage.IAdvertismentRuleStorage;
 import com.outgrader.proxy.core.advertisment.rule.impl.BasicRule;
+import com.outgrader.proxy.core.advertisment.storage.utils.PatternUtils;
 import com.outgrader.proxy.core.properties.IOutgraderProperties;
 
 /**
@@ -55,7 +55,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 	private final Collection<IAdvertismentRule> ruleSet;
 
 	@Inject
-	public AdvertismentRuleStorageImpl(final IOutgraderProperties properties) {
+	public AdvertismentRuleStorageImpl(final IOutgraderProperties properties) throws Exception {
 		this.properties = properties;
 
 		ruleSet = initializeRuleSet();
@@ -66,7 +66,13 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 		return ruleSet;
 	}
 
-	protected Collection<IAdvertismentRule> initializeRuleSet() {
+	protected Collection<IAdvertismentRule> initializeRuleSet() throws Exception {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("started initializeRuleSet()");
+		}
+
+		LOGGER.info("Initializing rule set from <" + properties.getAdvertismentListLocation() + ">");
+
 		Collection<IAdvertismentRule> result = new ArrayList<>();
 
 		try (InputStream stream = AdvertismentRuleStorageImpl.class.getResourceAsStream(properties.getAdvertismentListLocation())) {
@@ -78,33 +84,25 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 				LineType type = LineType.getLineType(line);
 
 				if (type != null) {
-					switch (type) {
-					case BASIC:
-						result.add(new BasicRule(line, Pattern.compile(formatRegexpLine(line))));
-						break;
-					default:
-						// skip
-						break;
+					try {
+						switch (type) {
+						case BASIC:
+							result.add(new BasicRule(line, PatternUtils.createPattern(line)));
+							break;
+						default:
+							// skip
+							break;
+						}
+					} catch (Exception e) {
+						LOGGER.error("An error occured during processing rule <" + line + "> by type <" + type + ">", e);
+
+						throw e;
 					}
 				}
 			}
 		} catch (IOException e) {
 			LOGGER.error("An error occured during reading Advertisment list file", e);
 		}
-
-		return result;
-	}
-
-	private String formatRegexpLine(final String line) {
-		String result = line;
-
-		result = result.replaceAll(Pattern.quote("+"), Pattern.quote("+"));
-		result = result.replaceAll(Pattern.quote("&"), Pattern.quote("&"));
-		result = result.replaceAll(Pattern.quote("/"), Pattern.quote("/"));
-		result = result.replaceAll(Pattern.quote("*"), Pattern.quote("*"));
-		result = result.replaceAll(Pattern.quote("?"), Pattern.quote("?"));
-		result = result.replaceAll(Pattern.quote("["), Pattern.quote("["));
-		result = result.replaceAll(Pattern.quote("]"), Pattern.quote("]"));
 
 		return result;
 	}

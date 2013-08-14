@@ -1,3 +1,5 @@
 dependencies {
 	compile project(':outgrader-proxy-advertisment-processor')
+	
+	testCompile project(':outgrader-proxy-properties')
 }

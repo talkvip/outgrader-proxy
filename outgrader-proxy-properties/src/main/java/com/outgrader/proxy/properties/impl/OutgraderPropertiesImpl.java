@@ -36,8 +36,12 @@ public class OutgraderPropertiesImpl implements IOutgraderProperties {
 
 	private Configuration configuration;
 
+	private final IPropertiesSource propertiesSource;
+
 	@Inject
-	private IPropertiesSource propertiesSource;
+	public OutgraderPropertiesImpl(final IPropertiesSource propertiesSource) {
+		this.propertiesSource = propertiesSource;
+	}
 
 	protected Configuration getConfiguration() {
 		if (configuration == null) {

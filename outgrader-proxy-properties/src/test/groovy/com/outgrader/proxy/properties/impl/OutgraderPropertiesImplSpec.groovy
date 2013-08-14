@@ -13,14 +13,14 @@ import com.outgrader.proxy.properties.source.IPropertiesSource
  */
 class OutgraderPropertiesImplSpec extends Specification {
 
-	OutgraderPropertiesImpl properties = new OutgraderPropertiesImpl()
+	OutgraderPropertiesImpl properties
 
 	Configuration config = Mock(Configuration)
 
 	IPropertiesSource source = Mock(IPropertiesSource)
 
 	def setup() {
-		properties.propertiesSource = source
+		properties = new OutgraderPropertiesImpl(source)
 	}
 
 	def "check configuration initializes only once"()  {
