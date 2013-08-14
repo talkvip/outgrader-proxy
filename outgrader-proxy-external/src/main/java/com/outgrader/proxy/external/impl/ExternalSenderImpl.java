@@ -33,6 +33,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpTrace;
+import org.apache.http.client.params.ClientPNames;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HTTP;
@@ -53,8 +54,7 @@ import com.outgrader.proxy.external.impl.exceptions.ExternalSenderException;
 @Singleton
 public class ExternalSenderImpl implements IExternalSender {
 
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(ExternalSenderImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ExternalSenderImpl.class);
 
 	private static final ThreadLocal<HttpClient> CLIENT_THREAD_POOL = new ThreadLocal<>();
 
@@ -66,8 +66,7 @@ public class ExternalSenderImpl implements IExternalSender {
 	}
 
 	@Override
-	public HttpResponse send(final HttpRequest request)
-			throws AbstractOutgraderException {
+	public HttpResponse send(final HttpRequest request) throws AbstractOutgraderException {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("start send(<" + request + ">)");
 		}
@@ -85,17 +84,14 @@ public class ExternalSenderImpl implements IExternalSender {
 			response = getClient().execute(externalRequest);
 
 			if (response != null) {
-				result = convertResponse(uri, response,
-						request.getProtocolVersion());
+				result = convertResponse(uri, response, request.getProtocolVersion());
 			} else {
 				LOGGER.error("HttpClient returned NULL for URI <" + uri + ">");
 				throw new ExternalSenderException("Got a NULL response");
 			}
 		} catch (IOException e) {
 			LOGGER.error("HttpClient throwed exception for URI <" + uri + ">");
-			throw new ExternalSenderException(
-					"An exception occured during connection to external host",
-					e);
+			throw new ExternalSenderException("An exception occured during connection to external host", e);
 		}
 
 		if (LOGGER.isDebugEnabled()) {
@@ -105,33 +101,27 @@ public class ExternalSenderImpl implements IExternalSender {
 		return result;
 	}
 
-	private HttpResponse convertResponse(final String uri,
-			final org.apache.http.HttpResponse response,
-			final HttpVersion httpVersion) throws IOException,
-			AbstractOutgraderException {
-		HttpResponse result = new DefaultFullHttpResponse(httpVersion,
-				convertStatus(response.getStatusLine()), processContent(uri,
-						response));
+	private HttpResponse convertResponse(final String uri, final org.apache.http.HttpResponse response, final HttpVersion httpVersion)
+			throws IOException, AbstractOutgraderException {
+		HttpResponse result = new DefaultFullHttpResponse(httpVersion, convertStatus(response.getStatusLine()), processContent(uri,
+				response));
 
 		copyHeaders(response, result);
 
 		return result;
 	}
 
-	protected void copyHeaders(final org.apache.http.HttpResponse external,
-			final HttpResponse target) {
+	protected void copyHeaders(final org.apache.http.HttpResponse external, final HttpResponse target) {
 		for (Header header : external.getAllHeaders()) {
 			target.headers().add(header.getName(), header.getValue());
 		}
 	}
 
-	protected InputStream gzipWrapper(final InputStream stream)
-			throws IOException {
+	protected InputStream gzipWrapper(final InputStream stream) throws IOException {
 		return new GZIPInputStream(stream);
 	}
 
-	protected ByteBuf processContent(final String uri,
-			final org.apache.http.HttpResponse response) throws IOException,
+	protected ByteBuf processContent(final String uri, final org.apache.http.HttpResponse response) throws IOException,
 			AbstractOutgraderException {
 		if (response.getEntity() != null) {
 			int code = response.getStatusLine().getStatusCode();
@@ -140,22 +130,17 @@ public class ExternalSenderImpl implements IExternalSender {
 
 			ByteBuf content = null;
 
-			if ((code == HttpStatus.SC_OK)
-					&& contentType.getMimeType().equals(
-							ContentType.TEXT_HTML.getMimeType())) {
-				boolean zipped = (contentEncoding != null)
-						&& contentEncoding.getValue().contains("gzip");
+			if ((code == HttpStatus.SC_OK) && contentType.getMimeType().equals(ContentType.TEXT_HTML.getMimeType())) {
+				boolean zipped = (contentEncoding != null) && contentEncoding.getValue().contains("gzip");
 
 				InputStream stream = response.getEntity().getContent();
 				if (zipped) {
 					stream = gzipWrapper(stream);
 				}
 
-				content = responseProcessor.process(uri, stream,
-						contentType.getCharset());
+				content = responseProcessor.process(uri, stream, contentType.getCharset());
 			} else {
-				content = Unpooled.copiedBuffer(IOUtils.toByteArray(response
-						.getEntity().getContent()));
+				content = Unpooled.copiedBuffer(IOUtils.toByteArray(response.getEntity().getContent()));
 			}
 
 			return content;
@@ -165,8 +150,7 @@ public class ExternalSenderImpl implements IExternalSender {
 	}
 
 	protected HttpResponseStatus convertStatus(final StatusLine status) {
-		return new HttpResponseStatus(status.getStatusCode(),
-				status.getReasonPhrase());
+		return new HttpResponseStatus(status.getStatusCode(), status.getReasonPhrase());
 	}
 
 	protected HttpClient getClient() {
@@ -174,25 +158,24 @@ public class ExternalSenderImpl implements IExternalSender {
 		if (result == null) {
 			result = new DefaultHttpClient();
 
+			result.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);
+
 			CLIENT_THREAD_POOL.set(result);
 		}
 
 		return result;
 	}
 
-	protected void copyHeaders(final HttpRequestBase external,
-			final HttpRequest original) {
+	protected void copyHeaders(final HttpRequestBase external, final HttpRequest original) {
 		for (Map.Entry<String, String> header : original.headers().entries()) {
 
-			if (!header.getKey().equals(HTTP.CONTENT_LEN)
-					&& !header.getKey().equals(HTTP.TRANSFER_ENCODING)) {
+			if (!header.getKey().equals(HTTP.CONTENT_LEN) && !header.getKey().equals(HTTP.TRANSFER_ENCODING)) {
 				external.addHeader(header.getKey(), header.getValue());
 			}
 		}
 	}
 
-	protected HttpRequestBase getRequest(final HttpMethod method,
-			final String uri) {
+	protected HttpRequestBase getRequest(final HttpMethod method, final String uri) {
 		HttpRequestBase result = null;
 
 		if (method.equals(HttpMethod.GET)) {
@@ -212,8 +195,7 @@ public class ExternalSenderImpl implements IExternalSender {
 		} else if (method.equals(HttpMethod.TRACE)) {
 			result = new HttpTrace();
 		} else {
-			throw new IllegalArgumentException("Unsupported HTTP Method <"
-					+ method + ">");
+			throw new IllegalArgumentException("Unsupported HTTP Method <" + method + ">");
 		}
 
 		result.setURI(URI.create(uri));
