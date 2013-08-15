@@ -24,13 +24,10 @@ public class StatisticsManager {
 	 * @since 0.2.0-SNAPSHOT
 	 * 
 	 */
-	private static final class STATISTICS_CONVERTER implements
-			Function<Entry<String, InternalStatisticsEntry>, StatisticsEntry> {
+	private static final class STATISTICS_CONVERTER implements Function<Entry<String, InternalStatisticsEntry>, StatisticsEntry> {
 		@Override
-		public StatisticsEntry apply(
-				final Entry<String, InternalStatisticsEntry> input) {
-			StatisticsEntryBuilder builder = new StatisticsEntryBuilder(
-					input.getKey());
+		public StatisticsEntry apply(final Entry<String, InternalStatisticsEntry> input) {
+			StatisticsEntryBuilder builder = new StatisticsEntryBuilder(input.getKey());
 
 			InternalStatisticsEntry entry = input.getValue();
 			builder.withAverageDuration(entry.getAverageDuration().get());
@@ -45,6 +42,10 @@ public class StatisticsManager {
 
 	private static final class StatisticsManagerHandler {
 		private static volatile StatisticsManager instance = new StatisticsManager();
+	}
+
+	static class AdvertismentCandidateEntry {
+
 	}
 
 	static class InternalStatisticsEntry {
@@ -79,8 +80,7 @@ public class StatisticsManager {
 				minDuration.compareAndSet(min, newDuration);
 			}
 
-			averageDuration
-					.set(((average * count) + newDuration) / (count + 1));
+			averageDuration.set(((average * count) + newDuration) / (count + 1));
 
 			responseCount.incrementAndGet();
 		}
@@ -140,7 +140,6 @@ public class StatisticsManager {
 	}
 
 	public Iterable<StatisticsEntry> exportStatistics() {
-		return Iterables.transform(Collections.unmodifiableMap(statistics)
-				.entrySet(), new STATISTICS_CONVERTER());
+		return Iterables.transform(Collections.unmodifiableMap(statistics).entrySet(), new STATISTICS_CONVERTER());
 	}
 }

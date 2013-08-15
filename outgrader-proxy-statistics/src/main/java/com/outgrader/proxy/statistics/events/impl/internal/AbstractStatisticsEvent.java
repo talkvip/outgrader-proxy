@@ -8,7 +8,7 @@ import com.outgrader.proxy.statistics.events.StatisticsEventType;
  * @since 0.2.0-SNAPSHOT
  * 
  */
-public abstract class AbstractStatisticsEvent implements IStatisticsEvent {
+public abstract class AbstractStatisticsEvent implements IStatisticsEvent, Comparable<IStatisticsEvent> {
 
 	private final StatisticsEventType type;
 
@@ -35,6 +35,11 @@ public abstract class AbstractStatisticsEvent implements IStatisticsEvent {
 	@Override
 	public long getTimestamp() {
 		return timestamp;
+	}
+
+	@Override
+	public int compareTo(final IStatisticsEvent o) {
+		return (int) (o.getTimestamp() - getTimestamp());
 	}
 
 }
