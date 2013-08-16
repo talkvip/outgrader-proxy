@@ -18,7 +18,7 @@ public class AdvertismentRewriterImpl implements IAdvertismentRewriter {
 
 	@Override
 	public ByteBuf rewrite(final ITag tag, final IAdvertismentRule rule, final Charset charset) {
-		return null;
+		return rewrite(tag, charset);
 	}
 
 	@Override
