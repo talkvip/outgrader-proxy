@@ -135,7 +135,7 @@ class AdvertismentProcessorImplSpec extends Specification {
 		processor.process(URI, stream, CHARSET)
 
 		then:
-		1 * statisticsHandler.onError(processor, _ as String, exception)
+		1 * statisticsHandler.onError(URI, processor, _ as String, exception)
 	}
 
 	def "check rewriter on empty tag"() {
