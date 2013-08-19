@@ -21,7 +21,7 @@ public class OutgraderHttpContentCompressor extends HttpContentCompressor {
 			return null;
 		}
 
-		headers.headers().add(HttpHeaders.Names.CONTENT_ENCODING, HttpHeaders.Values.IDENTITY);
+		headers.headers().set(HttpHeaders.Names.CONTENT_ENCODING, HttpHeaders.Values.IDENTITY);
 
 		return super.beginEncode(headers, acceptEncoding);
 	}
