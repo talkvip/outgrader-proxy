@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import com.outgrader.proxy.advertisment.processor.IAdvertismentRewriter;
 import com.outgrader.proxy.advertisment.processor.internal.ITag;
+import com.outgrader.proxy.advertisment.processor.internal.ITag.TagType;
 import com.outgrader.proxy.advertisment.processor.internal.TagReader;
 import com.outgrader.proxy.advertisment.rule.IAdvertismentRule;
 import com.outgrader.proxy.advertisment.storage.IAdvertismentRuleStorage;
@@ -54,18 +55,19 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 
 		try (TagReader reader = createTagReader(stream, actualCharset)) {
 			for (ITag tag : reader) {
-				if (tag.isAnalysable()) {
+				if (tag.isAnalysable() && (tag.getTagType() != TagType.CLOSING)) {
 					boolean isRewritten = false;
-					for (IAdvertismentRule rule : ruleStorage.getRules()) {
-						if (rule.matches(tag)) {
+					if (tag.haveAttributes()) {
+						for (IAdvertismentRule rule : ruleStorage.getRules()) {
+							if (rule.matches(tag)) {
+								statisticsHandler.onAdvertismentCandidateFound(uri, rule.toString());
 
-							statisticsHandler.onAdvertismentCandidateFound(uri, rule.toString());
+								isRewritten = true;
 
-							isRewritten = true;
+								result = Unpooled.copiedBuffer(result, rewriter.rewrite(tag, rule, actualCharset));
 
-							result = Unpooled.copiedBuffer(result, rewriter.rewrite(tag, rule, actualCharset));
-
-							break;
+								break;
+							}
 						}
 					}
 

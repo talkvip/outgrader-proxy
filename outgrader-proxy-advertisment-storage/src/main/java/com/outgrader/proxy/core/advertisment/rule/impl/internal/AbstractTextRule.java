@@ -17,7 +17,13 @@ public abstract class AbstractTextRule extends AbstractRule {
 
 	@Override
 	public boolean matches(final ITag tag) {
-		return matches(tag.getText());
+		// check if tag have attribute, if no attribute - no sense to check
+		// this tag
+		if (tag.haveAttribute("src", "href")) {
+			return matches(tag.getText());
+		}
+
+		return false;
 	}
 
 	protected abstract boolean matches(String tagText);
