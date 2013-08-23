@@ -4,4 +4,5 @@ include 'outgrader-proxy-core',
 		'outgrader-proxy-external', 
 		'outgrader-proxy-statistics', 
 		'outgrader-proxy-advertisment-processor',
-		'outgrader-proxy-advertisment-storage'
+		'outgrader-proxy-advertisment-storage',
+		'outgrader-proxy-utils'
