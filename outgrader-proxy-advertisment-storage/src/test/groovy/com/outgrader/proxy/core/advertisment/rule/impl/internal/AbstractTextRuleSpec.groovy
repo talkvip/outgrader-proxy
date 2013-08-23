@@ -27,6 +27,8 @@ class AbstractTextRuleSpec extends Specification {
 
 	def setup() {
 		rule = Spy(AbstractTextRuleTestImpl, constructorArgs: [TEXT, PATTERN])
+
+		tag.haveAttribute(_) >> true
 	}
 
 	def "check matches uses tag text"() {

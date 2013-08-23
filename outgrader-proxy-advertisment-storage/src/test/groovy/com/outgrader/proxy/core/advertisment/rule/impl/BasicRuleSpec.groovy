@@ -24,6 +24,8 @@ class BasicRuleSpec extends Specification {
 
 	def setup() {
 		tag.getText() >> TAG_TEXT
+
+		tag.haveAttribute(_) >> true
 	}
 
 	def "check rule matches if pattern matches"() {

@@ -11,6 +11,7 @@ import spock.lang.Specification
 import com.outgrader.proxy.advertisment.processor.IAdvertismentRewriter
 import com.outgrader.proxy.advertisment.processor.internal.ITag
 import com.outgrader.proxy.advertisment.processor.internal.TagReader
+import com.outgrader.proxy.advertisment.processor.internal.ITag.TagType
 import com.outgrader.proxy.advertisment.rule.IAdvertismentRule
 import com.outgrader.proxy.advertisment.storage.IAdvertismentRuleStorage
 import com.outgrader.proxy.core.advertisment.processor.IAdvertismentProcessor
@@ -88,6 +89,8 @@ class AdvertismentProcessorImplSpec extends Specification {
 	def "check rule checked if tag is analysable"() {
 		when:
 		tag.analysable >> true
+		tag.tagType >> TagType.OPEN_AND_CLOSING
+		tag.haveAttributes() >> true
 
 		and:
 		processor.process(URI, stream, CHARSET)
@@ -100,6 +103,8 @@ class AdvertismentProcessorImplSpec extends Specification {
 		setup:
 		rule.toString() >> 'some string'
 		rule.matches(tag) >> true
+		tag.tagType >> TagType.OPEN_AND_CLOSING
+		tag.haveAttributes() >> true
 
 		when:
 		tag.analysable >> true
@@ -164,6 +169,8 @@ class AdvertismentProcessorImplSpec extends Specification {
 	def "check rewriter on matched tag"() {
 		setup:
 		tag.analysable >> true
+		tag.tagType >> TagType.OPEN_AND_CLOSING
+		tag.haveAttributes() >> true
 		rule.matches(tag) >> true
 
 		when:
