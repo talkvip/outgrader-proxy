@@ -12,7 +12,15 @@ class Node implements Comparable<Node> {
 
 	private final Collection<Node> children = new TreeSet<>();
 
-	private char value;
+	private final char value;
+
+	public Node(final char value) {
+		this.value = value;
+	}
+
+	public Node() {
+		this((char) 0);
+	}
 
 	public Collection<Node> getChildren() {
 		return children;
