@@ -1,9 +1,6 @@
 package com.outgrader.proxy.advertisment.processor.internal.impl;
 
-import java.util.Map;
-
 import com.outgrader.proxy.advertisment.processor.internal.ITag;
-import com.outgrader.proxy.advertisment.processor.internal.impl.utils.TagUtils;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
@@ -108,14 +105,8 @@ public class Tag implements ITag {
 
 	private ITag parent;
 
-	private Map<String, String> attributes;
-
 	protected Tag() {
 
-	}
-
-	protected Tag(final String text) {
-		this.text = text;
 	}
 
 	@Override
@@ -177,31 +168,5 @@ public class Tag implements ITag {
 	@Override
 	public void setParent(final ITag tag) {
 		this.parent = tag;
-	}
-
-	@Override
-	public boolean haveAttributes() {
-		if (attributes == null) {
-			attributes = TagUtils.getAttributes(text);
-		}
-
-		return !attributes.isEmpty();
-	}
-
-	@Override
-	public boolean haveAttribute(final String... attributeNames) {
-		if (attributes == null) {
-			attributes = TagUtils.getAttributes(text);
-		}
-
-		boolean haveAttribute = false;
-		for (String attribute : attributeNames) {
-			if (attributes.containsKey(attribute)) {
-				haveAttribute = true;
-				break;
-			}
-		}
-
-		return haveAttribute;
 	}
 }

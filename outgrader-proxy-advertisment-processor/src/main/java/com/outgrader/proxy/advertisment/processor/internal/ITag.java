@@ -27,8 +27,4 @@ public interface ITag {
 
 	String getName();
 
-	boolean haveAttributes();
-
-	boolean haveAttribute(String... attributeName);
-
 }

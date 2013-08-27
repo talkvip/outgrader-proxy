@@ -73,13 +73,11 @@ class AdvertismentProcessorImplSpec extends Specification {
 
 		then:
 		1 * processor.process(_, _, _)
-		10 * tag.isAnalysable()
+		10 * processor.isAnalysable(_ as ITag)
 	}
 
 	def "check no actions if tag is not analysable"() {
 		when:
-		tag.analysable >> false
-		and:
 		processor.process(URI, stream, CHARSET)
 
 		then:
@@ -88,9 +86,7 @@ class AdvertismentProcessorImplSpec extends Specification {
 
 	def "check rule checked if tag is analysable"() {
 		when:
-		tag.analysable >> true
-		tag.tagType >> TagType.OPEN_AND_CLOSING
-		tag.haveAttributes() >> true
+		processor.isAnalysable(_ as ITag) >> true
 
 		and:
 		processor.process(URI, stream, CHARSET)
@@ -103,11 +99,9 @@ class AdvertismentProcessorImplSpec extends Specification {
 		setup:
 		rule.toString() >> 'some string'
 		rule.matches(tag) >> true
-		tag.tagType >> TagType.OPEN_AND_CLOSING
-		tag.haveAttributes() >> true
 
 		when:
-		tag.analysable >> true
+		processor.isAnalysable(tag) >> true
 
 		and:
 		processor.process(URI, stream, CHARSET)
@@ -118,7 +112,7 @@ class AdvertismentProcessorImplSpec extends Specification {
 
 	def "check no statistics update if rule not matches"() {
 		when:
-		tag.analysable >> true
+		processor.isAnalysable(tag) >> true
 
 		and:
 		processor.process(URI, stream, CHARSET)
@@ -145,7 +139,7 @@ class AdvertismentProcessorImplSpec extends Specification {
 
 	def "check rewriter on empty tag"() {
 		setup:
-		tag.analysable >> false
+		processor.isAnalysable(tag) >> false
 
 		when:
 		processor.process(URI, stream, CHARSET)
@@ -156,7 +150,7 @@ class AdvertismentProcessorImplSpec extends Specification {
 
 	def "check rewriter on non-matched tag"() {
 		setup:
-		tag.analysable >> true
+		processor.isAnalysable(tag) >> true
 		rule.matches(tag) >> false
 
 		when:
@@ -168,9 +162,8 @@ class AdvertismentProcessorImplSpec extends Specification {
 
 	def "check rewriter on matched tag"() {
 		setup:
-		tag.analysable >> true
+		processor.isAnalysable(tag) >> true
 		tag.tagType >> TagType.OPEN_AND_CLOSING
-		tag.haveAttributes() >> true
 		rule.matches(tag) >> true
 
 		when:
