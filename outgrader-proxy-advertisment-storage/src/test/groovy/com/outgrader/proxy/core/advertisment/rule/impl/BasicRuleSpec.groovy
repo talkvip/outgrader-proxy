@@ -1,7 +1,5 @@
 package com.outgrader.proxy.core.advertisment.rule.impl
 
-import java.util.regex.Pattern
-
 import spock.lang.Specification
 
 import com.outgrader.proxy.advertisment.processor.internal.ITag
@@ -30,7 +28,7 @@ class BasicRuleSpec extends Specification {
 
 	def "check rule matches if pattern matches"() {
 		setup:
-		rule = new BasicRule(RULE_TEXT, Pattern.compile('tag'))
+		rule = new BasicRule(RULE_TEXT, 'tag')
 
 		when:
 		def result = rule.matches(tag)
@@ -41,7 +39,7 @@ class BasicRuleSpec extends Specification {
 
 	def "check rule matches if pattern not matches"() {
 		setup:
-		rule = new BasicRule(RULE_TEXT, Pattern.compile('nothing'))
+		rule = new BasicRule(RULE_TEXT, 'nothing')
 
 		when:
 		def result = rule.matches(tag)
