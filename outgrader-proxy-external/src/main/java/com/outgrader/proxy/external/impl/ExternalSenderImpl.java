@@ -34,9 +34,6 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpTrace;
 import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
@@ -164,10 +161,7 @@ public class ExternalSenderImpl implements IExternalSender {
 
 	protected HttpClient getClient() {
 		if (httpClient == null) {
-			SchemeRegistry schemeRegistry = new SchemeRegistry();
-			schemeRegistry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
-
-			ClientConnectionManager connectionManager = new PoolingClientConnectionManager(schemeRegistry);
+			ClientConnectionManager connectionManager = new PoolingClientConnectionManager();
 
 			httpClient = new DefaultHttpClient(connectionManager);
 		}
