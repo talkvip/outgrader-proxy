@@ -2,5 +2,4 @@ dependencies {
 	compile project(':outgrader-proxy-core')
 	
 	compile group: 'commons-io', 		name: 'commons-io', version: commonsIOVersion
-	compile group: 'org.htmlparser',	name: 'htmlparser', version: htmlParserVersion
 }
