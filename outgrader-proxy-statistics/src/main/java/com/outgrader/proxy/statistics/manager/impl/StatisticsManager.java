@@ -18,12 +18,7 @@ import com.outgrader.proxy.statistics.impl.StatisticsEntry.StatisticsEntryBuilde
  */
 public class StatisticsManager {
 
-	/**
-	 * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
-	 * @since 0.2.0-SNAPSHOT
-	 * 
-	 */
-	private static final class STATISTICS_CONVERTER implements Function<Entry<String, InternalStatisticsEntry>, StatisticsEntry> {
+	private static final Function<Entry<String, InternalStatisticsEntry>, StatisticsEntry> STATISTICS_CONVERTER = new Function<Entry<String, InternalStatisticsEntry>, StatisticsEntry>() {
 		@Override
 		public StatisticsEntry apply(final Entry<String, InternalStatisticsEntry> input) {
 			StatisticsEntryBuilder builder = new StatisticsEntryBuilder(input.getKey());
@@ -37,7 +32,7 @@ public class StatisticsManager {
 
 			return builder.build();
 		}
-	}
+	};
 
 	private static final class StatisticsManagerHandler {
 		private static volatile StatisticsManager instance = new StatisticsManager();
@@ -76,6 +71,6 @@ public class StatisticsManager {
 	}
 
 	public Iterable<StatisticsEntry> exportStatistics() {
-		return Iterables.transform(Collections.unmodifiableMap(statistics).entrySet(), new STATISTICS_CONVERTER());
+		return Iterables.transform(Collections.unmodifiableMap(statistics).entrySet(), STATISTICS_CONVERTER);
 	}
 }
