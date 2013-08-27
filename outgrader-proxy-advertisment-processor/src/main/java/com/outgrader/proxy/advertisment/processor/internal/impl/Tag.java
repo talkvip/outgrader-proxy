@@ -14,6 +14,16 @@ public class Tag implements ITag {
 
 	public static class TagBuilder {
 
+		private static final String SPACE = " ";
+
+		private static final String TAG_START = "<";
+
+		private static final String OPEN_AND_CLOSE_TAG_END = "/>";
+
+		private static final String TAG_END = ">";
+
+		private static final String CLOSING_TAG_START = "</";
+
 		private final Tag tag;
 
 		private TagBuilder() {
@@ -26,28 +36,28 @@ public class Tag implements ITag {
 			int nameStart = -1;
 			int nameEnd = -1;
 
-			if (text.startsWith("</")) {
+			if (text.startsWith(CLOSING_TAG_START)) {
 				tag.setTagType(TagType.CLOSING);
 
-				nameStart = text.indexOf("</") + 2;
-				nameEnd = text.indexOf(">");
-			} else if (text.endsWith("/>")) {
+				nameStart = text.indexOf(CLOSING_TAG_START) + 2;
+				nameEnd = text.indexOf(TAG_END);
+			} else if (text.endsWith(OPEN_AND_CLOSE_TAG_END)) {
 				tag.setTagType(TagType.OPEN_AND_CLOSING);
 
 				withOpeningTag(tag);
 
-				nameStart = text.indexOf("<") + 1;
-				nameEnd = text.indexOf(" ");
+				nameStart = text.indexOf(TAG_START) + 1;
+				nameEnd = text.indexOf(SPACE);
 				if (nameEnd < 0) {
-					nameEnd = text.indexOf("/>");
+					nameEnd = text.indexOf(OPEN_AND_CLOSE_TAG_END);
 				}
 			} else {
 				tag.setTagType(TagType.OPENING);
 
-				nameStart = text.indexOf("<") + 1;
-				nameEnd = text.indexOf(" ");
+				nameStart = text.indexOf(TAG_START) + 1;
+				nameEnd = text.indexOf(SPACE);
 				if (nameEnd < 0) {
-					nameEnd = text.indexOf(">");
+					nameEnd = text.indexOf(TAG_END);
 				}
 			}
 
@@ -162,12 +172,6 @@ public class Tag implements ITag {
 
 	public void setName(final String name) {
 		this.name = name;
-
-		if (name.equals("script") || name.equals("object")) {
-			isAnalysable = true;
-		} else {
-			isAnalysable = false;
-		}
 	}
 
 	@Override

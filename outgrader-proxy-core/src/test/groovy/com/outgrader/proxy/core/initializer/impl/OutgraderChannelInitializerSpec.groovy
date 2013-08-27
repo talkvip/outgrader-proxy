@@ -3,7 +3,6 @@ package com.outgrader.proxy.core.initializer.impl
 import io.netty.channel.ChannelPipeline
 import io.netty.channel.socket.SocketChannel
 import io.netty.handler.codec.http.HttpContentCompressor
-import io.netty.handler.codec.http.HttpObjectAggregator
 import io.netty.handler.codec.http.HttpServerCodec
 import spock.lang.Specification
 
@@ -35,7 +34,6 @@ class OutgraderChannelInitializerSpec extends Specification {
 		then:
 		1 * pipeline.addLast(_ as String, _ as IOutgraderFrontendHandler)
 		1 * pipeline.addLast(_ as String, _ as HttpServerCodec)
-		1 * pipeline.addLast(_ as String, _ as HttpObjectAggregator)
 		1 * pipeline.addLast(_ as String, _ as HttpContentCompressor)
 
 		1 * channel.pipeline() >> pipeline
