@@ -1,7 +1,5 @@
 package com.outgrader.proxy.core.advertisment.rule.impl.internal;
 
-import java.util.regex.Pattern;
-
 import com.outgrader.proxy.advertisment.rule.IAdvertismentRule;
 
 /**
@@ -13,11 +11,11 @@ public abstract class AbstractRule implements IAdvertismentRule {
 
 	private final String text;
 
-	private final Pattern pattern;
+	private final String[] patterns;
 
-	protected AbstractRule(final String text, final Pattern pattern) {
+	protected AbstractRule(final String text, final String... patterns) {
 		this.text = text;
-		this.pattern = pattern;
+		this.patterns = patterns;
 	}
 
 	@Override
@@ -25,8 +23,8 @@ public abstract class AbstractRule implements IAdvertismentRule {
 		return text;
 	}
 
-	protected Pattern getPattern() {
-		return pattern;
+	protected String[] getPatterns() {
+		return patterns;
 	}
 
 }

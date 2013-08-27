@@ -1,7 +1,5 @@
 package com.outgrader.proxy.core.advertisment.rule.impl;
 
-import java.util.regex.Pattern;
-
 import com.outgrader.proxy.core.advertisment.rule.impl.internal.AbstractTextRule;
 
 /**
@@ -11,13 +9,18 @@ import com.outgrader.proxy.core.advertisment.rule.impl.internal.AbstractTextRule
  */
 public class BasicRule extends AbstractTextRule {
 
-	public BasicRule(final String text, final Pattern pattern) {
-		super(text, pattern);
+	public BasicRule(final String text, final String... patterns) {
+		super(text, patterns);
 	}
 
 	@Override
 	protected boolean matches(final String tagText) {
-		return getPattern().matcher(tagText).matches();
+		for (String pattern : getPatterns()) {
+			if (!tagText.contains(pattern)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

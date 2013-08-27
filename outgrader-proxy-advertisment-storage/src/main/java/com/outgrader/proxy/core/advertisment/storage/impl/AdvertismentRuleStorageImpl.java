@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -11,13 +13,13 @@ import javax.inject.Singleton;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.outgrader.proxy.advertisment.rule.IAdvertismentRule;
 import com.outgrader.proxy.advertisment.storage.IAdvertismentRuleStorage;
 import com.outgrader.proxy.core.advertisment.rule.impl.BasicRule;
-import com.outgrader.proxy.core.advertisment.storage.utils.PatternUtils;
 import com.outgrader.proxy.core.properties.IOutgraderProperties;
 
 /**
@@ -52,21 +54,24 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 
 	private final IOutgraderProperties properties;
 
-	private final Collection<IAdvertismentRule> ruleSet;
+	private final ThreadLocal<IAdvertismentRule[]> ruleSet = new ThreadLocal<IAdvertismentRule[]>() {
+		@Override
+		protected IAdvertismentRule[] initialValue() {
+			return initializeRuleSet();
+		}
+	};
 
 	@Inject
 	public AdvertismentRuleStorageImpl(final IOutgraderProperties properties) throws Exception {
 		this.properties = properties;
-
-		ruleSet = initializeRuleSet();
 	}
 
 	@Override
-	public Collection<IAdvertismentRule> getRules() {
-		return ruleSet;
+	public IAdvertismentRule[] getRules() {
+		return ruleSet.get();
 	}
 
-	protected Collection<IAdvertismentRule> initializeRuleSet() throws Exception {
+	protected IAdvertismentRule[] initializeRuleSet() {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("started initializeRuleSet()");
 		}
@@ -87,7 +92,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 					try {
 						switch (type) {
 						case BASIC:
-							result.add(new BasicRule(line, PatternUtils.createPattern(line)));
+							result.add(new BasicRule(line, getBasicRule(line)));
 							break;
 						default:
 							// skip
@@ -104,6 +109,22 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 			LOGGER.error("An error occured during reading Advertisment list file", e);
 		}
 
-		return result;
+		return result.toArray(new IAdvertismentRule[result.size()]);
+	}
+
+	private String[] getBasicRule(final String line) {
+		List<String> result = new ArrayList<>();
+
+		StringTokenizer tokenizer = new StringTokenizer(line, "*", false);
+
+		while (tokenizer.hasMoreTokens()) {
+			String token = tokenizer.nextToken();
+
+			if (!StringUtils.isEmpty(token)) {
+				result.add(token);
+			}
+		}
+
+		return result.toArray(new String[result.size()]);
 	}
 }

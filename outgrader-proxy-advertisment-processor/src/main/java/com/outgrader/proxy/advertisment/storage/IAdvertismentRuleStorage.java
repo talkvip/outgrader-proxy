@@ -1,7 +1,5 @@
 package com.outgrader.proxy.advertisment.storage;
 
-import java.util.Collection;
-
 import com.outgrader.proxy.advertisment.rule.IAdvertismentRule;
 
 /**
@@ -11,6 +9,6 @@ import com.outgrader.proxy.advertisment.rule.IAdvertismentRule;
  */
 public interface IAdvertismentRuleStorage {
 
-	Collection<IAdvertismentRule> getRules();
+	IAdvertismentRule[] getRules();
 
 }

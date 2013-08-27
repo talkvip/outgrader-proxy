@@ -162,6 +162,10 @@ public class Tag implements ITag {
 
 	public void setName(final String name) {
 		this.name = name;
+
+		if (name.equals("script") || name.equals("link")) {
+			isAnalysable = false;
+		}
 	}
 
 	@Override

@@ -1,7 +1,5 @@
 package com.outgrader.proxy.core.advertisment.rule.impl.internal;
 
-import java.util.regex.Pattern;
-
 import com.outgrader.proxy.advertisment.processor.internal.ITag;
 
 /**
@@ -11,15 +9,17 @@ import com.outgrader.proxy.advertisment.processor.internal.ITag;
  */
 public abstract class AbstractTextRule extends AbstractRule {
 
-	protected AbstractTextRule(final String text, final Pattern pattern) {
-		super(text, pattern);
+	private static final String[] SUPPORTED_ATTRIBUTES = { "src", "href" };
+
+	protected AbstractTextRule(final String text, final String... patterns) {
+		super(text, patterns);
 	}
 
 	@Override
 	public boolean matches(final ITag tag) {
 		// check if tag have attribute, if no attribute - no sense to check
 		// this tag
-		if (tag.haveAttribute("src", "href")) {
+		if (tag.haveAttribute(SUPPORTED_ATTRIBUTES)) {
 			return matches(tag.getText());
 		}
 
