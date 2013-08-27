@@ -2,12 +2,15 @@ package com.outgrader.proxy.properties.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.Set;
+
 import javax.inject.Inject;
 
 import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Sets;
 import com.outgrader.proxy.core.properties.IOutgraderProperties;
 import com.outgrader.proxy.properties.source.IPropertiesSource;
 
@@ -39,6 +42,8 @@ public class OutgraderPropertiesImpl implements IOutgraderProperties {
 	private Configuration configuration;
 
 	private final IPropertiesSource propertiesSource;
+
+	private Set<String> supportedTags = null;
 
 	@Inject
 	public OutgraderPropertiesImpl(final IPropertiesSource propertiesSource) {
@@ -104,7 +109,17 @@ public class OutgraderPropertiesImpl implements IOutgraderProperties {
 	}
 
 	@Override
-	public String[] getSupportedTags() {
-		return getConfiguration().getStringArray(ADVERITSMENT_TAG_CANDIDATES);
+	public Set<String> getSupportedTags() {
+		if (supportedTags == null) {
+			String[] sources = getConfiguration().getStringArray(ADVERITSMENT_TAG_CANDIDATES);
+
+			if (sources != null) {
+				supportedTags = Sets.newHashSet(sources);
+			} else {
+				supportedTags = Sets.newHashSet();
+			}
+		}
+
+		return supportedTags;
 	}
 }

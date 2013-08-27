@@ -15,11 +15,13 @@ import org.slf4j.LoggerFactory;
 
 import com.outgrader.proxy.advertisment.processor.IAdvertismentRewriter;
 import com.outgrader.proxy.advertisment.processor.internal.ITag;
+import com.outgrader.proxy.advertisment.processor.internal.ITag.TagType;
 import com.outgrader.proxy.advertisment.processor.internal.TagReader;
 import com.outgrader.proxy.advertisment.rule.IAdvertismentRule;
 import com.outgrader.proxy.advertisment.storage.IAdvertismentRuleStorage;
 import com.outgrader.proxy.core.advertisment.processor.IAdvertismentProcessor;
 import com.outgrader.proxy.core.exceptions.AbstractOutgraderException;
+import com.outgrader.proxy.core.properties.IOutgraderProperties;
 import com.outgrader.proxy.core.statistics.IStatisticsHandler;
 
 /**
@@ -38,12 +40,16 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 
 	private final IAdvertismentRewriter rewriter;
 
+	private final IOutgraderProperties properties;
+
 	@Inject
 	public AdvertismentProcessorImpl(final IAdvertismentRuleStorage ruleStorage, final IStatisticsHandler statisticsHandler,
-			final IAdvertismentRewriter rewriter) {
+			final IAdvertismentRewriter rewriter, final IOutgraderProperties properties) {
 		this.ruleStorage = ruleStorage;
 		this.statisticsHandler = statisticsHandler;
 		this.rewriter = rewriter;
+
+		this.properties = properties;
 	}
 
 	@Override
@@ -90,7 +96,6 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 	}
 
 	protected boolean isAnalysable(final ITag tag) {
-		// if (tag.isAnalysable() && (tag.getTagType() != TagType.CLOSING)) {
-		return false;
+		return tag.isAnalysable() && (tag.getTagType() != TagType.CLOSING) && properties.getSupportedTags().contains(tag.getName());
 	}
 }

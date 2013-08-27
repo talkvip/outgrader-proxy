@@ -1,5 +1,7 @@
 package com.outgrader.proxy.core.properties;
 
+import java.util.Set;
+
 /**
  * Describes configuration of Proxy
  * 
@@ -47,7 +49,6 @@ public interface IOutgraderProperties {
 	/**
 	 * Returns list of Tag types that will be analyzed for Advertisment
 	 * 
-	 * @return
 	 */
-	String[] getSupportedTags();
+	Set<String> getSupportedTags();
 }

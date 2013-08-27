@@ -15,6 +15,7 @@ import com.outgrader.proxy.advertisment.processor.internal.ITag.TagType
 import com.outgrader.proxy.advertisment.rule.IAdvertismentRule
 import com.outgrader.proxy.advertisment.storage.IAdvertismentRuleStorage
 import com.outgrader.proxy.core.advertisment.processor.IAdvertismentProcessor
+import com.outgrader.proxy.core.properties.IOutgraderProperties
 import com.outgrader.proxy.core.statistics.IStatisticsHandler
 
 /**
@@ -40,6 +41,8 @@ class AdvertismentProcessorImplSpec extends Specification {
 
 	IAdvertismentRewriter rewriter = Mock(IAdvertismentRewriter)
 
+	IOutgraderProperties properties = Mock(IOutgraderProperties)
+
 	IAdvertismentProcessor processor
 
 	TagReader tagReader
@@ -48,7 +51,8 @@ class AdvertismentProcessorImplSpec extends Specification {
 		processor = Spy(AdvertismentProcessorImpl, constructorArgs: [
 			ruleStorage,
 			statisticsHandler,
-			rewriter
+			rewriter,
+			properties
 		])
 
 		tagReader = Mock(TagReader, constructorArgs: [stream, CHARSET])
@@ -180,4 +184,52 @@ class AdvertismentProcessorImplSpec extends Specification {
 		then:
 		1 * processor.createTagReader(stream, Charset.defaultCharset()) >> tagReader
 	}
+
+	def "check tag not analasyable if it's not anylysable by property"() {
+		when:
+		tag.analysable >> false
+
+		then:
+		!processor.isAnalysable(tag)
+	}
+
+	def "check tag not analysable if it's CLOSED tag"() {
+		setup:
+		tag.analysable >> true
+
+		when:
+		tag.tagType >> TagType.CLOSING
+
+		then:
+		!processor.isAnalysable(tag)
+	}
+
+	def "check tag not analysable if it's not in supported tags"() {
+		setup:
+		tag.analysable >> true
+		tag.tagType >> TagType.OPENING
+
+		when:
+		properties.getSupportedTags() >> ['tag']
+		and:
+		tag.getName() >> 'not a tag'
+
+		then:
+		!processor.isAnalysable(tag)
+	}
+
+	def "check tag is analysable when conditions satisfied"() {
+		setup:
+		tag.analysable >> true
+		tag.tagType >> TagType.OPENING
+		properties.getSupportedTags() >> ['tag']
+		tag.getName() >> 'tag'
+
+		when:
+		def result = processor.isAnalysable(tag)
+
+		then:
+		result
+	}
 }
+
