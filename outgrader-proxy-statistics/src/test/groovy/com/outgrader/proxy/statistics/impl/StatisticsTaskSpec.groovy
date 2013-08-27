@@ -3,6 +3,7 @@ package com.outgrader.proxy.statistics.impl
 import spock.lang.Specification
 
 import com.outgrader.proxy.statistics.events.IStatisticsEvent
+import com.outgrader.proxy.statistics.manager.impl.StatisticsManager;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)

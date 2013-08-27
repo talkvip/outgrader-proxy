@@ -1,8 +1,8 @@
 package com.outgrader.proxy.statistics.impl
 
-import spock.lang.Specification
+import com.outgrader.proxy.statistics.manager.impl.InternalStatisticsEntry;
 
-import com.outgrader.proxy.statistics.impl.StatisticsManager.InternalStatisticsEntry
+import spock.lang.Specification
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)

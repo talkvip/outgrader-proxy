@@ -1,4 +1,4 @@
-package com.outgrader.proxy.statistics.impl
+package com.outgrader.proxy.statistics.manager.impl
 
 import spock.lang.Specification
 
@@ -8,7 +8,8 @@ import com.outgrader.proxy.statistics.events.impl.AdvertismentCandidateEvent
 import com.outgrader.proxy.statistics.events.impl.ErrorEvent
 import com.outgrader.proxy.statistics.events.impl.RequestEvent
 import com.outgrader.proxy.statistics.events.impl.ResponseEvent
-import com.outgrader.proxy.statistics.impl.StatisticsManager.InternalStatisticsEntry
+import com.outgrader.proxy.statistics.manager.impl.InternalStatisticsEntry;
+import com.outgrader.proxy.statistics.manager.impl.StatisticsManager;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)

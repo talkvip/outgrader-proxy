@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import com.outgrader.proxy.statistics.exceptions.StatisticsExportException;
 import com.outgrader.proxy.statistics.export.IStatisticsExporter;
 import com.outgrader.proxy.statistics.impl.StatisticsEntry;
-import com.outgrader.proxy.statistics.impl.StatisticsManager;
+import com.outgrader.proxy.statistics.manager.impl.StatisticsManager;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)

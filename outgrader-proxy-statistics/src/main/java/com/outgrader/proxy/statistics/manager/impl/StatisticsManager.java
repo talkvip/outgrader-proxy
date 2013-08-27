@@ -1,15 +1,14 @@
-package com.outgrader.proxy.statistics.impl;
+package com.outgrader.proxy.statistics.manager.impl;
 
 import java.util.Collections;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.outgrader.proxy.statistics.events.IStatisticsEvent;
 import com.outgrader.proxy.statistics.events.impl.ResponseEvent;
+import com.outgrader.proxy.statistics.impl.StatisticsEntry;
 import com.outgrader.proxy.statistics.impl.StatisticsEntry.StatisticsEntryBuilder;
 
 /**
@@ -42,69 +41,6 @@ public class StatisticsManager {
 
 	private static final class StatisticsManagerHandler {
 		private static volatile StatisticsManager instance = new StatisticsManager();
-	}
-
-	static class AdvertismentCandidateEntry {
-
-	}
-
-	static class InternalStatisticsEntry {
-
-		private final AtomicInteger requestCount = new AtomicInteger();
-
-		private final AtomicInteger responseCount = new AtomicInteger();
-
-		private AtomicLong minDuration = null;
-
-		private final AtomicLong maxDuration = new AtomicLong();
-
-		private final AtomicLong averageDuration = new AtomicLong();
-
-		public void updateRequest() {
-			requestCount.incrementAndGet();
-		}
-
-		public void updateResponse(final long newDuration) {
-			if (minDuration == null) {
-				minDuration = new AtomicLong(newDuration);
-			}
-			long min = minDuration.get();
-			long max = maxDuration.get();
-			long average = averageDuration.get();
-			int count = responseCount.get();
-
-			if (newDuration > max) {
-				maxDuration.compareAndSet(max, newDuration);
-			}
-			if (newDuration < min) {
-				minDuration.compareAndSet(min, newDuration);
-			}
-
-			averageDuration.set(((average * count) + newDuration) / (count + 1));
-
-			responseCount.incrementAndGet();
-		}
-
-		public AtomicInteger getRequestCount() {
-			return requestCount;
-		}
-
-		public AtomicInteger getResponseCount() {
-			return responseCount;
-		}
-
-		public AtomicLong getMinDuration() {
-			return minDuration;
-		}
-
-		public AtomicLong getMaxDuration() {
-			return maxDuration;
-		}
-
-		public AtomicLong getAverageDuration() {
-			return averageDuration;
-		}
-
 	}
 
 	private final ConcurrentHashMap<String, InternalStatisticsEntry> statistics = new ConcurrentHashMap<>();
