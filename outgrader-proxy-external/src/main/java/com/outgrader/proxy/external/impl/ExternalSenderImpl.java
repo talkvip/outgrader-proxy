@@ -33,10 +33,15 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpTrace;
-import org.apache.http.client.params.ClientPNames;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,9 +61,9 @@ public class ExternalSenderImpl implements IExternalSender {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExternalSenderImpl.class);
 
-	private static final ThreadLocal<HttpClient> CLIENT_THREAD_POOL = new ThreadLocal<>();
-
 	private final IAdvertismentProcessor responseProcessor;
+
+	private HttpClient httpClient;
 
 	@Inject
 	public ExternalSenderImpl(final IAdvertismentProcessor responseProcessor) {
@@ -92,6 +97,8 @@ public class ExternalSenderImpl implements IExternalSender {
 		} catch (IOException e) {
 			LOGGER.error("HttpClient throwed exception for URI <" + uri + ">");
 			throw new ExternalSenderException("An exception occured during connection to external host", e);
+		} finally {
+			externalRequest.releaseConnection();
 		}
 
 		if (LOGGER.isDebugEnabled()) {
@@ -143,6 +150,8 @@ public class ExternalSenderImpl implements IExternalSender {
 				content = Unpooled.copiedBuffer(IOUtils.toByteArray(response.getEntity().getContent()));
 			}
 
+			EntityUtils.consume(response.getEntity());
+
 			return content;
 		}
 
@@ -154,16 +163,16 @@ public class ExternalSenderImpl implements IExternalSender {
 	}
 
 	protected HttpClient getClient() {
-		HttpClient result = CLIENT_THREAD_POOL.get();
-		if (result == null) {
-			result = new DefaultHttpClient();
+		if (httpClient == null) {
+			SchemeRegistry schemeRegistry = new SchemeRegistry();
+			schemeRegistry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
 
-			result.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);
+			ClientConnectionManager connectionManager = new PoolingClientConnectionManager(schemeRegistry);
 
-			CLIENT_THREAD_POOL.set(result);
+			httpClient = new DefaultHttpClient(connectionManager);
 		}
 
-		return result;
+		return httpClient;
 	}
 
 	protected void copyHeaders(final HttpRequestBase external, final HttpRequest original) {

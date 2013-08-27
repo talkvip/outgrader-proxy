@@ -13,11 +13,13 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class OutgraderHttpContentCompressor extends HttpContentCompressor {
 
+	private static final String TEXT_HTML = "text/html";
+
 	@Override
 	protected Result beginEncode(final HttpResponse headers, final String acceptEncoding) throws Exception {
 		String contentType = headers.headers().get(HttpHeaders.Names.CONTENT_TYPE);
 		String contentEncoding = headers.headers().get(HttpHeaders.Names.CONTENT_ENCODING);
-		if (!contentType.contains("text/html") || StringUtils.isEmpty(contentEncoding)) {
+		if (!contentType.contains(TEXT_HTML) || StringUtils.isEmpty(contentEncoding)) {
 			return null;
 		}
 
