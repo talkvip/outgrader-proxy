@@ -66,6 +66,8 @@ public class StatisticsCSVExporterImpl extends AbstractStatisticsExporter {
 			getWriter().close();
 		} catch (IOException e) {
 			throw new StatisticsExportException("An exception occured during closing Writer", e);
+		} finally {
+			writer = null;
 		}
 	}
 }

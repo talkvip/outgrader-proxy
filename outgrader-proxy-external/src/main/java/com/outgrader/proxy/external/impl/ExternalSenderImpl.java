@@ -33,6 +33,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpTrace;
+import org.apache.http.client.params.ClientPNames;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -164,6 +165,7 @@ public class ExternalSenderImpl implements IExternalSender {
 			ClientConnectionManager connectionManager = new PoolingClientConnectionManager();
 
 			httpClient = new DefaultHttpClient(connectionManager);
+			httpClient.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);
 		}
 
 		return httpClient;
