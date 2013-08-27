@@ -76,7 +76,8 @@ class OutgraderPropertiesImplSpec extends Specification {
 			'statisticsThreadNumber',
 			'statisticsExportPeriod',
 			'statisticsExportDirectory',
-			'advertismentListLocation'
+			'advertismentListLocation',
+			'supportedTags'
 		]
 	}
 }

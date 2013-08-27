@@ -34,6 +34,8 @@ public class OutgraderPropertiesImpl implements IOutgraderProperties {
 
 	private static final String ADVERTISMENT_LIST_FILE = "outgrader.proxy.advertisments.file";
 
+	private static final String ADVERITSMENT_TAG_CANDIDATES = "outgrader.proxy.advertisment.tags";
+
 	private Configuration configuration;
 
 	private final IPropertiesSource propertiesSource;
@@ -99,5 +101,10 @@ public class OutgraderPropertiesImpl implements IOutgraderProperties {
 	@Override
 	public String getAdvertismentListLocation() {
 		return getConfiguration().getString(ADVERTISMENT_LIST_FILE);
+	}
+
+	@Override
+	public String[] getSupportedTags() {
+		return getConfiguration().getStringArray(ADVERITSMENT_TAG_CANDIDATES);
 	}
 }

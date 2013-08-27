@@ -43,4 +43,11 @@ public interface IOutgraderProperties {
 	 * Location of initial file with advertisment rules
 	 */
 	String getAdvertismentListLocation();
+
+	/**
+	 * Returns list of Tag types that will be analyzed for Advertisment
+	 * 
+	 * @return
+	 */
+	String[] getSupportedTags();
 }
