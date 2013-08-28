@@ -9,8 +9,8 @@ import com.outgrader.proxy.advertisment.processor.internal.ITag;
  */
 public abstract class AbstractTextRule extends AbstractRule {
 
-	protected AbstractTextRule(final String text, final String... patterns) {
-		super(text, patterns);
+	protected AbstractTextRule(final String text) {
+		super(text);
 	}
 
 	@Override

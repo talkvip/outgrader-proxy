@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.inject.Inject;
@@ -20,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import com.outgrader.proxy.advertisment.rule.IAdvertismentRule;
 import com.outgrader.proxy.advertisment.storage.IAdvertismentRuleStorage;
 import com.outgrader.proxy.core.advertisment.rule.impl.BasicRule;
+import com.outgrader.proxy.core.advertisment.rule.impl.BasicRule.BasicRuleBuilder;
 import com.outgrader.proxy.core.properties.IOutgraderProperties;
 
 /**
@@ -33,17 +33,24 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AdvertismentRuleStorageImpl.class);
 
 	private enum LineType {
-		COMMENT("!"), BASIC(null), ELEMENT_HIDING("#"), EXCLUDING("@@");
+		COMMENT("!", true), BASIC(null), ELEMENT_HIDING("#"), EXCLUDING("@@");
 
 		private String symbol;
 
+		private boolean shouldStart;
+
 		private LineType(final String symbol) {
+			this(symbol, false);
+		}
+
+		private LineType(final String symbol, final boolean shouldStart) {
 			this.symbol = symbol;
+			this.shouldStart = shouldStart;
 		}
 
 		public static LineType getLineType(final String line) {
 			for (LineType type : values()) {
-				if ((type.symbol != null) && line.contains(type.symbol)) {
+				if ((type.symbol != null) && (type.shouldStart ? line.startsWith(type.symbol) : line.contains(type.symbol))) {
 					return type;
 				}
 			}
@@ -92,7 +99,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 					try {
 						switch (type) {
 						case BASIC:
-							result.add(new BasicRule(line, getBasicRule(line)));
+							result.add(getBasicRule(line));
 							break;
 						default:
 							// skip
@@ -109,22 +116,32 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 			LOGGER.error("An error occured during reading Advertisment list file", e);
 		}
 
+		LOGGER.info("It was loaded <" + result.size() + "> rules");
+
 		return result.toArray(new IAdvertismentRule[result.size()]);
 	}
 
-	private String[] getBasicRule(final String line) {
-		List<String> result = new ArrayList<>();
-
+	private BasicRule getBasicRule(final String line) {
 		StringTokenizer tokenizer = new StringTokenizer(line, "*", false);
+		BasicRuleBuilder builder = new BasicRuleBuilder(line);
 
 		while (tokenizer.hasMoreTokens()) {
 			String token = tokenizer.nextToken();
 
-			if (!StringUtils.isEmpty(token)) {
-				result.add(token);
+			int endsWithIndex = token.indexOf("!");
+			if (endsWithIndex != StringUtils.INDEX_NOT_FOUND) {
+				builder.shouldEndWith(token.substring(0, endsWithIndex));
+			} else {
+				int startsWithIndex = token.indexOf("||");
+
+				if (startsWithIndex != StringUtils.INDEX_NOT_FOUND) {
+					builder.shouldStartWith(token.substring(startsWithIndex + 2));
+				} else {
+					builder.shouldContain(token);
+				}
 			}
 		}
 
-		return result.toArray(new String[result.size()]);
+		return builder.build();
 	}
 }

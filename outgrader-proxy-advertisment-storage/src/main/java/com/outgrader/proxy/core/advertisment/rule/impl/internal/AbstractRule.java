@@ -11,20 +11,13 @@ public abstract class AbstractRule implements IAdvertismentRule {
 
 	private final String text;
 
-	private final String[] patterns;
-
-	protected AbstractRule(final String text, final String... patterns) {
+	protected AbstractRule(final String text) {
 		this.text = text;
-		this.patterns = patterns;
 	}
 
 	@Override
 	public String toString() {
 		return text;
-	}
-
-	protected String[] getPatterns() {
-		return patterns;
 	}
 
 }
