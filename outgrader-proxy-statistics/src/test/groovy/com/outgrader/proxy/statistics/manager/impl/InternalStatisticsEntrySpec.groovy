@@ -1,4 +1,4 @@
-package com.outgrader.proxy.statistics.impl
+package com.outgrader.proxy.statistics.manager.impl
 
 import com.outgrader.proxy.statistics.manager.impl.InternalStatisticsEntry;
 
