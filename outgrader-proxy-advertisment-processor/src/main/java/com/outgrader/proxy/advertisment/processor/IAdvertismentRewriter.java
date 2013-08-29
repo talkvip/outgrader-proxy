@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import io.netty.buffer.ByteBuf;
 
 import com.outgrader.proxy.advertisment.processor.internal.ITag;
+import com.outgrader.proxy.advertisment.processor.internal.TagReader;
 import com.outgrader.proxy.advertisment.rule.IAdvertismentRule;
 
 /**
@@ -14,7 +15,7 @@ import com.outgrader.proxy.advertisment.rule.IAdvertismentRule;
  */
 public interface IAdvertismentRewriter {
 
-	ByteBuf rewrite(ITag tag, IAdvertismentRule rule, Charset charset);
+	ByteBuf rewrite(ITag tag, IAdvertismentRule rule, Charset charset, TagReader tagReader);
 
 	ByteBuf rewrite(ITag tag, Charset charset);
 

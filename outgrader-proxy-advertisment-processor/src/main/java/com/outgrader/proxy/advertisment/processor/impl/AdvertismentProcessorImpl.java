@@ -69,7 +69,7 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 
 							isRewritten = true;
 
-							result = Unpooled.copiedBuffer(result, rewriter.rewrite(tag, rule, actualCharset));
+							result = Unpooled.copiedBuffer(result, rewriter.rewrite(tag, rule, actualCharset, reader));
 
 							break;
 						}

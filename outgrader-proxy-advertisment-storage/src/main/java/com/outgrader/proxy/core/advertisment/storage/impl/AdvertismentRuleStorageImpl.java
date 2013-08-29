@@ -12,7 +12,6 @@ import javax.inject.Singleton;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,18 +127,18 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 		while (tokenizer.hasMoreTokens()) {
 			String token = tokenizer.nextToken();
 
-			int endsWithIndex = token.indexOf("!");
-			if (endsWithIndex != StringUtils.INDEX_NOT_FOUND) {
-				builder.shouldEndWith(token.substring(0, endsWithIndex));
-			} else {
-				int startsWithIndex = token.indexOf("||");
-
-				if (startsWithIndex != StringUtils.INDEX_NOT_FOUND) {
-					builder.shouldStartWith(token.substring(startsWithIndex + 2));
-				} else {
-					builder.shouldContain(token);
-				}
-			}
+			// int endsWithIndex = token.indexOf("!");
+			// if (endsWithIndex != StringUtils.INDEX_NOT_FOUND) {
+			// builder.shouldEndWith(token.substring(0, endsWithIndex));
+			// } else {
+			// int startsWithIndex = token.indexOf("||");
+			//
+			// if (startsWithIndex != StringUtils.INDEX_NOT_FOUND) {
+			// builder.shouldStartWith(token.substring(startsWithIndex + 2));
+			// } else {
+			builder.shouldContain(token);
+			// }
+			// }
 		}
 
 		return builder.build();
