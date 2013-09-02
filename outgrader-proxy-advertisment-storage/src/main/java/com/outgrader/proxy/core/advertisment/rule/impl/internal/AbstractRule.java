@@ -1,6 +1,6 @@
 package com.outgrader.proxy.core.advertisment.rule.impl.internal;
 
-import com.outgrader.proxy.advertisment.rule.IAdvertismentRule;
+import com.outgrader.proxy.core.model.IAdvertismentRule;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)

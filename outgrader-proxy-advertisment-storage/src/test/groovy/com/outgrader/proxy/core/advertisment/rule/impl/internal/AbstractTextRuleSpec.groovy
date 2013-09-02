@@ -2,9 +2,9 @@ package com.outgrader.proxy.core.advertisment.rule.impl.internal
 
 import spock.lang.Specification
 
-import com.outgrader.proxy.advertisment.processor.internal.ITag
-import com.outgrader.proxy.advertisment.rule.IAdvertismentRule
 import com.outgrader.proxy.core.advertisment.rule.impl.internal.util.AbstractTextRuleTestImpl
+import com.outgrader.proxy.core.model.IAdvertismentRule
+import com.outgrader.proxy.core.model.ITag
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)

@@ -15,10 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.outgrader.proxy.advertisment.rule.IAdvertismentRule;
 import com.outgrader.proxy.advertisment.storage.IAdvertismentRuleStorage;
 import com.outgrader.proxy.core.advertisment.rule.impl.BasicRule;
 import com.outgrader.proxy.core.advertisment.rule.impl.BasicRule.BasicRuleBuilder;
+import com.outgrader.proxy.core.model.IAdvertismentRule;
 import com.outgrader.proxy.core.properties.IOutgraderProperties;
 
 /**

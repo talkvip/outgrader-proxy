@@ -4,9 +4,9 @@ import java.nio.charset.Charset;
 
 import io.netty.buffer.ByteBuf;
 
-import com.outgrader.proxy.advertisment.processor.internal.ITag;
 import com.outgrader.proxy.advertisment.processor.internal.TagReader;
-import com.outgrader.proxy.advertisment.rule.IAdvertismentRule;
+import com.outgrader.proxy.core.model.IAdvertismentRule;
+import com.outgrader.proxy.core.model.ITag;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)

@@ -5,7 +5,7 @@ import org.apache.commons.io.IOUtils
 
 import spock.lang.Specification
 
-import com.outgrader.proxy.advertisment.processor.internal.ITag.TagType
+import com.outgrader.proxy.core.model.ITag.TagType
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)

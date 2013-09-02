@@ -9,12 +9,12 @@ import org.apache.commons.io.Charsets
 import spock.lang.Specification
 
 import com.outgrader.proxy.advertisment.processor.IAdvertismentRewriter
-import com.outgrader.proxy.advertisment.processor.internal.ITag
 import com.outgrader.proxy.advertisment.processor.internal.TagReader
-import com.outgrader.proxy.advertisment.processor.internal.ITag.TagType
-import com.outgrader.proxy.advertisment.rule.IAdvertismentRule
 import com.outgrader.proxy.advertisment.storage.IAdvertismentRuleStorage
 import com.outgrader.proxy.core.advertisment.processor.IAdvertismentProcessor
+import com.outgrader.proxy.core.model.IAdvertismentRule
+import com.outgrader.proxy.core.model.ITag
+import com.outgrader.proxy.core.model.ITag.TagType
 import com.outgrader.proxy.core.properties.IOutgraderProperties
 import com.outgrader.proxy.core.statistics.IStatisticsHandler
 

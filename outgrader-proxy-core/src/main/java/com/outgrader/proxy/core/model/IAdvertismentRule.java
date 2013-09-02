@@ -1,6 +1,4 @@
-package com.outgrader.proxy.advertisment.rule;
-
-import com.outgrader.proxy.advertisment.processor.internal.ITag;
+package com.outgrader.proxy.core.model;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)

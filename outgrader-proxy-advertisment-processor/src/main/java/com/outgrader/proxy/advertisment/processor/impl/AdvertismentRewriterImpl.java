@@ -8,10 +8,10 @@ import java.nio.charset.Charset;
 import org.springframework.stereotype.Component;
 
 import com.outgrader.proxy.advertisment.processor.IAdvertismentRewriter;
-import com.outgrader.proxy.advertisment.processor.internal.ITag;
-import com.outgrader.proxy.advertisment.processor.internal.ITag.TagType;
 import com.outgrader.proxy.advertisment.processor.internal.TagReader;
-import com.outgrader.proxy.advertisment.rule.IAdvertismentRule;
+import com.outgrader.proxy.core.model.IAdvertismentRule;
+import com.outgrader.proxy.core.model.ITag;
+import com.outgrader.proxy.core.model.ITag.TagType;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
