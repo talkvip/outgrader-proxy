@@ -1,5 +1,5 @@
 dependencies {
 	compile project(':outgrader-proxy-core')
 	
-	compile group: 'commons-io', 		name: 'commons-io', version: commonsIOVersion
+	compile group: 'commons-io', name: 'commons-io', version: commonsIOVersion
 }

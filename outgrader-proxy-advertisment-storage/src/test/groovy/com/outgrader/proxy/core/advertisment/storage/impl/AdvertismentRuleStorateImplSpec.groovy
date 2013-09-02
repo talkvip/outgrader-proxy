@@ -2,8 +2,8 @@ package com.outgrader.proxy.core.advertisment.storage.impl
 
 import spock.lang.Specification
 
-import com.outgrader.proxy.advertisment.storage.IAdvertismentRuleStorage
 import com.outgrader.proxy.core.properties.IOutgraderProperties
+import com.outgrader.proxy.core.storage.IAdvertismentRuleStorage
 import com.outgrader.proxy.properties.impl.OutgraderPropertiesImpl
 import com.outgrader.proxy.properties.source.file.FilePropertiesSource
 

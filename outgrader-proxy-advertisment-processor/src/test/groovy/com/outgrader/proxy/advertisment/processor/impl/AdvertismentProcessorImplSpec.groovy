@@ -10,13 +10,13 @@ import spock.lang.Specification
 
 import com.outgrader.proxy.advertisment.processor.IAdvertismentRewriter
 import com.outgrader.proxy.advertisment.processor.internal.TagReader
-import com.outgrader.proxy.advertisment.storage.IAdvertismentRuleStorage
 import com.outgrader.proxy.core.advertisment.processor.IAdvertismentProcessor
 import com.outgrader.proxy.core.model.IAdvertismentRule
 import com.outgrader.proxy.core.model.ITag
 import com.outgrader.proxy.core.model.ITag.TagType
 import com.outgrader.proxy.core.properties.IOutgraderProperties
 import com.outgrader.proxy.core.statistics.IStatisticsHandler
+import com.outgrader.proxy.core.storage.IAdvertismentRuleStorage;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)

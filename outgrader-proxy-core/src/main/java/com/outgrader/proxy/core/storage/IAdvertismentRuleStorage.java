@@ -1,4 +1,4 @@
-package com.outgrader.proxy.advertisment.storage;
+package com.outgrader.proxy.core.storage;
 
 import com.outgrader.proxy.core.model.IAdvertismentRule;
 
