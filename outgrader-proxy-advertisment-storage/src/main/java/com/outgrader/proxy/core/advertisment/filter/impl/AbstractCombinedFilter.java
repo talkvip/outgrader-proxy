@@ -1,5 +1,6 @@
 package com.outgrader.proxy.core.advertisment.filter.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.outgrader.proxy.core.advertisment.filter.IFilter;
@@ -11,7 +12,7 @@ import com.outgrader.proxy.core.advertisment.filter.IFilter;
  */
 abstract class AbstractCombinedFilter implements IFilter {
 
-	private List<IFilter> filters;
+	private final List<IFilter> filters = new ArrayList<>();
 
 	public void addSubFilter(final IFilter filter) {
 		filters.add(filter);
