@@ -1,7 +1,5 @@
 package com.outgrader.proxy.core.advertisment.rule.impl.internal
 
-import java.util.regex.Pattern
-
 import spock.lang.Specification
 
 import com.outgrader.proxy.advertisment.processor.internal.ITag
@@ -17,8 +15,6 @@ class AbstractTextRuleSpec extends Specification {
 
 	static final String TEXT = 'pattern'
 
-	static final Pattern PATTERN = Pattern.compile('pattern')
-
 	static final String TAG_TEXT = 'tag text'
 
 	ITag tag = Mock(ITag)
@@ -26,7 +22,7 @@ class AbstractTextRuleSpec extends Specification {
 	IAdvertismentRule rule
 
 	def setup() {
-		rule = Spy(AbstractTextRuleTestImpl, constructorArgs: [TEXT, PATTERN])
+		rule = Spy(AbstractTextRuleTestImpl, constructorArgs: [TEXT])
 
 		tag.haveAttribute(_) >> true
 	}

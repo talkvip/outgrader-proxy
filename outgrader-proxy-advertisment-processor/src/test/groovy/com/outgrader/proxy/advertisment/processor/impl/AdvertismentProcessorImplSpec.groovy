@@ -66,6 +66,7 @@ class AdvertismentProcessorImplSpec extends Specification {
 
 		rewriter.rewrite(_, _) >> Unpooled.EMPTY_BUFFER
 		rewriter.rewrite(_, _, _) >> Unpooled.EMPTY_BUFFER
+		rewriter.rewrite(tag, rule, _, _) >> Unpooled.EMPTY_BUFFER
 	}
 
 	def "check all tags was read"() {
@@ -174,7 +175,7 @@ class AdvertismentProcessorImplSpec extends Specification {
 		processor.process(URI, stream, CHARSET)
 
 		then:
-		1 * rewriter.rewrite(tag, rule, CHARSET) >> Unpooled.EMPTY_BUFFER
+		1 * rewriter.rewrite(tag, rule, CHARSET, tagReader) >> Unpooled.EMPTY_BUFFER
 	}
 
 	def "check default charset is used when no charset given"() {
