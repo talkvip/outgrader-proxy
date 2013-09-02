@@ -1,8 +1,9 @@
 package com.outgrader.proxy
 
+import org.springframework.context.ApplicationContext
+
 import spock.lang.Specification
 
-import com.google.inject.Injector
 import com.outgrader.proxy.core.IOutgraderProxy
 import com.outgrader.proxy.core.statistics.IStatisticsHandler
 
@@ -15,23 +16,23 @@ class OutgraderSpec extends Specification {
 
 	Outgrader outgrader
 
-	Injector injector = Mock(Injector)
+	ApplicationContext context = Mock(ApplicationContext)
 
 	IOutgraderProxy proxy = Mock(IOutgraderProxy)
 
 	IStatisticsHandler statistics = Mock(IStatisticsHandler)
 
 	def setup() {
-		outgrader = new Outgrader(injector)
+		outgrader = new Outgrader(context)
 
-		injector.getInstance(IOutgraderProxy.class) >> proxy
-		injector.getInstance(IStatisticsHandler.class) >> statistics
+		context.getBean(IOutgraderProxy.class) >> proxy
+		context.getBean(IStatisticsHandler.class) >> statistics
 	}
 
 	def "check injector cache"() {
 		when:
-		def attempt1 = outgrader.getInjector()
-		def attempt2 = outgrader.getInjector()
+		def attempt1 = outgrader.getApplicationContext()
+		def attempt2 = outgrader.getApplicationContext()
 
 		then:
 		attempt1.is(attempt2)
@@ -66,8 +67,8 @@ class OutgraderSpec extends Specification {
 		outgrader.run()
 
 		then:
-		injector.getInstance(IStatisticsHandler) >> statistics
-		injector.getInstance(IOutgraderProxy) >> proxy
+		context.getBean(IStatisticsHandler) >> statistics
+		context.getBean(IOutgraderProxy) >> proxy
 		1 * statistics.initialize()
 		1 * proxy.run()
 

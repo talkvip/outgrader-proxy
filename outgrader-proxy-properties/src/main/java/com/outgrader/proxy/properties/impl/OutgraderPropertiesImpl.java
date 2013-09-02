@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Sets;
 import com.outgrader.proxy.core.properties.IOutgraderProperties;
@@ -19,6 +20,7 @@ import com.outgrader.proxy.properties.source.IPropertiesSource;
  * @since 0.1.0-SNAPSHOT
  * 
  */
+@Component
 public class OutgraderPropertiesImpl implements IOutgraderProperties {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(OutgraderPropertiesImpl.class);

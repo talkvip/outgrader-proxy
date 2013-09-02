@@ -8,10 +8,10 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.outgrader.proxy.advertisment.processor.IAdvertismentRewriter;
 import com.outgrader.proxy.advertisment.processor.internal.ITag;
@@ -29,7 +29,7 @@ import com.outgrader.proxy.core.statistics.IStatisticsHandler;
  * @since 0.3.0-SNAPSHOT
  * 
  */
-@Singleton
+@Component
 public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AdvertismentProcessorImpl.class);

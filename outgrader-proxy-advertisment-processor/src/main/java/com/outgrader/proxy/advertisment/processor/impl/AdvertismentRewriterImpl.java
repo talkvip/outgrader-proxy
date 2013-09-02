@@ -5,6 +5,8 @@ import io.netty.buffer.Unpooled;
 
 import java.nio.charset.Charset;
 
+import org.springframework.stereotype.Component;
+
 import com.outgrader.proxy.advertisment.processor.IAdvertismentRewriter;
 import com.outgrader.proxy.advertisment.processor.internal.ITag;
 import com.outgrader.proxy.advertisment.processor.internal.ITag.TagType;
@@ -16,6 +18,7 @@ import com.outgrader.proxy.advertisment.rule.IAdvertismentRule;
  * @since 0.3.0-SNAPSHOT
  * 
  */
+@Component
 public class AdvertismentRewriterImpl implements IAdvertismentRewriter {
 
 	@Override

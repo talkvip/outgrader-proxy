@@ -6,10 +6,10 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpServerCodec;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.outgrader.proxy.core.handler.IOutgraderFrontendHandler;
 import com.outgrader.proxy.core.initializer.IOutgraderChannelInitializer;
@@ -20,7 +20,7 @@ import com.outgrader.proxy.core.util.OutgraderHttpContentCompressor;
  * @since 0.1.0-SNAPSHOT
  * 
  */
-@Singleton
+@Component
 public class OutgraderChannelInitializer extends ChannelInitializer<SocketChannel> implements IOutgraderChannelInitializer {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(OutgraderChannelInitializer.class);

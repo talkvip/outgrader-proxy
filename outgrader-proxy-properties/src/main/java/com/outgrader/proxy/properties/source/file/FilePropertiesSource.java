@@ -9,6 +9,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.outgrader.proxy.properties.impl.OutgraderPropertiesImpl;
 import com.outgrader.proxy.properties.source.IPropertiesSource;
@@ -18,13 +19,12 @@ import com.outgrader.proxy.properties.source.IPropertiesSource;
  * @since 0.1.0-SNAPSHOT
  * 
  */
+@Component
 public class FilePropertiesSource implements IPropertiesSource {
 
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(FilePropertiesSource.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(FilePropertiesSource.class);
 
-	private static final String[] PROPERTIES_LOCATIONS = {
-			"/outgrader.properties", "/test-outgrader.properties",
+	private static final String[] PROPERTIES_LOCATIONS = { "/outgrader.properties", "/test-outgrader.properties",
 			"/default-outgrader.properties" };
 
 	@Override
@@ -42,8 +42,7 @@ public class FilePropertiesSource implements IPropertiesSource {
 
 			result = new PropertiesConfiguration(location);
 		} catch (ConfigurationException e) {
-			LOGGER.error(
-					"An exception occured during processing Properties file", e);
+			LOGGER.error("An exception occured during processing Properties file", e);
 
 			throw new RuntimeException(e);
 		}
@@ -62,8 +61,7 @@ public class FilePropertiesSource implements IPropertiesSource {
 
 		for (String locationCandidate : getLocationCandidates()) {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Check properties file location at <"
-						+ locationCandidate + ">");
+				LOGGER.debug("Check properties file location at <" + locationCandidate + ">");
 			}
 
 			result = toURL(locationCandidate);

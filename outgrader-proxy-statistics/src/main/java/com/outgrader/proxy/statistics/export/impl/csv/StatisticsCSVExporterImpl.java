@@ -7,6 +7,9 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
@@ -21,6 +24,8 @@ import com.outgrader.proxy.statistics.impl.StatisticsEntry;
  * @since 0.2.0-SNAPSHOT
  * 
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class StatisticsCSVExporterImpl extends AbstractStatisticsExporter {
 
 	private static final String[] HEADERS = { "uri", "requestCount", "responseCount", "minDuration", "averageDuration", "maxDuration" };

@@ -7,10 +7,10 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.outgrader.proxy.core.external.IExternalSender;
 import com.outgrader.proxy.core.handler.IOutgraderFrontendHandler;
@@ -21,7 +21,7 @@ import com.outgrader.proxy.core.statistics.IStatisticsHandler;
  * @since 0.1.0-SNAPSHOT
  * 
  */
-@Singleton
+@Component
 @Sharable
 public class OutgraderFrontendHandler extends SimpleChannelInboundHandler<Object> implements IOutgraderFrontendHandler {
 

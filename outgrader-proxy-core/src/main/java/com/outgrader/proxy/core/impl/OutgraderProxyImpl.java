@@ -10,6 +10,7 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.outgrader.proxy.core.IOutgraderProxy;
 import com.outgrader.proxy.core.initializer.IOutgraderChannelInitializer;
@@ -20,6 +21,7 @@ import com.outgrader.proxy.core.properties.IOutgraderProperties;
  * @since 0.1.0-SNAPSHOT
  * 
  */
+@Component
 public class OutgraderProxyImpl implements IOutgraderProxy {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(OutgraderProxyImpl.class);

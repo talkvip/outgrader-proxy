@@ -6,10 +6,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.outgrader.proxy.core.properties.IOutgraderProperties;
 import com.outgrader.proxy.core.statistics.IStatisticsHandler;
@@ -25,7 +25,7 @@ import com.outgrader.proxy.statistics.export.IStatisticsExporter;
  * @since 0.1.0-SNAPSHOT
  * 
  */
-@Singleton
+@Component
 public class StatisticsHandlerImpl implements IStatisticsHandler {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsHandlerImpl.class);

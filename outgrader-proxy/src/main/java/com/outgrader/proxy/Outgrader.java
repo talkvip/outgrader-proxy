@@ -2,17 +2,11 @@ package com.outgrader.proxy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.outgrader.proxy.advertisment.module.AdvertismentProcessorModule;
 import com.outgrader.proxy.core.IOutgraderProxy;
-import com.outgrader.proxy.core.advertisment.storage.module.AdvertismentRuleStorageModule;
-import com.outgrader.proxy.core.module.OutgraderCoreModule;
 import com.outgrader.proxy.core.statistics.IStatisticsHandler;
-import com.outgrader.proxy.external.module.ExternalSenderModule;
-import com.outgrader.proxy.properties.module.OutgraderPropertiesModule;
-import com.outgrader.proxy.statistics.module.StatisticsModule;
 
 /**
  * Main entry point to application
@@ -24,7 +18,9 @@ public final class Outgrader {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Outgrader.class);
 
-	private Injector injector;
+	private static final String CONTEXT_LOCATION = "classpath*:META-INF/*/applicationContext.xml";
+
+	private ApplicationContext context;
 
 	private Outgrader() {
 
@@ -33,32 +29,31 @@ public final class Outgrader {
 	/**
 	 * For tests only
 	 */
-	protected Outgrader(final Injector injector) {
-		this.injector = injector;
+	protected Outgrader(final ApplicationContext context) {
+		this.context = context;
 	}
 
 	public void run() {
 		LOGGER.info("Initializing Statistics module");
-		IStatisticsHandler statisticsModule = getInjector().getInstance(IStatisticsHandler.class);
+		IStatisticsHandler statisticsModule = getApplicationContext().getBean(IStatisticsHandler.class);
 		statisticsModule.initialize();
 
 		LOGGER.info("Creating instance of Outgrader Proxy and start it");
-		IOutgraderProxy proxy = getInjector().getInstance(IOutgraderProxy.class);
+		IOutgraderProxy proxy = getApplicationContext().getBean(IOutgraderProxy.class);
 		proxy.run();
 
 		LOGGER.info("Finalize statistics module");
 		statisticsModule.finish();
 	}
 
-	protected Injector getInjector() {
-		LOGGER.info("Initializing Guice environment");
+	protected ApplicationContext getApplicationContext() {
+		LOGGER.info("Initializing Spring environment");
 
-		if (injector == null) {
-			injector = Guice.createInjector(new OutgraderCoreModule(), new OutgraderPropertiesModule(), new ExternalSenderModule(),
-					new StatisticsModule(), new AdvertismentProcessorModule(), new AdvertismentRuleStorageModule());
+		if (context == null) {
+			context = new ClassPathXmlApplicationContext(CONTEXT_LOCATION);
 		}
 
-		return injector;
+		return context;
 	}
 
 	public static void main(final String[] args) {

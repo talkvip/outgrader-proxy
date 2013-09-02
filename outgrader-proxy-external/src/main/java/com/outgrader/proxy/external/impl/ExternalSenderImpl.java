@@ -16,13 +16,11 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
-import org.apache.http.annotation.NotThreadSafe;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -42,6 +40,7 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.outgrader.proxy.core.advertisment.processor.IAdvertismentProcessor;
 import com.outgrader.proxy.core.exceptions.AbstractOutgraderException;
@@ -53,8 +52,7 @@ import com.outgrader.proxy.external.impl.exceptions.ExternalSenderException;
  * @since 0.1.0-SNAPSHOT
  * 
  */
-@NotThreadSafe
-@Singleton
+@Component
 public class ExternalSenderImpl implements IExternalSender {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExternalSenderImpl.class);
