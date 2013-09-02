@@ -1,8 +1,8 @@
 package com.outgrader.proxy.core.advertisment.filter.impl
 
-import spock.lang.Specification
+import com.outgrader.proxy.core.advertisment.filter.IFilter;
 
-import com.outgrader.proxy.core.advertisment.filter.IFilter
+import spock.lang.Specification
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
