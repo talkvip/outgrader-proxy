@@ -1,4 +1,6 @@
 dependencies {
+	compile project(':outgrader-proxy-core')
+	
 	testCompile project(':outgrader-proxy-properties')
 	
 	compile group: 'commons-io', name: 'commons-io', version: commonsIOVersion
