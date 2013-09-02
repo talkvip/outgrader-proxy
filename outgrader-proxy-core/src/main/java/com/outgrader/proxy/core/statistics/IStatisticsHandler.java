@@ -7,8 +7,6 @@ package com.outgrader.proxy.core.statistics;
  */
 public interface IStatisticsHandler {
 
-	void initialize();
-
 	void onRequestHandled(String uri);
 
 	void onResponseHandled(String uri, long duration);
@@ -16,7 +14,5 @@ public interface IStatisticsHandler {
 	void onAdvertismentCandidateFound(String uri, String ruleText);
 
 	void onError(String uri, Object source, String errorText, Exception error);
-
-	void finish();
 
 }

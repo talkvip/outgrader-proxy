@@ -26,6 +26,7 @@ class OutgraderPropertiesImplSpec extends Specification {
 	def "check configuration initializes only once"()  {
 		when:
 		source.getConfiguration() >> config
+		properties.initialize()
 		and:
 		def firstAttempt = properties.getConfiguration()
 		def secondAttempt = properties.getConfiguration()
@@ -61,6 +62,7 @@ class OutgraderPropertiesImplSpec extends Specification {
 	def "check all properties came from config"(def method) {
 		setup:
 		source.getConfiguration() >> config
+		properties.initialize()
 
 		when: "call method <${method}>"
 		properties."get${method.capitalize()}"()

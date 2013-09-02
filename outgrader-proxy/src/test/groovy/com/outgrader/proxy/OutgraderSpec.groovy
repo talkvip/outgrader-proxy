@@ -46,33 +46,13 @@ class OutgraderSpec extends Specification {
 		1 * proxy.run()
 	}
 
-	def "check statistics handler initialized on outgrader run"() {
-		when:
-		outgrader.run()
-
-		then:
-		1 * statistics.initialize()
-	}
-
-	def "check statistics handler finished on outgrader run"() {
-		when:
-		outgrader.run()
-
-		then:
-		1 * statistics.finish()
-	}
-
 	def "check no more interactions except tested"() {
 		when:
 		outgrader.run()
 
 		then:
-		context.getBean(IStatisticsHandler) >> statistics
 		context.getBean(IOutgraderProxy) >> proxy
-		1 * statistics.initialize()
 		1 * proxy.run()
-
-		1 * statistics.finish()
 
 		0 * _._
 	}

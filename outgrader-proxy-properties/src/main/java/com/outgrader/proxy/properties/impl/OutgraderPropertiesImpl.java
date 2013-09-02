@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.configuration.Configuration;
@@ -53,13 +54,10 @@ public class OutgraderPropertiesImpl implements IOutgraderProperties {
 	}
 
 	protected Configuration getConfiguration() {
-		if (configuration == null) {
-			initialize();
-		}
-
 		return configuration;
 	}
 
+	@PostConstruct
 	protected void initialize() {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("start initialize()");

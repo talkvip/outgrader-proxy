@@ -5,6 +5,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
@@ -54,8 +56,8 @@ public class StatisticsHandlerImpl implements IStatisticsHandler {
 		updateExecutor.submit(new StatisticsTask(event));
 	}
 
-	@Override
-	public void initialize() {
+	@PostConstruct
+	protected void initialize() {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("start initialize()");
 		}
@@ -87,7 +89,7 @@ public class StatisticsHandlerImpl implements IStatisticsHandler {
 		LOGGER.info("Export statistics task initialized and scheduled");
 	}
 
-	@Override
+	@PreDestroy
 	public void finish() {
 		if (updateExecutor != null) {
 			updateExecutor.shutdownNow();

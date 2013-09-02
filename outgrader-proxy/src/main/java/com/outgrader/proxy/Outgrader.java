@@ -6,7 +6,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.outgrader.proxy.core.IOutgraderProxy;
-import com.outgrader.proxy.core.statistics.IStatisticsHandler;
 
 /**
  * Main entry point to application
@@ -34,16 +33,9 @@ public final class Outgrader {
 	}
 
 	public void run() {
-		LOGGER.info("Initializing Statistics module");
-		IStatisticsHandler statisticsModule = getApplicationContext().getBean(IStatisticsHandler.class);
-		statisticsModule.initialize();
-
 		LOGGER.info("Creating instance of Outgrader Proxy and start it");
 		IOutgraderProxy proxy = getApplicationContext().getBean(IOutgraderProxy.class);
 		proxy.run();
-
-		LOGGER.info("Finalize statistics module");
-		statisticsModule.finish();
 	}
 
 	protected ApplicationContext getApplicationContext() {
