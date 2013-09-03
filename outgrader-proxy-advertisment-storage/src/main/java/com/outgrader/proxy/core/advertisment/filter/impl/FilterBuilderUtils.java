@@ -72,7 +72,10 @@ public final class FilterBuilderUtils {
 		@Override
 		public IFilter build(String rule, final IFilterSource source, final boolean supportsNot) {
 			if (rule.startsWith(PROTOCOL_SYMBOL)) {
-				IFilter subFilter = MAIN_FILTER_BUILDER.build(rule.replace(PROTOCOL_SYMBOL, StringUtils.EMPTY), source, supportsNot);
+				IFilter subFilter = null;
+				if (rule.contains(SEPARATOR_SYMBOL)) {
+					subFilter = SEPARATOR_FILTER_BUILDER.build(rule.replace(PROTOCOL_SYMBOL, StringUtils.EMPTY), source, supportsNot);
+				}
 
 				if (subFilter != null) {
 					rule = rule.replace(SEPARATOR_SYMBOL, StringUtils.EMPTY);

@@ -104,8 +104,8 @@ public class OutgraderPropertiesImpl implements IOutgraderProperties {
 	}
 
 	@Override
-	public String getAdvertismentListLocation() {
-		return getConfiguration().getString(ADVERTISMENT_LIST_FILE);
+	public String[] getAdvertismentListLocations() {
+		return getConfiguration().getStringArray(ADVERTISMENT_LIST_FILE);
 	}
 
 	@Override

@@ -74,8 +74,8 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 		return ruleSet;
 	}
 
-	protected InputStream openRuleFileStream() {
-		return AdvertismentRuleStorageImpl.class.getResourceAsStream(properties.getAdvertismentListLocation());
+	protected InputStream openRuleFileStream(final String location) {
+		return AdvertismentRuleStorageImpl.class.getResourceAsStream(location);
 	}
 
 	@PostConstruct
@@ -84,45 +84,47 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 			LOGGER.debug("started initializeRuleSet()");
 		}
 
-		LOGGER.info("Initializing rule set from <" + properties.getAdvertismentListLocation() + ">");
-
 		Collection<IAdvertismentRule> result = new ArrayList<>();
 
-		try (InputStream stream = openRuleFileStream()) {
-			LineIterator lineIterator = IOUtils.lineIterator(stream, Charsets.UTF_8);
+		for (String location : properties.getAdvertismentListLocations()) {
+			LOGGER.info("Initializing rule set from <" + location + ">");
 
-			while (lineIterator.hasNext()) {
-				String line = lineIterator.next();
+			try (InputStream stream = openRuleFileStream(location)) {
+				LineIterator lineIterator = IOUtils.lineIterator(stream, Charsets.UTF_8);
 
-				LineType type = LineType.getLineType(line);
+				while (lineIterator.hasNext()) {
+					String line = lineIterator.next();
 
-				IFilter filter = null;
+					LineType type = LineType.getLineType(line);
 
-				if (type != null) {
-					switch (type) {
-					case BASIC:
-						filter = getBasicFilter(line);
-						break;
-					case EXTENDED:
-						filter = getExtendedFilter(line);
-						break;
-					case ELEMENT_HIDING:
-						filter = getHidingElementFilter(line);
-						break;
-					default:
-						// skip
-						break;
+					IFilter filter = null;
+
+					if (type != null) {
+						switch (type) {
+						case BASIC:
+							filter = getBasicFilter(line);
+							break;
+						case EXTENDED:
+							filter = getExtendedFilter(line);
+							break;
+						case ELEMENT_HIDING:
+							filter = getHidingElementFilter(line);
+							break;
+						default:
+							// skip
+							break;
+						}
+					}
+
+					if (filter != null) {
+						result.add(new AdvertismentRuleImpl(line, filter));
 					}
 				}
+			} catch (IOException e) {
+				LOGGER.error("An error occured during reading Advertisment list file", e);
 
-				if (filter != null) {
-					result.add(new AdvertismentRuleImpl(line, filter));
-				}
+				throw e;
 			}
-		} catch (IOException e) {
-			LOGGER.error("An error occured during reading Advertisment list file", e);
-
-			throw e;
 		}
 
 		LOGGER.info("It was loaded <" + result.size() + "> rules");

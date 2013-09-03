@@ -20,11 +20,13 @@ class AdvertismentRuleStorateImplSpec extends Specification {
 
 	IAdvertismentRuleStorage storage
 
-	def "check storage successfully loaded from file"() {
-		setup:
+	def setup() {
 		def source = new FilePropertiesSource()
 		properties = new OutgraderPropertiesImpl(source)
+		properties.initialize()
+	}
 
+	def "check storage successfully loaded from file"() {
 		when:
 		storage = new AdvertismentRuleStorageImpl(properties)
 
@@ -50,7 +52,7 @@ class AdvertismentRuleStorateImplSpec extends Specification {
 		storage = createStorage(null)
 
 		when:
-		storage.openRuleFileStream() >> { throw new IOException() }
+		storage.openRuleFileStream(_ as String) >> { throw new IOException() }
 		and:
 		storage.initializeRuleSet()
 
@@ -123,12 +125,10 @@ class AdvertismentRuleStorateImplSpec extends Specification {
 	}
 
 	private IAdvertismentRuleStorage createStorage(String fileContent) {
-		properties = Mock(IOutgraderProperties)
-
 		AdvertismentRuleStorageImpl result = Spy(AdvertismentRuleStorageImpl, constructorArgs: [properties])
 
 		if (fileContent != null) {
-			result.openRuleFileStream() >> IOUtils.toInputStream(fileContent)
+			result.openRuleFileStream(_ as String) >> IOUtils.toInputStream(fileContent)
 		}
 
 		result
