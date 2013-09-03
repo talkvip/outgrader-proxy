@@ -23,12 +23,18 @@ class FilterBuilderUtilsSpec extends Specification {
 
 	static final String TAG_TEXT = 'tag'
 
+	static final String TAG_ID = 'id'
+
+	static final String TAG_NAME = 'name'
+
 	ITag tag = Mock(ITag)
 
 	IFilterSource source = Mock(IFilterSource)
 
 	def setup() {
 		tag.getText() >> TAG_TEXT
+		tag.getAttribute(ITag.ID_ATTRIBUTE) >> TAG_ID
+		tag.getName() >> TAG_NAME
 	}
 
 	def "check simple matching filter"() {
@@ -174,12 +180,45 @@ class FilterBuilderUtilsSpec extends Specification {
 
 	def "check not filter builder"() {
 		when:
-		IFilter filter = FilterBuilderUtils.build('~' + SIMPLE_RULE, source)
+		IFilter filter = FilterBuilderUtils.build('~' + SIMPLE_RULE, source, true)
 
 		then:
 		filter != null
 		filter instanceof NotFilter
 		filter.source != null
 		filter.source.pattern == SIMPLE_RULE
+	}
+
+	def "check css id filter source"() {
+		setup:
+		IFilterSource source = FilterBuilderUtils.getCSSIdFilterSource()
+
+		when:
+		def result = source.getFilterSource(URI, tag)
+
+		then:
+		result == TAG_ID
+	}
+
+	def "check tag name filter source"() {
+		setup:
+		IFilterSource source = FilterBuilderUtils.getTagNameFilterSource()
+
+		when:
+		def result = source.getFilterSource(URI, tag)
+
+		then:
+		result == TAG_NAME
+	}
+
+	def "check css selector filter source"() {
+		setup:
+		IFilterSource source = FilterBuilderUtils.getCSSSelectorFilterSource()
+
+		when:
+		def result = source.getFilterSource(URI, tag)
+
+		then:
+		result == TAG_NAME + '.' + TAG_ID
 	}
 }

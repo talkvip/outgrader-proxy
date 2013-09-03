@@ -31,16 +31,16 @@ public final class FilterBuilderUtils {
 
 	private interface IFilterBuilder {
 
-		IFilter build(String rule, IFilterSource source);
+		IFilter build(String rule, IFilterSource source, boolean supportsNot);
 
 	}
 
 	private static final IFilterBuilder NOT_FILTER_BUILDER = new IFilterBuilder() {
 
 		@Override
-		public IFilter build(final String rule, final IFilterSource source) {
+		public IFilter build(final String rule, final IFilterSource source, final boolean supportsNot) {
 			if (rule.contains(NOT_SYMBOL)) {
-				return new NotFilter(MAIN_FILTER_BUILDER.build(rule.substring(1), source));
+				return new NotFilter(MAIN_FILTER_BUILDER.build(rule.substring(1), source, supportsNot));
 			}
 			return null;
 		}
@@ -49,14 +49,14 @@ public final class FilterBuilderUtils {
 	private static final IFilterBuilder SEPARATOR_FILTER_BUILDER = new IFilterBuilder() {
 
 		@Override
-		public IFilter build(final String rule, final IFilterSource source) {
+		public IFilter build(final String rule, final IFilterSource source, final boolean supportsNot) {
 			int rounds = StringUtils.countMatches(rule, SEPARATOR_SYMBOL);
 			if (rounds > 0) {
 
 				OrFilter result = new OrFilter();
 
 				for (String delimeter : DELIMETERS) {
-					result.addSubFilter(build(rule.replaceFirst(Pattern.quote(SEPARATOR_SYMBOL), delimeter), source));
+					result.addSubFilter(build(rule.replaceFirst(Pattern.quote(SEPARATOR_SYMBOL), delimeter), source, supportsNot));
 				}
 
 				return result;
@@ -70,9 +70,21 @@ public final class FilterBuilderUtils {
 	private static final IFilterBuilder PROTOCOL_FILTER_BUILDER = new IFilterBuilder() {
 
 		@Override
-		public IFilter build(final String rule, final IFilterSource source) {
+		public IFilter build(String rule, final IFilterSource source, final boolean supportsNot) {
 			if (rule.startsWith(PROTOCOL_SYMBOL)) {
-				return new MatchingFilter(rule.replace(PROTOCOL_SYMBOL, "://"), source);
+				IFilter subFilter = MAIN_FILTER_BUILDER.build(rule.replace(PROTOCOL_SYMBOL, StringUtils.EMPTY), source, supportsNot);
+
+				if (subFilter != null) {
+					rule = rule.replace(SEPARATOR_SYMBOL, StringUtils.EMPTY);
+				}
+
+				IFilter matchingFilter = new MatchingFilter(rule.replace(PROTOCOL_SYMBOL, "://"), source);
+
+				if (subFilter == null) {
+					return matchingFilter;
+				} else {
+					return joinAnd(matchingFilter, subFilter);
+				}
 			}
 
 			return null;
@@ -82,7 +94,7 @@ public final class FilterBuilderUtils {
 	private static final IFilterBuilder ENDS_WITH_FILTER_BUILDER = new IFilterBuilder() {
 
 		@Override
-		public IFilter build(final String rule, final IFilterSource source) {
+		public IFilter build(final String rule, final IFilterSource source, final boolean supportsNot) {
 			if (rule.endsWith(EDGE_SYMBOL)) {
 				return new MatchingFilter(rule.replace(EDGE_SYMBOL, "\""), source);
 			}
@@ -94,7 +106,7 @@ public final class FilterBuilderUtils {
 	private static final IFilterBuilder STARTS_WITH_FILTER_BUILDER = new IFilterBuilder() {
 
 		@Override
-		public IFilter build(final String rule, final IFilterSource source) {
+		public IFilter build(final String rule, final IFilterSource source, final boolean supportsNot) {
 			if (rule.startsWith(EDGE_SYMBOL)) {
 				return new MatchingFilter(rule.replace(EDGE_SYMBOL, "\""), source);
 			}
@@ -105,17 +117,17 @@ public final class FilterBuilderUtils {
 
 	private static final IFilterBuilder MAIN_FILTER_BUILDER = new IFilterBuilder() {
 
-		private final IFilterBuilder[] SUB_BUILDERS = new IFilterBuilder[] { NOT_FILTER_BUILDER, PROTOCOL_FILTER_BUILDER,
-				STARTS_WITH_FILTER_BUILDER, ENDS_WITH_FILTER_BUILDER, SEPARATOR_FILTER_BUILDER };
+		private final IFilterBuilder[] SUB_BUILDERS = new IFilterBuilder[] { PROTOCOL_FILTER_BUILDER, STARTS_WITH_FILTER_BUILDER,
+				ENDS_WITH_FILTER_BUILDER, SEPARATOR_FILTER_BUILDER };
 
 		@Override
-		public IFilter build(final String rule, final IFilterSource source) {
+		public IFilter build(final String rule, final IFilterSource source, final boolean supportsNot) {
 			if (rule.contains(TOKEN_SEPARATOR)) {
 				AndFilter result = new AndFilter();
 
 				StringTokenizer tokenizer = new StringTokenizer(rule, TOKEN_SEPARATOR, false);
 				while (tokenizer.hasMoreTokens()) {
-					result.addSubFilter(build(tokenizer.nextToken(), source));
+					result.addSubFilter(build(tokenizer.nextToken(), source, supportsNot));
 				}
 
 				return result;
@@ -123,11 +135,17 @@ public final class FilterBuilderUtils {
 
 			IFilter result = null;
 
-			for (IFilterBuilder builder : SUB_BUILDERS) {
-				result = builder.build(rule, source);
+			if (supportsNot) {
+				result = NOT_FILTER_BUILDER.build(rule, source, supportsNot);
+			}
 
-				if (result != null) {
-					break;
+			if (result == null) {
+				for (IFilterBuilder builder : SUB_BUILDERS) {
+					result = builder.build(rule, source, supportsNot);
+
+					if (result != null) {
+						break;
+					}
 				}
 			}
 
@@ -139,11 +157,41 @@ public final class FilterBuilderUtils {
 		}
 	};
 
+	public static IFilterSource getCSSSelectorFilterSource() {
+		return new AbstractFilterSource() {
+
+			@Override
+			public String getFilterSource(final String uri, final ITag tag) {
+				return tag.getName() + "." + tag.getAttribute(ITag.ID_ATTRIBUTE);
+			}
+		};
+	}
+
+	public static IFilterSource getCSSIdFilterSource() {
+		return new AbstractFilterSource() {
+
+			@Override
+			public String getFilterSource(final String uri, final ITag tag) {
+				return tag.getAttribute(ITag.ID_ATTRIBUTE);
+			}
+		};
+	}
+
+	public static IFilterSource getTagNameFilterSource() {
+		return new AbstractFilterSource() {
+
+			@Override
+			public String getFilterSource(final String uri, final ITag tag) {
+				return tag.getName();
+			}
+		};
+	}
+
 	public static IFilterSource getBasicFilterSource() {
 		return new AbstractFilterSource() {
 
 			@Override
-			protected String computeSource(final String uri, final ITag tag) {
+			public String getFilterSource(final String uri, final ITag tag) {
 				return tag.getText();
 			}
 		};
@@ -153,14 +201,18 @@ public final class FilterBuilderUtils {
 		return new AbstractFilterSource() {
 
 			@Override
-			protected String computeSource(final String uri, final ITag tag) {
+			public String getFilterSource(final String uri, final ITag tag) {
 				return uri;
 			}
 		};
 	}
 
 	public static IFilter build(final String rule, final IFilterSource filterSource) {
-		return MAIN_FILTER_BUILDER.build(rule, filterSource);
+		return build(rule, filterSource, false);
+	}
+
+	public static IFilter build(final String rule, final IFilterSource filterSource, final boolean supportsNot) {
+		return MAIN_FILTER_BUILDER.build(rule, filterSource, supportsNot);
 	}
 
 	public static IFilter joinAnd(final IFilter... filters) {

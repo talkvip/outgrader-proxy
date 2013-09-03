@@ -19,7 +19,13 @@ abstract class AbstractFilter implements IFilter {
 
 	@Override
 	public boolean matches(final String uri, final ITag tag) {
-		return matches(source.getFilterSource(uri, tag), source.isMatchCase());
+		String value = source.getFilterSource(uri, tag);
+
+		if (value != null) {
+			return matches(value, source.isMatchCase());
+		}
+
+		return false;
 	}
 
 	protected abstract boolean matches(String text, boolean isMatchCase);

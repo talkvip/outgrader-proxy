@@ -34,14 +34,8 @@ import com.outgrader.proxy.core.storage.IAdvertismentRuleStorage;
 @Component
 public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 
-	/**
-	 * 
-	 */
 	private static final String DOMAIN_PREFIX = "domain=";
 
-	/**
-	 * 
-	 */
 	private static final String PARAMETERS_SEPARATOR = "$";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AdvertismentRuleStorageImpl.class);
@@ -112,6 +106,9 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 					case EXTENDED:
 						filter = getExtendedFilter(line);
 						break;
+					case ELEMENT_HIDING:
+						filter = getHidingElementFilter(line);
+						break;
 					default:
 						// skip
 						break;
@@ -133,13 +130,72 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 		ruleSet = result.toArray(new IAdvertismentRule[result.size()]);
 	}
 
+	protected IFilter getHidingElementFilter(final String line) {
+		IFilterSource source = null;
+		String pattern = null;
+
+		pattern = getHidingElementPattern(line, "###");
+		if (pattern != null) {
+			source = FilterBuilderUtils.getCSSIdFilterSource();
+		} else {
+			pattern = getHidingElementPattern(line, "##*#");
+			if (pattern != null) {
+				source = FilterBuilderUtils.getCSSIdFilterSource();
+			} else {
+				pattern = getHidingElementPattern(line, "##.");
+				if (pattern != null) {
+					source = FilterBuilderUtils.getCSSSelectorFilterSource();
+					pattern = "." + pattern;
+				} else {
+					pattern = getHidingElementPattern(line, "##");
+
+					if (pattern != null) {
+						if (!pattern.contains("[")) {
+							if (pattern.contains(".")) {
+								source = FilterBuilderUtils.getCSSSelectorFilterSource();
+							} else {
+								if (pattern.contains("#")) {
+									source = FilterBuilderUtils.getCSSSelectorFilterSource();
+									pattern = pattern.replace("#", ".");
+								} else {
+									source = FilterBuilderUtils.getTagNameFilterSource();
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		if ((source != null) && !StringUtils.isEmpty(pattern)) {
+			return FilterBuilderUtils.build(pattern, source);
+		}
+
+		return null;
+	}
+
+	private String getHidingElementPattern(final String line, final String prefix) {
+		if (line.startsWith(prefix)) {
+			return line.replace(prefix, StringUtils.EMPTY);
+		}
+
+		return null;
+	}
+
 	protected IFilter getExtendedFilter(final String line) {
 		int parametersIndex = line.indexOf(PARAMETERS_SEPARATOR);
 
 		String parametersBlock = line.substring(parametersIndex + 1);
 		String baseBlock = line.substring(0, parametersIndex);
 
-		return FilterBuilderUtils.joinAnd(getParametersFilter(parametersBlock), getBasicFilter(baseBlock));
+		IFilter parametersFilter = getParametersFilter(parametersBlock);
+		IFilter basicFilter = getBasicFilter(baseBlock);
+
+		if ((parametersFilter != null) && (basicFilter != null)) {
+			return FilterBuilderUtils.joinAnd(parametersFilter, basicFilter);
+		}
+
+		return null;
 	}
 
 	protected IFilter getParametersFilter(final String parametersLine) {
@@ -150,7 +206,11 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 			List<IFilter> filters = new ArrayList<>(parameters.length);
 
 			for (String param : parameters) {
-				filters.add(getParametersFilter(param));
+				IFilter subFilter = getParametersFilter(param);
+
+				if (subFilter != null) {
+					filters.add(subFilter);
+				}
 			}
 
 			return FilterBuilderUtils.joinAnd(filters);
@@ -177,7 +237,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 			List<IFilter> filters = new ArrayList<>();
 
 			while (tokenizer.hasMoreTokens()) {
-				filters.add(FilterBuilderUtils.build(tokenizer.nextToken(), filterSource));
+				filters.add(FilterBuilderUtils.build(tokenizer.nextToken(), filterSource, true));
 			}
 
 			return FilterBuilderUtils.joinAnd(filters);

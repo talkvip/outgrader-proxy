@@ -60,4 +60,12 @@ class AndFilterSpec extends Specification {
 		5 * subFilter.matches(URI, tag) >> true
 		1 * subFilter.matches(URI, tag) >> false
 	}
+
+	def "check NPE on adding null filter"() {
+		when:
+		filter.addSubFilter(null)
+
+		then:
+		thrown(NullPointerException)
+	}
 }

@@ -7,6 +7,8 @@ package com.outgrader.proxy.core.model;
  */
 public interface ITag {
 
+	public static final String ID_ATTRIBUTE = "id";
+
 	public enum TagType {
 		OPENING, CLOSING, OPEN_AND_CLOSING;
 	}
@@ -26,5 +28,7 @@ public interface ITag {
 	ITag getOpeningTag();
 
 	String getName();
+
+	String getAttribute(String name);
 
 }

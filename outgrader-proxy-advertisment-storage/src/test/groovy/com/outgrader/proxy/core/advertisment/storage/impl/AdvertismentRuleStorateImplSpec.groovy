@@ -72,7 +72,7 @@ class AdvertismentRuleStorateImplSpec extends Specification {
 
 	def "check extended rule parsed"() {
 		setup:
-		storage = createStorage('rule$match-case')
+		storage = createStorage('rule$domain=some.net')
 
 		when:
 		storage.initializeRuleSet()
@@ -80,8 +80,8 @@ class AdvertismentRuleStorateImplSpec extends Specification {
 		then:
 		storage.rules != null
 		storage.rules.size() == 1
-		1 * storage.getExtendedFilter('rule$match-case')
-		1 * storage.getParametersFilter('match-case')
+		1 * storage.getExtendedFilter('rule$domain=some.net')
+		1 * storage.getParametersFilter('domain=some.net')
 		1 * storage.getBasicFilter('rule')
 	}
 
@@ -97,6 +97,29 @@ class AdvertismentRuleStorateImplSpec extends Specification {
 		result.filters.size() == 2
 		result.filters[0].filters.size() == 1
 		result.filters[1].pattern == 'rule'
+	}
+
+	def "check hiding element rule filters"(def line) {
+		setup:
+		storage = createStorage(line)
+
+		when:
+		storage.initializeRuleSet()
+
+		then:
+		1 * storage.getHidingElementFilter(line)
+		storage.rules != null
+		storage.rules.size() == 1
+
+		where:
+		line << [
+			'##tag#id',
+			'###id',
+			'##*#id',
+			'##tag.id',
+			'##.id',
+			'##tag'
+		]
 	}
 
 	private IAdvertismentRuleStorage createStorage(String fileContent) {
