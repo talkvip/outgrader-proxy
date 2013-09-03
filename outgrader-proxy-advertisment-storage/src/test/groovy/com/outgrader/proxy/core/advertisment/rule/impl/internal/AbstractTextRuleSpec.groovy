@@ -2,6 +2,7 @@ package com.outgrader.proxy.core.advertisment.rule.impl.internal
 
 import spock.lang.Specification
 
+import com.outgrader.proxy.core.advertisment.filter.IFilter
 import com.outgrader.proxy.core.advertisment.rule.impl.internal.util.AbstractTextRuleTestImpl
 import com.outgrader.proxy.core.model.IAdvertismentRule
 import com.outgrader.proxy.core.model.ITag
@@ -19,12 +20,12 @@ class AbstractTextRuleSpec extends Specification {
 
 	ITag tag = Mock(ITag)
 
+	IFilter filter = Mock(IFilter)
+
 	IAdvertismentRule rule
 
 	def setup() {
-		rule = Spy(AbstractTextRuleTestImpl, constructorArgs: [TEXT])
-
-		tag.haveAttribute(_) >> true
+		rule = Spy(AbstractTextRuleTestImpl, constructorArgs: [TEXT, filter])
 	}
 
 	def "check matches uses tag text"() {

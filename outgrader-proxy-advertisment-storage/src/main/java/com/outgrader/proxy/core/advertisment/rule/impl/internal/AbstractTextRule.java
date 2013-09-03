@@ -1,5 +1,6 @@
 package com.outgrader.proxy.core.advertisment.rule.impl.internal;
 
+import com.outgrader.proxy.core.advertisment.filter.IFilter;
 import com.outgrader.proxy.core.model.ITag;
 
 /**
@@ -9,8 +10,8 @@ import com.outgrader.proxy.core.model.ITag;
  */
 public abstract class AbstractTextRule extends AbstractRule {
 
-	protected AbstractTextRule(final String text) {
-		super(text);
+	protected AbstractTextRule(final String text, final IFilter filter) {
+		super(text, filter);
 	}
 
 	@Override

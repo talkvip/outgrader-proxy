@@ -1,5 +1,6 @@
 package com.outgrader.proxy.core.advertisment.rule.impl.internal;
 
+import com.outgrader.proxy.core.advertisment.filter.IFilter;
 import com.outgrader.proxy.core.model.IAdvertismentRule;
 
 /**
@@ -11,8 +12,15 @@ public abstract class AbstractRule implements IAdvertismentRule {
 
 	private final String text;
 
-	protected AbstractRule(final String text) {
+	private final IFilter filter;
+
+	protected AbstractRule(final String text, final IFilter filter) {
 		this.text = text;
+		this.filter = filter;
+	}
+
+	protected IFilter getFilter() {
+		return filter;
 	}
 
 	@Override

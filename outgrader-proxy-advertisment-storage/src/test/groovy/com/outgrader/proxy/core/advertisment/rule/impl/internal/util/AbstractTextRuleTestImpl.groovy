@@ -1,5 +1,6 @@
 package com.outgrader.proxy.core.advertisment.rule.impl.internal.util
 
+import com.outgrader.proxy.core.advertisment.filter.IFilter
 import com.outgrader.proxy.core.advertisment.rule.impl.internal.AbstractTextRule
 
 /**
@@ -9,8 +10,8 @@ import com.outgrader.proxy.core.advertisment.rule.impl.internal.AbstractTextRule
  */
 class AbstractTextRuleTestImpl extends AbstractTextRule {
 
-	public AbstractTextRuleTestImpl(String text) {
-		super(text)
+	public AbstractTextRuleTestImpl(String text, IFilter filter) {
+		super(text, filter)
 	}
 
 	@Override

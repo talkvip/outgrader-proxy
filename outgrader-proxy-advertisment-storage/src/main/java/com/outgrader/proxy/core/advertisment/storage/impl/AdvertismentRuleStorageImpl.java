@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.StringTokenizer;
 
 import javax.inject.Inject;
 
@@ -15,8 +14,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Charsets;
+import com.outgrader.proxy.core.advertisment.filter.IFilter;
+import com.outgrader.proxy.core.advertisment.filter.impl.FilterBuilderUtils;
 import com.outgrader.proxy.core.advertisment.rule.impl.BasicRule;
-import com.outgrader.proxy.core.advertisment.rule.impl.BasicRule.BasicRuleBuilder;
 import com.outgrader.proxy.core.model.IAdvertismentRule;
 import com.outgrader.proxy.core.properties.IOutgraderProperties;
 import com.outgrader.proxy.core.storage.IAdvertismentRuleStorage;
@@ -121,26 +121,8 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 	}
 
 	private BasicRule getBasicRule(final String line) {
-		StringTokenizer tokenizer = new StringTokenizer(line, "*", false);
-		BasicRuleBuilder builder = new BasicRuleBuilder(line);
+		IFilter filter = FilterBuilderUtils.build(line);
 
-		while (tokenizer.hasMoreTokens()) {
-			String token = tokenizer.nextToken();
-
-			// int endsWithIndex = token.indexOf("!");
-			// if (endsWithIndex != StringUtils.INDEX_NOT_FOUND) {
-			// builder.shouldEndWith(token.substring(0, endsWithIndex));
-			// } else {
-			// int startsWithIndex = token.indexOf("||");
-			//
-			// if (startsWithIndex != StringUtils.INDEX_NOT_FOUND) {
-			// builder.shouldStartWith(token.substring(startsWithIndex + 2));
-			// } else {
-			builder.shouldContain(token);
-			// }
-			// }
-		}
-
-		return builder.build();
+		return new BasicRule(line, filter);
 	}
 }

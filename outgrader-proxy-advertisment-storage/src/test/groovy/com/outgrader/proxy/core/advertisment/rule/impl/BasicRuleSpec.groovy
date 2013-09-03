@@ -2,6 +2,7 @@ package com.outgrader.proxy.core.advertisment.rule.impl
 
 import spock.lang.Specification
 
+import com.outgrader.proxy.core.advertisment.filter.IFilter
 import com.outgrader.proxy.core.model.IAdvertismentRule
 import com.outgrader.proxy.core.model.ITag
 
@@ -16,21 +17,23 @@ class BasicRuleSpec extends Specification {
 
 	static final String TAG_TEXT = 'tag'
 
+	IFilter filter = Mock(IFilter)
+
 	ITag tag = Mock(ITag)
 
 	IAdvertismentRule rule
 
 	def setup() {
 		tag.getText() >> TAG_TEXT
-
-		tag.haveAttribute(_) >> true
 	}
 
 	def "check rule matches if pattern matches"() {
 		setup:
-		rule = new BasicRule(RULE_TEXT, 'tag')
+		rule = new BasicRule(RULE_TEXT, filter)
 
 		when:
+		filter.matches(TAG_TEXT) >> true
+		and:
 		def result = rule.matches(tag)
 
 		then:
@@ -39,9 +42,11 @@ class BasicRuleSpec extends Specification {
 
 	def "check rule matches if pattern not matches"() {
 		setup:
-		rule = new BasicRule(RULE_TEXT, 'nothing')
+		rule = new BasicRule(RULE_TEXT, filter)
 
 		when:
+		filter.matches(TAG_TEXT) >> false
+		and:
 		def result = rule.matches(tag)
 
 		then:
