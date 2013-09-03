@@ -73,8 +73,12 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 		return ruleSet;
 	}
 
+	protected InputStream openRuleFileStream() {
+		return AdvertismentRuleStorageImpl.class.getResourceAsStream(properties.getAdvertismentListLocation());
+	}
+
 	@PostConstruct
-	protected void initializeRuleSet() {
+	protected void initializeRuleSet() throws Exception {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("started initializeRuleSet()");
 		}
@@ -83,7 +87,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 
 		Collection<IAdvertismentRule> result = new ArrayList<>();
 
-		try (InputStream stream = AdvertismentRuleStorageImpl.class.getResourceAsStream(properties.getAdvertismentListLocation())) {
+		try (InputStream stream = openRuleFileStream()) {
 			LineIterator lineIterator = IOUtils.lineIterator(stream, Charsets.UTF_8);
 
 			while (lineIterator.hasNext()) {
@@ -92,24 +96,20 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 				LineType type = LineType.getLineType(line);
 
 				if (type != null) {
-					try {
-						switch (type) {
-						case BASIC:
-							result.add(getBasicRule(line));
-							break;
-						default:
-							// skip
-							break;
-						}
-					} catch (Exception e) {
-						LOGGER.error("An error occured during processing rule <" + line + "> by type <" + type + ">", e);
-
-						throw e;
+					switch (type) {
+					case BASIC:
+						result.add(getBasicRule(line));
+						break;
+					default:
+						// skip
+						break;
 					}
 				}
 			}
 		} catch (IOException e) {
 			LOGGER.error("An error occured during reading Advertisment list file", e);
+
+			throw e;
 		}
 
 		LOGGER.info("It was loaded <" + result.size() + "> rules");
