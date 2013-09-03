@@ -1,8 +1,9 @@
 package com.outgrader.proxy.core.advertisment.filter.impl
 
-import com.outgrader.proxy.core.advertisment.filter.IFilter;
-
 import spock.lang.Specification
+
+import com.outgrader.proxy.core.advertisment.filter.IFilter
+import com.outgrader.proxy.core.model.ITag
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
@@ -11,7 +12,9 @@ import spock.lang.Specification
  */
 class OrFilterSpec extends Specification {
 
-	final static TEST_STRING = 'test'
+	final static URI = 'test'
+
+	ITag tag = Mock(ITag)
 
 	OrFilter filter = new OrFilter()
 
@@ -24,7 +27,7 @@ class OrFilterSpec extends Specification {
 		}
 
 		when:
-		def result = filter.matches(TEST_STRING)
+		def result = filter.matches(URI, tag)
 
 		then:
 		!result
@@ -36,25 +39,25 @@ class OrFilterSpec extends Specification {
 		10.times { filter.addSubFilter(subFilter) }
 
 		when:
-		filter.matches(TEST_STRING)
+		filter.matches(URI, tag)
 
 		then:
-		10 * subFilter.matches(TEST_STRING) >> false
+		10 * subFilter.matches(URI, tag) >> false
 	}
 
 	def "check filter checks all subfilter until matched to return true"() {
 		setup:
 		def subFilter = Mock(IFilter)
 		10.times {
-			subFilter.matches(TEST_STRING) >> (it > 5)
+			subFilter.matches(URI, tag) >> (it > 5)
 			filter.addSubFilter(subFilter)
 		}
 
 		when:
-		filter.matches(TEST_STRING)
+		filter.matches(URI, tag)
 
 		then:
-		5 * subFilter.matches(TEST_STRING) >> false
-		1 * subFilter.matches(TEST_STRING) >> true
+		5 * subFilter.matches(URI, tag) >> false
+		1 * subFilter.matches(URI, tag) >> true
 	}
 }

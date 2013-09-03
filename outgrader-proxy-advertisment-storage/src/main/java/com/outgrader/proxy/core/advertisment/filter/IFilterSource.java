@@ -7,8 +7,10 @@ import com.outgrader.proxy.core.model.ITag;
  * @since 0.4.0-SNAPSHOT
  * 
  */
-public interface IFilter {
+public interface IFilterSource {
 
-	boolean matches(String uri, ITag tag);
+	String getFilterSource(String uri, ITag tag);
+
+	boolean isMatchCase();
 
 }

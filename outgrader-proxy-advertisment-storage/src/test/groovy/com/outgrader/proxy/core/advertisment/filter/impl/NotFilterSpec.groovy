@@ -3,6 +3,7 @@ package com.outgrader.proxy.core.advertisment.filter.impl
 import spock.lang.Specification
 
 import com.outgrader.proxy.core.advertisment.filter.IFilter
+import com.outgrader.proxy.core.model.ITag
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
@@ -11,17 +12,19 @@ import com.outgrader.proxy.core.advertisment.filter.IFilter
  */
 class NotFilterSpec extends Specification {
 
-	final static TEST_STRING = 'test'
+	final static URI = 'uri'
+
+	ITag tag = Mock(ITag)
 
 	def "check not filter"(def result) {
 		setup:
 		IFilter source = Mock(IFilter)
-		source.matches(TEST_STRING) >> result
+		source.matches(URI, tag) >> result
 
 		def filter = new NotFilter(source)
 
 		when:
-		def isMatches = filter.matches(TEST_STRING)
+		def isMatches = filter.matches(URI, tag)
 
 		then:
 		isMatches == !result

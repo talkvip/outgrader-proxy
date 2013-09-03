@@ -42,6 +42,7 @@ class AdvertismentRuleStorateImplSpec extends Specification {
 		then:
 		storage.rules != null
 		storage.rules.size() == 1
+		1 * storage.getBasicFilter(_ as String)
 	}
 
 	def "check exception thrown on underlying IO error"() {
@@ -67,6 +68,35 @@ class AdvertismentRuleStorateImplSpec extends Specification {
 		then:
 		storage.rules != null
 		storage.rules.size() == 0
+	}
+
+	def "check extended rule parsed"() {
+		setup:
+		storage = createStorage('rule$match-case')
+
+		when:
+		storage.initializeRuleSet()
+
+		then:
+		storage.rules != null
+		storage.rules.size() == 1
+		1 * storage.getExtendedFilter('rule$match-case')
+		1 * storage.getParametersFilter('match-case')
+		1 * storage.getBasicFilter('rule')
+	}
+
+	def "check extended rule filter"() {
+		setup:
+		storage = createStorage(null)
+
+		when:
+		def result = storage.getExtendedFilter('rule$domain=~something.net')
+
+		then:
+		result != null
+		result.filters.size() == 2
+		result.filters[0].filters.size() == 1
+		result.filters[1].pattern == 'rule'
 	}
 
 	private IAdvertismentRuleStorage createStorage(String fileContent) {

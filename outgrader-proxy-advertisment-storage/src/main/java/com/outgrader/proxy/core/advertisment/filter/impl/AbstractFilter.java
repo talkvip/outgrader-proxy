@@ -1,6 +1,7 @@
 package com.outgrader.proxy.core.advertisment.filter.impl;
 
 import com.outgrader.proxy.core.advertisment.filter.IFilter;
+import com.outgrader.proxy.core.advertisment.filter.IFilterSource;
 import com.outgrader.proxy.core.model.ITag;
 
 /**
@@ -8,17 +9,19 @@ import com.outgrader.proxy.core.model.ITag;
  * @since 0.4.0-SNAPSHOT
  * 
  */
-class NotFilter implements IFilter {
+abstract class AbstractFilter implements IFilter {
 
-	private final IFilter source;
+	private final IFilterSource source;
 
-	public NotFilter(final IFilter source) {
+	protected AbstractFilter(final IFilterSource source) {
 		this.source = source;
 	}
 
 	@Override
 	public boolean matches(final String uri, final ITag tag) {
-		return !source.matches(uri, tag);
+		return matches(source.getFilterSource(uri, tag), source.isMatchCase());
 	}
+
+	protected abstract boolean matches(String text, boolean isMatchCase);
 
 }

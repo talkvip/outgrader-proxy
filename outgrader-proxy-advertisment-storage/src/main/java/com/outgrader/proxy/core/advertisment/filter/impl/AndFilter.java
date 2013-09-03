@@ -1,7 +1,7 @@
 package com.outgrader.proxy.core.advertisment.filter.impl;
 
 import com.outgrader.proxy.core.advertisment.filter.IFilter;
-
+import com.outgrader.proxy.core.model.ITag;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
@@ -11,9 +11,9 @@ import com.outgrader.proxy.core.advertisment.filter.IFilter;
 class AndFilter extends AbstractCombinedFilter {
 
 	@Override
-	public boolean matches(final String string) {
+	public boolean matches(final String uri, final ITag tag) {
 		for (IFilter filter : getFilters()) {
-			if (!filter.matches(string)) {
+			if (!filter.matches(uri, tag)) {
 				return false;
 			}
 		}
