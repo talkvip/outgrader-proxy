@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
@@ -60,12 +61,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 
 	private final IOutgraderProperties properties;
 
-	private final ThreadLocal<IAdvertismentRule[]> ruleSet = new ThreadLocal<IAdvertismentRule[]>() {
-		@Override
-		protected IAdvertismentRule[] initialValue() {
-			return initializeRuleSet();
-		}
-	};
+	private IAdvertismentRule[] ruleSet;
 
 	@Inject
 	public AdvertismentRuleStorageImpl(final IOutgraderProperties properties) throws Exception {
@@ -74,10 +70,11 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 
 	@Override
 	public IAdvertismentRule[] getRules() {
-		return ruleSet.get();
+		return ruleSet;
 	}
 
-	protected IAdvertismentRule[] initializeRuleSet() {
+	@PostConstruct
+	protected void initializeRuleSet() {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("started initializeRuleSet()");
 		}
@@ -117,7 +114,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 
 		LOGGER.info("It was loaded <" + result.size() + "> rules");
 
-		return result.toArray(new IAdvertismentRule[result.size()]);
+		ruleSet = result.toArray(new IAdvertismentRule[result.size()]);
 	}
 
 	private BasicRule getBasicRule(final String line) {
