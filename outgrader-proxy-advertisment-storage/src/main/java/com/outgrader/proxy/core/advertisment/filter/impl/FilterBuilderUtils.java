@@ -1,6 +1,9 @@
 package com.outgrader.proxy.core.advertisment.filter.impl;
 
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.outgrader.proxy.core.advertisment.filter.IFilter;
 
@@ -17,11 +20,36 @@ public final class FilterBuilderUtils {
 
 	private static final String PROTOCOL_SYMBOL = "||";
 
+	private static final String SEPARATOR_SYMBOL = "^";
+
+	private static final String[] DELIMETERS = { "//", "/", "?", "=", "&" };
+
 	private interface IFilterBuilder {
 
 		IFilter build(String rule);
 
 	}
+
+	private static final IFilterBuilder SEPARATOR_FILTER_BUILDER = new IFilterBuilder() {
+
+		@Override
+		public IFilter build(final String rule) {
+			int rounds = StringUtils.countMatches(rule, SEPARATOR_SYMBOL);
+			if (rounds > 0) {
+
+				OrFilter result = new OrFilter();
+
+				for (String delimeter : DELIMETERS) {
+					result.addSubFilter(build(rule.replaceFirst(Pattern.quote(SEPARATOR_SYMBOL), delimeter)));
+				}
+
+				return result;
+			}
+
+			return new MatchingFilter(rule);
+		}
+
+	};
 
 	private static final IFilterBuilder PROTOCOL_FILTER_BUILDER = new IFilterBuilder() {
 
@@ -61,7 +89,7 @@ public final class FilterBuilderUtils {
 
 	private static final IFilterBuilder MAIN_FILTER_BUILDER = new IFilterBuilder() {
 
-		private final IFilterBuilder[] SUB_BUILDERS = new IFilterBuilder[] { PROTOCOL_FILTER_BUILDER, STARTS_WITH_FILTER_BUILDER, ENDS_WITH_FILTER_BUILDER };
+		private final IFilterBuilder[] SUB_BUILDERS = new IFilterBuilder[] { PROTOCOL_FILTER_BUILDER, STARTS_WITH_FILTER_BUILDER, ENDS_WITH_FILTER_BUILDER, SEPARATOR_FILTER_BUILDER };
 
 		@Override
 		public IFilter build(final String rule) {

@@ -67,4 +67,58 @@ class FilterBuilderUtilsSpec extends Specification {
 		filter instanceof MatchingFilter
 		filter.pattern == '://' + STARTS_WITH_RULE
 	}
+
+	def "check separator rule creates amount of possible patterns"() {
+		setup:
+		def possiblePatterns = [
+			'//rule//',
+			'//rule/',
+			'//rule?',
+			'//rule=',
+			'//rule&',
+			'/rule//',
+			'/rule/',
+			'/rule?',
+			'/rule=',
+			'/rule&',
+			'?rule//',
+			'?rule/',
+			'?rule?',
+			'?rule=',
+			'?rule&',
+			'=rule//',
+			'=rule/',
+			'=rule?',
+			'=rule=',
+			'=rule&',
+			'&rule//',
+			'&rule/',
+			'&rule?',
+			'&rule=',
+			'&rule&'
+		]
+		when:
+		IFilter filter = FilterBuilderUtils.build('^rule^')
+
+		then:
+		filter != null
+		filter instanceof OrFilter
+		possiblePatterns.each { pattern ->
+			def contains = false
+
+			filter.filters.each {
+				if (it instanceof OrFilter) {
+					it.filters.each {
+						if (it.pattern == pattern) {
+							contains = true
+						}
+					}
+				} else if (it.pattern == pattern) {
+					contains = true
+				}
+			}
+
+			assert contains
+		}
+	}
 }
