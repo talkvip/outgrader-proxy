@@ -7,6 +7,6 @@ package com.outgrader.proxy.core.model;
  */
 public interface IAdvertismentRule {
 
-	boolean matches(ITag tag);
+	boolean matches(String uri, ITag tag);
 
 }

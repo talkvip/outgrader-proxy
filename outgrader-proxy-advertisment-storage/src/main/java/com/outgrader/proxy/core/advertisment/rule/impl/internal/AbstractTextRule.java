@@ -15,7 +15,7 @@ public abstract class AbstractTextRule extends AbstractRule {
 	}
 
 	@Override
-	public boolean matches(final ITag tag) {
+	public boolean matches(final String uri, final ITag tag) {
 		return matches(tag.getText());
 	}
 

@@ -16,7 +16,7 @@ import com.outgrader.proxy.core.model.ITag
 import com.outgrader.proxy.core.model.ITag.TagType
 import com.outgrader.proxy.core.properties.IOutgraderProperties
 import com.outgrader.proxy.core.statistics.IStatisticsHandler
-import com.outgrader.proxy.core.storage.IAdvertismentRuleStorage;
+import com.outgrader.proxy.core.storage.IAdvertismentRuleStorage
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
@@ -97,13 +97,13 @@ class AdvertismentProcessorImplSpec extends Specification {
 		processor.process(URI, stream, CHARSET)
 
 		then:
-		1 * rule.matches(tag)
+		1 * rule.matches(URI, tag)
 	}
 
 	def "check statistics updated on rule matching"() {
 		setup:
 		rule.toString() >> 'some string'
-		rule.matches(tag) >> true
+		rule.matches(URI, tag) >> true
 
 		when:
 		processor.isAnalysable(tag) >> true
@@ -169,7 +169,7 @@ class AdvertismentProcessorImplSpec extends Specification {
 		setup:
 		processor.isAnalysable(tag) >> true
 		tag.tagType >> TagType.OPEN_AND_CLOSING
-		rule.matches(tag) >> true
+		rule.matches(URI, tag) >> true
 
 		when:
 		processor.process(URI, stream, CHARSET)

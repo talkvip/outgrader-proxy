@@ -17,6 +17,8 @@ class BasicRuleSpec extends Specification {
 
 	static final String TAG_TEXT = 'tag'
 
+	static final String URI = 'uri'
+
 	IFilter filter = Mock(IFilter)
 
 	ITag tag = Mock(ITag)
@@ -34,7 +36,7 @@ class BasicRuleSpec extends Specification {
 		when:
 		filter.matches(TAG_TEXT) >> true
 		and:
-		def result = rule.matches(tag)
+		def result = rule.matches(URI, tag)
 
 		then:
 		result == true
@@ -47,7 +49,7 @@ class BasicRuleSpec extends Specification {
 		when:
 		filter.matches(TAG_TEXT) >> false
 		and:
-		def result = rule.matches(tag)
+		def result = rule.matches(URI, tag)
 
 		then:
 		result == false

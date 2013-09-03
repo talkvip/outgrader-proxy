@@ -18,6 +18,8 @@ class AbstractTextRuleSpec extends Specification {
 
 	static final String TAG_TEXT = 'tag text'
 
+	static final String URI = 'uri'
+
 	ITag tag = Mock(ITag)
 
 	IFilter filter = Mock(IFilter)
@@ -30,7 +32,7 @@ class AbstractTextRuleSpec extends Specification {
 
 	def "check matches uses tag text"() {
 		when:
-		rule.matches(tag)
+		rule.matches(URI, tag)
 
 		then:
 		1 * tag.getText() >> TAG_TEXT
