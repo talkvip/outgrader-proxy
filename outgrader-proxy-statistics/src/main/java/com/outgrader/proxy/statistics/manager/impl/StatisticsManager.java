@@ -4,19 +4,26 @@ import java.util.Collections;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Component;
+
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
+import com.outgrader.proxy.core.properties.IOutgraderProperties;
 import com.outgrader.proxy.statistics.events.IStatisticsEvent;
 import com.outgrader.proxy.statistics.events.impl.ResponseEvent;
 import com.outgrader.proxy.statistics.impl.StatisticsEntry;
 import com.outgrader.proxy.statistics.impl.StatisticsEntry.StatisticsEntryBuilder;
+import com.outgrader.proxy.statistics.manager.IStatisticsManager;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
  * @since 0.2.0-SNAPSHOT
  * 
  */
-public class StatisticsManager {
+@Component
+public class StatisticsManager implements IStatisticsManager {
 
 	private static final Function<Entry<String, InternalStatisticsEntry>, StatisticsEntry> STATISTICS_CONVERTER = new Function<Entry<String, InternalStatisticsEntry>, StatisticsEntry>() {
 		@Override
@@ -34,20 +41,16 @@ public class StatisticsManager {
 		}
 	};
 
-	private static final class StatisticsManagerHandler {
-		private static volatile StatisticsManager instance = new StatisticsManager();
-	}
-
 	private final ConcurrentHashMap<String, InternalStatisticsEntry> statistics = new ConcurrentHashMap<>();
 
-	protected StatisticsManager() {
+	private final IOutgraderProperties properties;
 
+	@Inject
+	public StatisticsManager(final IOutgraderProperties properties) {
+		this.properties = properties;
 	}
 
-	public static StatisticsManager getInstance() {
-		return StatisticsManagerHandler.instance;
-	}
-
+	@Override
 	public void updateStatistics(final IStatisticsEvent event) {
 		String uri = event.getURI();
 		InternalStatisticsEntry entry = statistics.get(uri);

@@ -8,6 +8,7 @@ import spock.lang.Specification
 import com.outgrader.proxy.core.properties.IOutgraderProperties
 import com.outgrader.proxy.statistics.exceptions.StatisticsExportException
 import com.outgrader.proxy.statistics.impl.StatisticsEntry
+import com.outgrader.proxy.statistics.manager.IStatisticsManager
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
@@ -20,10 +21,12 @@ class StatisticsCSVExporterImplSpec extends Specification {
 
 	IOutgraderProperties properties = Mock(IOutgraderProperties)
 
+	IStatisticsManager manager = Mock(IStatisticsManager)
+
 	File exportDirectory = new File("/tmp/outgrader")
 
 	def setup() {
-		exporter = Spy(StatisticsCSVExporterImpl, constructorArgs: [properties])
+		exporter = Spy(StatisticsCSVExporterImpl, constructorArgs: [properties, manager])
 
 		properties.getStatisticsExportDirectory() >> exportDirectory.getAbsolutePath()
 	}

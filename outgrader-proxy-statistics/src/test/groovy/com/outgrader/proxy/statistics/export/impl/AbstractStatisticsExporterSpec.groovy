@@ -5,6 +5,7 @@ import spock.lang.Specification
 import com.outgrader.proxy.statistics.exceptions.StatisticsExportException
 import com.outgrader.proxy.statistics.export.impl.internal.AbstractStatisticsExporterTestImpl
 import com.outgrader.proxy.statistics.impl.StatisticsEntry
+import com.outgrader.proxy.statistics.manager.IStatisticsManager
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
@@ -19,9 +20,13 @@ class AbstractStatisticsExporterSpec extends Specification {
 		new StatisticsEntry()
 	]
 
-	AbstractStatisticsExporter exporter = Spy(AbstractStatisticsExporterTestImpl)
+	IStatisticsManager manager = Mock(IStatisticsManager)
+
+	AbstractStatisticsExporter exporter
 
 	def setup() {
+		exporter = Spy(AbstractStatisticsExporterTestImpl, constructorArgs: [manager])
+
 		exporter.getStatistics() >> VALUES
 	}
 

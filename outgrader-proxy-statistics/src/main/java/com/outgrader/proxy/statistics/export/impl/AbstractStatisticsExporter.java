@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import com.outgrader.proxy.statistics.exceptions.StatisticsExportException;
 import com.outgrader.proxy.statistics.export.IStatisticsExporter;
 import com.outgrader.proxy.statistics.impl.StatisticsEntry;
-import com.outgrader.proxy.statistics.manager.impl.StatisticsManager;
+import com.outgrader.proxy.statistics.manager.IStatisticsManager;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
@@ -15,8 +15,13 @@ import com.outgrader.proxy.statistics.manager.impl.StatisticsManager;
  */
 public abstract class AbstractStatisticsExporter implements IStatisticsExporter {
 
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(AbstractStatisticsExporter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractStatisticsExporter.class);
+
+	private final IStatisticsManager manager;
+
+	protected AbstractStatisticsExporter(final IStatisticsManager manager) {
+		this.manager = manager;
+	}
 
 	@Override
 	public void run() {
@@ -49,11 +54,10 @@ public abstract class AbstractStatisticsExporter implements IStatisticsExporter 
 	}
 
 	protected Iterable<StatisticsEntry> getStatistics() {
-		return StatisticsManager.getInstance().exportStatistics();
+		return manager.exportStatistics();
 	}
 
-	protected abstract void exportEntry(StatisticsEntry entry)
-			throws StatisticsExportException;
+	protected abstract void exportEntry(StatisticsEntry entry) throws StatisticsExportException;
 
 	protected abstract void finish() throws StatisticsExportException;
 

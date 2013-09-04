@@ -18,6 +18,7 @@ import com.outgrader.proxy.core.properties.IOutgraderProperties;
 import com.outgrader.proxy.statistics.exceptions.StatisticsExportException;
 import com.outgrader.proxy.statistics.export.impl.AbstractStatisticsExporter;
 import com.outgrader.proxy.statistics.impl.StatisticsEntry;
+import com.outgrader.proxy.statistics.manager.IStatisticsManager;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
@@ -35,7 +36,8 @@ public class StatisticsCSVExporterImpl extends AbstractStatisticsExporter {
 	private final IOutgraderProperties properties;
 
 	@Inject
-	public StatisticsCSVExporterImpl(final IOutgraderProperties properties) {
+	public StatisticsCSVExporterImpl(final IOutgraderProperties properties, final IStatisticsManager manager) {
+		super(manager);
 		this.properties = properties;
 	}
 

@@ -7,7 +7,6 @@ import java.util.concurrent.ThreadPoolExecutor
 import spock.lang.Specification
 
 import com.outgrader.proxy.core.properties.IOutgraderProperties
-import com.outgrader.proxy.statistics.events.StatisticsEventType
 import com.outgrader.proxy.statistics.export.IStatisticsExporter
 
 /**
@@ -124,11 +123,7 @@ class StatisticsHandlerImplSpec extends Specification {
 		handler.onRequestHandled(URI)
 
 		then:
-		1 * updateExecutor.submit({
-			it.event != null
-			it.event.URI == URI
-			it.event.type == StatisticsEventType.REQUEST
-		})
+		1 * updateExecutor.submit(_)
 	}
 
 	def "check actions for onResponseReceived"() {
@@ -138,12 +133,7 @@ class StatisticsHandlerImplSpec extends Specification {
 		handler.onResponseHandled(URI, DURATION)
 
 		then:
-		1 * updateExecutor.submit({
-			it.event != null
-			it.event.URI == URI
-			it.event.duration == DURATION
-			it.event.type == StatisticsEventType.RESPONSE
-		})
+		1 * updateExecutor.submit(_)
 	}
 
 	def "check actions for onAdvertismentCandidate"() {
@@ -154,12 +144,7 @@ class StatisticsHandlerImplSpec extends Specification {
 		handler.onAdvertismentCandidateFound(URI, RULE_TEXT)
 
 		then:
-		1 * updateExecutor.submit({
-			it.event != null
-			it.event.URI == URI
-			it.event.rule == RULE_TEXT
-			it.event.type == StatisticsEventType.ADVERTISMENT_CANDIDATE
-		})
+		1 * updateExecutor.submit(_)
 	}
 
 	def "check actions for onError"() {
@@ -171,13 +156,6 @@ class StatisticsHandlerImplSpec extends Specification {
 		handler.onError(URI, source, MESSAGE, ERROR)
 
 		then:
-		1 * updateExecutor.submit({
-			it.event != null
-			it.event.URI == URI
-			it.event.source == source
-			it.event.error == ERROR
-			it.event.message == MESSAGE
-			it.event.type == StatisticsEventType.ERROR
-		})
+		1 * updateExecutor.submit(_)
 	}
 }

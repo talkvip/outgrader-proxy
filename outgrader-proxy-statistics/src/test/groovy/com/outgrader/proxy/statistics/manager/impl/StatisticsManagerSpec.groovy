@@ -2,14 +2,14 @@ package com.outgrader.proxy.statistics.manager.impl
 
 import spock.lang.Specification
 
+import com.outgrader.proxy.core.properties.IOutgraderProperties
 import com.outgrader.proxy.statistics.events.IStatisticsEvent
 import com.outgrader.proxy.statistics.events.StatisticsEventType
 import com.outgrader.proxy.statistics.events.impl.AdvertismentCandidateEvent
 import com.outgrader.proxy.statistics.events.impl.ErrorEvent
 import com.outgrader.proxy.statistics.events.impl.RequestEvent
 import com.outgrader.proxy.statistics.events.impl.ResponseEvent
-import com.outgrader.proxy.statistics.manager.impl.InternalStatisticsEntry;
-import com.outgrader.proxy.statistics.manager.impl.StatisticsManager;
+import com.outgrader.proxy.statistics.manager.IStatisticsManager
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
@@ -30,7 +30,13 @@ class StatisticsManagerSpec extends Specification {
 
 	InternalStatisticsEntry entry = Mock(InternalStatisticsEntry)
 
-	StatisticsManager manager = StatisticsManager.getInstance()
+	IOutgraderProperties properties = Mock(IOutgraderProperties)
+
+	IStatisticsManager manager
+
+	def setup() {
+		manager = new StatisticsManager(properties)
+	}
 
 	def cleanup() {
 		manager.statistics.clear()

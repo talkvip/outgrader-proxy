@@ -21,6 +21,7 @@ import com.outgrader.proxy.statistics.events.impl.ErrorEvent;
 import com.outgrader.proxy.statistics.events.impl.RequestEvent;
 import com.outgrader.proxy.statistics.events.impl.ResponseEvent;
 import com.outgrader.proxy.statistics.export.IStatisticsExporter;
+import com.outgrader.proxy.statistics.manager.IStatisticsManager;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
@@ -38,6 +39,9 @@ public class StatisticsHandlerImpl implements IStatisticsHandler {
 	@Inject
 	private IStatisticsExporter exporter;
 
+	@Inject
+	private IStatisticsManager manager;
+
 	private ExecutorService updateExecutor;
 
 	private ScheduledExecutorService exportExecutor;
@@ -53,7 +57,13 @@ public class StatisticsHandlerImpl implements IStatisticsHandler {
 	}
 
 	private void handleEvent(final IStatisticsEvent event) {
-		updateExecutor.submit(new StatisticsTask(event));
+		updateExecutor.submit(new Runnable() {
+
+			@Override
+			public void run() {
+				manager.updateStatistics(event);
+			}
+		});
 	}
 
 	@PostConstruct
