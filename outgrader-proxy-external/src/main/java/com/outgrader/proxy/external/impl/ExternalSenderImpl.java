@@ -15,6 +15,8 @@ import java.net.URI;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
@@ -34,9 +36,11 @@ import org.apache.http.client.methods.HttpTrace;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.entity.ContentType;
+import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,10 +108,8 @@ public class ExternalSenderImpl implements IExternalSender {
 		return result;
 	}
 
-	private HttpResponse convertResponse(final String uri, final org.apache.http.HttpResponse response, final HttpVersion httpVersion)
-			throws IOException, AbstractOutgraderException {
-		HttpResponse result = new DefaultFullHttpResponse(httpVersion, convertStatus(response.getStatusLine()), processContent(uri,
-				response));
+	private HttpResponse convertResponse(final String uri, final org.apache.http.HttpResponse response, final HttpVersion httpVersion) throws IOException, AbstractOutgraderException {
+		HttpResponse result = new DefaultFullHttpResponse(httpVersion, convertStatus(response.getStatusLine()), processContent(uri, response));
 
 		copyHeaders(response, result);
 
@@ -124,8 +126,7 @@ public class ExternalSenderImpl implements IExternalSender {
 		return new GZIPInputStream(stream);
 	}
 
-	protected ByteBuf processContent(final String uri, final org.apache.http.HttpResponse response) throws IOException,
-			AbstractOutgraderException {
+	protected ByteBuf processContent(final String uri, final org.apache.http.HttpResponse response) throws IOException, AbstractOutgraderException {
 		if (response.getEntity() != null) {
 			int code = response.getStatusLine().getStatusCode();
 			ContentType contentType = ContentType.get(response.getEntity());
@@ -158,14 +159,37 @@ public class ExternalSenderImpl implements IExternalSender {
 		return new HttpResponseStatus(status.getStatusCode(), status.getReasonPhrase());
 	}
 
-	protected HttpClient getClient() {
-		if (httpClient == null) {
-			ClientConnectionManager connectionManager = new PoolingClientConnectionManager();
-
-			httpClient = new DefaultHttpClient(connectionManager);
-			httpClient.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);
+	@PreDestroy
+	protected void finishUp() {
+		if (httpClient != null) {
+			httpClient.getConnectionManager().shutdown();
 		}
+	}
 
+	@PostConstruct
+	protected void initializeHttpClient() {
+		ClientConnectionManager connectionManager = new PoolingClientConnectionManager();
+
+		DefaultHttpClient result = new DefaultHttpClient(connectionManager);
+		result.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);
+
+		result.setKeepAliveStrategy(new DefaultConnectionKeepAliveStrategy() {
+
+			@Override
+			public long getKeepAliveDuration(final org.apache.http.HttpResponse response, final HttpContext context) {
+				long keepAlive = super.getKeepAliveDuration(response, context);
+				if (keepAlive == -1) {
+					keepAlive = 30000;
+				}
+				return keepAlive;
+			}
+
+		});
+
+		httpClient = result;
+	}
+
+	protected HttpClient getClient() {
 		return httpClient;
 	}
 
