@@ -1,7 +1,5 @@
 package com.outgrader.proxy.statistics.manager.impl
 
-import com.outgrader.proxy.statistics.manager.impl.InternalStatisticsEntry;
-
 import spock.lang.Specification
 
 /**
@@ -61,5 +59,25 @@ class InternalStatisticsEntrySpec extends Specification {
 
 		then:
 		entry.requestCount.get() == VALUES.size()
+	}
+
+	def "check error count calculation"() {
+		when:
+		def InternalStatisticsEntry entry = new InternalStatisticsEntry()
+		and:
+		VALUES.each { value -> entry.updateError() }
+
+		then:
+		entry.errorCount.get() == VALUES.size()
+	}
+
+	def "check advertisment candidates count calculation"() {
+		when:
+		def InternalStatisticsEntry entry = new InternalStatisticsEntry()
+		and:
+		VALUES.each { value -> entry.updateAdvertismentCandidateCount() }
+
+		then:
+		entry.advertismentCandidateCount.get() == VALUES.size()
 	}
 }

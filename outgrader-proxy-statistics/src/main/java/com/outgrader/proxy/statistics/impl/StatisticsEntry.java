@@ -22,13 +22,25 @@ public final class StatisticsEntry {
 			return this;
 		}
 
-		public StatisticsEntryBuilder withRequestCount(final int requestCount) {
+		public StatisticsEntryBuilder withErrorCount(final long errorCount) {
+			result.errorCount = errorCount;
+
+			return this;
+		}
+
+		public StatisticsEntryBuilder withAdvertismentCandidateCount(final long advertismentCandidateCount) {
+			result.advertismentCandidateCount = advertismentCandidateCount;
+
+			return this;
+		}
+
+		public StatisticsEntryBuilder withRequestCount(final long requestCount) {
 			result.requestCount = requestCount;
 
 			return this;
 		}
 
-		public StatisticsEntryBuilder withResponseCount(final int responseCount) {
+		public StatisticsEntryBuilder withResponseCount(final long responseCount) {
 			result.responseCount = responseCount;
 
 			return this;
@@ -62,11 +74,15 @@ public final class StatisticsEntry {
 
 	}
 
+	private long advertismentCandidateCount;
+
+	private long errorCount;
+
 	private String uri;
 
-	private int requestCount;
+	private long requestCount;
 
-	private int responseCount;
+	private long responseCount;
 
 	private long minDuration;
 
@@ -78,11 +94,11 @@ public final class StatisticsEntry {
 		return uri;
 	}
 
-	public int getRequestCount() {
+	public long getRequestCount() {
 		return requestCount;
 	}
 
-	public int getResponseCount() {
+	public long getResponseCount() {
 		return responseCount;
 	}
 
@@ -96,6 +112,14 @@ public final class StatisticsEntry {
 
 	public long getAverageDuration() {
 		return averageDuration;
+	}
+
+	public long getAdvertismentCandidateCount() {
+		return advertismentCandidateCount;
+	}
+
+	public long getErrorCount() {
+		return errorCount;
 	}
 
 }

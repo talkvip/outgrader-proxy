@@ -2,7 +2,6 @@ package com.outgrader.proxy.statistics.manager.impl
 
 import spock.lang.Specification
 
-import com.outgrader.proxy.core.properties.IOutgraderProperties
 import com.outgrader.proxy.statistics.events.IStatisticsEvent
 import com.outgrader.proxy.statistics.events.StatisticsEventType
 import com.outgrader.proxy.statistics.events.impl.AdvertismentCandidateEvent
@@ -20,7 +19,7 @@ class StatisticsManagerSpec extends Specification {
 
 	static final MESSAGE = 'error'
 
-	static final ERROR = new UnsupportedOperationException()
+	static final ERROR = new UnsupportedOperationException('some message')
 
 	final static URI = 'uri'
 
@@ -30,12 +29,12 @@ class StatisticsManagerSpec extends Specification {
 
 	InternalStatisticsEntry entry = Mock(InternalStatisticsEntry)
 
-	IOutgraderProperties properties = Mock(IOutgraderProperties)
+
 
 	IStatisticsManager manager
 
 	def setup() {
-		manager = new StatisticsManager(properties)
+		manager = new StatisticsManager()
 	}
 
 	def cleanup() {
@@ -49,7 +48,7 @@ class StatisticsManagerSpec extends Specification {
 		manager.updateStatistics(new RequestEvent(URI))
 
 		then:
-		entry.updateRequest()
+		1 * entry.updateRequest()
 	}
 
 	def "check statistics entry updated on ResponseEvent"() {
@@ -59,7 +58,27 @@ class StatisticsManagerSpec extends Specification {
 		manager.updateStatistics(new ResponseEvent(URI, DURATION))
 
 		then:
-		entry.updateResponse(DURATION)
+		1 * entry.updateResponse(DURATION)
+	}
+
+	def "check statistics entry updated on ErrorEvent"() {
+		when:
+		manager.statistics.put(URI, entry)
+		and:
+		manager.updateStatistics(new ErrorEvent(URI, this, MESSAGE, ERROR))
+
+		then:
+		1 * entry.updateError()
+	}
+
+	def "check statistics entry updated on AdvertismentCandidateEvent"() {
+		when:
+		manager.statistics.put(URI, entry)
+		and:
+		manager.updateStatistics(new AdvertismentCandidateEvent(URI, MESSAGE))
+
+		then:
+		1 * entry.updateAdvertismentCandidateCount()
 	}
 
 	def "check new statistics entry added if uri not exists"() {
@@ -96,7 +115,7 @@ class StatisticsManagerSpec extends Specification {
 		}
 
 		then:
-		2 * entry._
+		4 * entry._
 	}
 
 	def "check calculated statistics"() {
@@ -109,14 +128,18 @@ class StatisticsManagerSpec extends Specification {
 
 		then:
 		statistics.toList().size() == 2
-		statistics.each { entry ->
-			entry.uri == URI || entry.uri == URI + 2
-			entry.requestCount == 2
-			entry.responseCount == 2
-			entry.maxDuration == DURATION * 2
-			entry.minDuration == DURATION
-			entry.averageDuration == DURATION * 1.5
-		}
+		statistics.each { entry -> assertEntry(entry) }
+	}
+
+	def assertEntry(def entry) {
+		assert entry.uri == URI || entry.uri == URI + 2
+		assert entry.requestCount == 2
+		assert entry.responseCount == 2
+		assert entry.maxDuration == DURATION * 2
+		assert entry.minDuration == DURATION
+		assert entry.averageDuration == DURATION * 1.5
+		assert entry.errorCount == 1
+		assert entry.advertismentCandidateCount == 1
 	}
 
 	private void updateStatistics(String uri) {
@@ -124,5 +147,7 @@ class StatisticsManagerSpec extends Specification {
 		manager.updateStatistics(new ResponseEvent(uri, DURATION))
 		manager.updateStatistics(new RequestEvent(uri))
 		manager.updateStatistics(new ResponseEvent(uri, DURATION * 2))
+		manager.updateStatistics(new ErrorEvent(uri, this, MESSAGE, ERROR))
+		manager.updateStatistics(new AdvertismentCandidateEvent(uri, MESSAGE))
 	}
 }

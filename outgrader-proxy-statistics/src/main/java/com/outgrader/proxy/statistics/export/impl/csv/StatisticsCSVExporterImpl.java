@@ -29,7 +29,7 @@ import com.outgrader.proxy.statistics.manager.IStatisticsManager;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class StatisticsCSVExporterImpl extends AbstractStatisticsExporter {
 
-	private static final String[] HEADERS = { "uri", "requestCount", "responseCount", "minDuration", "averageDuration", "maxDuration" };
+	private static final String[] HEADERS = { "uri", "requestCount", "advertismentCandidateCount", "responseCount", "minDuration", "averageDuration", "maxDuration", "errorCount" };
 
 	private ICsvBeanWriter writer;
 

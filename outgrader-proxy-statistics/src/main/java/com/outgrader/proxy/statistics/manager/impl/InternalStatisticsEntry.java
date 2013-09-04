@@ -21,8 +21,20 @@ class InternalStatisticsEntry {
 
 	private final AtomicLong averageDuration = new AtomicLong();
 
+	private final AtomicLong errorCount = new AtomicLong();
+
+	private final AtomicLong advertismentCandidateCount = new AtomicLong();
+
 	public void updateRequest() {
 		requestCount.incrementAndGet();
+	}
+
+	public void updateError() {
+		errorCount.incrementAndGet();
+	}
+
+	public void updateAdvertismentCandidateCount() {
+		advertismentCandidateCount.incrementAndGet();
 	}
 
 	public void updateResponse(final long newDuration) {
@@ -64,6 +76,14 @@ class InternalStatisticsEntry {
 
 	public AtomicLong getAverageDuration() {
 		return averageDuration;
+	}
+
+	public AtomicLong getErrorCount() {
+		return errorCount;
+	}
+
+	public AtomicLong getAdvertismentCandidateCount() {
+		return advertismentCandidateCount;
 	}
 
 }

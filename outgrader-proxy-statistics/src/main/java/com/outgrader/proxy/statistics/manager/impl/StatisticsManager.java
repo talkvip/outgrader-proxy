@@ -4,13 +4,10 @@ import java.util.Collections;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.inject.Inject;
-
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
-import com.outgrader.proxy.core.properties.IOutgraderProperties;
 import com.outgrader.proxy.statistics.events.IStatisticsEvent;
 import com.outgrader.proxy.statistics.events.impl.ResponseEvent;
 import com.outgrader.proxy.statistics.impl.StatisticsEntry;
@@ -36,19 +33,14 @@ public class StatisticsManager implements IStatisticsManager {
 			builder.withMinDuration(entry.getMinDuration().get());
 			builder.withRequestCount(entry.getRequestCount().get());
 			builder.withResponseCount(entry.getResponseCount().get());
+			builder.withErrorCount(entry.getErrorCount().get());
+			builder.withAdvertismentCandidateCount(entry.getAdvertismentCandidateCount().get());
 
 			return builder.build();
 		}
 	};
 
 	private final ConcurrentHashMap<String, InternalStatisticsEntry> statistics = new ConcurrentHashMap<>();
-
-	private final IOutgraderProperties properties;
-
-	@Inject
-	public StatisticsManager(final IOutgraderProperties properties) {
-		this.properties = properties;
-	}
 
 	@Override
 	public void updateStatistics(final IStatisticsEvent event) {
@@ -68,11 +60,18 @@ public class StatisticsManager implements IStatisticsManager {
 
 			entry.updateResponse(responseEvent.getDuration());
 			break;
+		case ERROR:
+			entry.updateError();
+			break;
+		case ADVERTISMENT_CANDIDATE:
+			entry.updateAdvertismentCandidateCount();
+			break;
 		default:
 			// TODO: throw exception
 		}
 	}
 
+	@Override
 	public Iterable<StatisticsEntry> exportStatistics() {
 		return Iterables.transform(Collections.unmodifiableMap(statistics).entrySet(), STATISTICS_CONVERTER);
 	}
