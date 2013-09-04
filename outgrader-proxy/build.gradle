@@ -1,3 +1,5 @@
+apply plugin: 'application'
+
 dependencies {
 	compile project(':outgrader-proxy-core')
 	compile project(':outgrader-proxy-properties')
@@ -6,3 +8,5 @@ dependencies {
 	compile project(':outgrader-proxy-advertisment-processor')
 	compile project(':outgrader-proxy-advertisment-storage')
 }
+
+mainClassName = 'com.outgrader.proxy.Outgrader'

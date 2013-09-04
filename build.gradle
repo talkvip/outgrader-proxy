@@ -26,11 +26,16 @@ subprojects {
 	}
 	
 	dependencies {
-		compile group: 'ch.qos.logback', name: 'logback-classic', version: logbackVersion
+		compile group: 'ch.qos.logback',	name: 'logback-classic', 	version: logbackVersion
+		compile group: 'org.slf4j',			name: 'jcl-over-slf4j',		version: jclOverSlf4jVeresion
 		
 		testCompile group: 'org.spockframework', 	name: 'spock-core', 	version: spockVersion
 		testCompile group: 'org.objenesis',			name: 'objenesis',		version: objenesisVersion	
 		testCompile group: 'cglib',					name: 'cglib-nodep',	version: cglibVersion	
+	}
+	
+	configurations {
+		compile.exclude module: 'commons-logging'
 	}
 }
 

@@ -1,0 +1,42 @@
+2013-09-04 17:29:10.297 [main] INFO  com.outgrader.proxy.Outgrader - Starting Ougrader-Runner application
+2013-09-04 17:29:10.299 [main] INFO  com.outgrader.proxy.Outgrader - Creating instance of Outgrader Proxy and start it
+2013-09-04 17:29:10.299 [main] INFO  com.outgrader.proxy.Outgrader - Initializing Spring environment
+2013-09-04 17:29:10.366 [main] INFO  o.s.c.s.ClassPathXmlApplicationContext - Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@a4920bc: startup date [Wed Sep 04 17:29:10 FET 2013]; root of context hierarchy
+2013-09-04 17:29:10.538 [main] INFO  o.s.b.f.xml.XmlBeanDefinitionReader - Loading XML bean definitions from URL [jar:file:/home/gerzog/develop/workspace/java/outgrader/outgrader-proxy/outgrader-proxy/build/install/outgrader-proxy/lib/outgrader-proxy-core-0.4.0-SNAPSHOT.jar!/META-INF/outgrader-proxy-core/applicationContext.xml]
+2013-09-04 17:29:10.797 [main] INFO  o.s.c.a.ClassPathBeanDefinitionScanner - JSR-330 'javax.inject.Named' annotation found and supported for component scanning
+2013-09-04 17:29:11.010 [main] INFO  o.s.b.f.a.AutowiredAnnotationBeanPostProcessor - JSR-330 'javax.inject.Inject' annotation found and supported for autowiring
+2013-09-04 17:29:11.023 [main] INFO  o.s.b.f.s.DefaultListableBeanFactory - Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@3eaa6e7e: defining beans [outgraderChannelInitializer,outgraderFrontendHandler,outgraderProxyImpl,filePropertiesSource,outgraderPropertiesImpl,externalSenderImpl,statisticsCSVExporterImpl,statisticsManager,statisticsHandlerImpl,advertismentRewriterImpl,advertismentProcessorImpl,advertismentRuleStorageImpl,org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.ConfigurationClassPostProcessor.importAwareProcessor]; root of factory hierarchy
+2013-09-04 17:29:11.089 [main] INFO  c.o.p.p.impl.OutgraderPropertiesImpl - Initializing Outgrader properties
+2013-09-04 17:29:11.090 [main] INFO  c.o.p.p.s.file.FilePropertiesSource - Determining config file location
+2013-09-04 17:29:11.090 [main] INFO  c.o.p.p.s.file.FilePropertiesSource - Properties file found at <file:/home/gerzog/develop/workspace/java/outgrader/outgrader-proxy/outgrader-proxy/build/install/outgrader-proxy/lib/outgrader-proxy-properties-0.4.0-SNAPSHOT.jar!/default-outgrader.properties>
+2013-09-04 17:29:11.148 [main] INFO  c.o.p.c.a.s.i.AdvertismentRuleStorageImpl - Initializing rule set from </advertisment-storage/advblock.txt>
+2013-09-04 17:29:11.393 [main] INFO  c.o.p.c.a.s.i.AdvertismentRuleStorageImpl - Initializing rule set from </advertisment-storage/easylist.txt>
+2013-09-04 17:29:11.630 [main] INFO  c.o.p.c.a.s.i.AdvertismentRuleStorageImpl - It was loaded <24712> rules
+2013-09-04 17:29:11.668 [main] INFO  c.o.p.s.impl.StatisticsHandlerImpl - Initializing Statistics module
+2013-09-04 17:29:11.668 [main] INFO  c.o.p.s.impl.StatisticsHandlerImpl - Initializing Executor service for 1 threads
+2013-09-04 17:29:11.670 [main] INFO  c.o.p.s.impl.StatisticsHandlerImpl - Executor service initialized
+2013-09-04 17:29:11.670 [main] INFO  c.o.p.s.impl.StatisticsHandlerImpl - Initializing Export statistics Task
+2013-09-04 17:29:11.696 [main] INFO  c.o.p.s.impl.StatisticsHandlerImpl - Export statistics task initialized and scheduled
+2013-09-04 17:29:11.716 [main] INFO  c.o.p.core.impl.OutgraderProxyImpl - Starting netty.io server
+2013-09-04 17:29:11.926 [main] INFO  c.o.p.core.impl.OutgraderProxyImpl - Outgrader started at port <8888>
+2013-09-04 17:30:11.265 [main] INFO  com.outgrader.proxy.Outgrader - Starting Ougrader-Runner application
+2013-09-04 17:30:11.268 [main] INFO  com.outgrader.proxy.Outgrader - Creating instance of Outgrader Proxy and start it
+2013-09-04 17:30:11.268 [main] INFO  com.outgrader.proxy.Outgrader - Initializing Spring environment
+2013-09-04 17:30:11.335 [main] INFO  o.s.c.s.ClassPathXmlApplicationContext - Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@7986f141: startup date [Wed Sep 04 17:30:11 FET 2013]; root of context hierarchy
+2013-09-04 17:30:11.443 [main] INFO  o.s.b.f.xml.XmlBeanDefinitionReader - Loading XML bean definitions from URL [jar:file:/home/gerzog/develop/workspace/java/outgrader/outgrader-proxy/outgrader-proxy/build/install/outgrader-proxy/lib/outgrader-proxy-core-0.4.0-SNAPSHOT.jar!/META-INF/outgrader-proxy-core/applicationContext.xml]
+2013-09-04 17:30:11.586 [main] INFO  o.s.c.a.ClassPathBeanDefinitionScanner - JSR-330 'javax.inject.Named' annotation found and supported for component scanning
+2013-09-04 17:30:11.754 [main] INFO  o.s.b.f.a.AutowiredAnnotationBeanPostProcessor - JSR-330 'javax.inject.Inject' annotation found and supported for autowiring
+2013-09-04 17:30:11.767 [main] INFO  o.s.b.f.s.DefaultListableBeanFactory - Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@610cc039: defining beans [outgraderChannelInitializer,outgraderFrontendHandler,outgraderProxyImpl,filePropertiesSource,outgraderPropertiesImpl,externalSenderImpl,statisticsCSVExporterImpl,statisticsManager,statisticsHandlerImpl,advertismentRewriterImpl,advertismentProcessorImpl,advertismentRuleStorageImpl,org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.ConfigurationClassPostProcessor.importAwareProcessor]; root of factory hierarchy
+2013-09-04 17:30:11.833 [main] INFO  c.o.p.p.impl.OutgraderPropertiesImpl - Initializing Outgrader properties
+2013-09-04 17:30:11.833 [main] INFO  c.o.p.p.s.file.FilePropertiesSource - Determining config file location
+2013-09-04 17:30:11.833 [main] INFO  c.o.p.p.s.file.FilePropertiesSource - Properties file found at <file:/home/gerzog/develop/workspace/java/outgrader/outgrader-proxy/outgrader-proxy/build/install/outgrader-proxy/lib/outgrader-proxy-properties-0.4.0-SNAPSHOT.jar!/default-outgrader.properties>
+2013-09-04 17:30:11.873 [main] INFO  c.o.p.c.a.s.i.AdvertismentRuleStorageImpl - Initializing rule set from </advertisment-storage/advblock.txt>
+2013-09-04 17:30:12.175 [main] INFO  c.o.p.c.a.s.i.AdvertismentRuleStorageImpl - Initializing rule set from </advertisment-storage/easylist.txt>
+2013-09-04 17:30:12.398 [main] INFO  c.o.p.c.a.s.i.AdvertismentRuleStorageImpl - It was loaded <24712> rules
+2013-09-04 17:30:12.417 [main] INFO  c.o.p.s.impl.StatisticsHandlerImpl - Initializing Statistics module
+2013-09-04 17:30:12.417 [main] INFO  c.o.p.s.impl.StatisticsHandlerImpl - Initializing Executor service for 1 threads
+2013-09-04 17:30:12.420 [main] INFO  c.o.p.s.impl.StatisticsHandlerImpl - Executor service initialized
+2013-09-04 17:30:12.420 [main] INFO  c.o.p.s.impl.StatisticsHandlerImpl - Initializing Export statistics Task
+2013-09-04 17:30:12.422 [main] INFO  c.o.p.s.impl.StatisticsHandlerImpl - Export statistics task initialized and scheduled
+2013-09-04 17:30:12.444 [main] INFO  c.o.p.core.impl.OutgraderProxyImpl - Starting netty.io server
+2013-09-04 17:30:12.552 [main] INFO  c.o.p.core.impl.OutgraderProxyImpl - Outgrader started at port <8888>
