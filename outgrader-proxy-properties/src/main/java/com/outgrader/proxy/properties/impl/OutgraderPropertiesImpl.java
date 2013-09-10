@@ -140,6 +140,6 @@ public class OutgraderPropertiesImpl implements IOutgraderProperties {
 			throw new IllegalArgumentException(PROXY_REWRITE_MODE + " should be of values <" + StringUtils.join(RewriteMode.values(), ",")
 					+ "> but was <" + mode + ">");
 		}
-		return null;
+		return result;
 	}
 }
