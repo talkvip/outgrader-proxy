@@ -11,6 +11,10 @@ import java.util.Set;
  */
 public interface IOutgraderProperties {
 
+	public enum RewriteMode {
+		ON, OFF;
+	}
+
 	/**
 	 * Array of Ports a Proxy will be bind to
 	 */
@@ -51,4 +55,10 @@ public interface IOutgraderProperties {
 	 * 
 	 */
 	Set<String> getSupportedTags();
+
+	/**
+	 * Returns RewriteMode - if ON advertisment will be replaced, if OFF - will
+	 * return content as it is but only update statistics
+	 */
+	RewriteMode getRewriteMode();
 }

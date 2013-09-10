@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -41,6 +42,8 @@ public class OutgraderPropertiesImpl implements IOutgraderProperties {
 	private static final String ADVERTISMENT_LIST_FILE = "outgrader.proxy.advertisments.file";
 
 	private static final String ADVERITSMENT_TAG_CANDIDATES = "outgrader.proxy.advertisment.tags";
+
+	private static final String PROXY_REWRITE_MODE = "outgrader.proxy.rewrite_mode";
 
 	private Configuration configuration;
 
@@ -121,5 +124,22 @@ public class OutgraderPropertiesImpl implements IOutgraderProperties {
 		}
 
 		return supportedTags;
+	}
+
+	@Override
+	public RewriteMode getRewriteMode() {
+		String mode = getConfiguration().getString(PROXY_REWRITE_MODE);
+
+		if (StringUtils.isEmpty(mode)) {
+			throw new IllegalArgumentException("<" + PROXY_REWRITE_MODE + "> parameter not found in config file");
+		}
+
+		RewriteMode result = RewriteMode.valueOf(mode);
+
+		if (result == null) {
+			throw new IllegalArgumentException(PROXY_REWRITE_MODE + " should be of values <" + StringUtils.join(RewriteMode.values(), ",")
+					+ "> but was <" + mode + ">");
+		}
+		return null;
 	}
 }

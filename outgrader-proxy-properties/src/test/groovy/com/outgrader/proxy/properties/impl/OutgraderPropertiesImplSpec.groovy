@@ -59,6 +59,34 @@ class OutgraderPropertiesImplSpec extends Specification {
 		thrown(NullPointerException)
 	}
 
+	def "check IllegalArgumentException if rewriteMode is null"() {
+		setup:
+		source.getConfiguration() >> config
+		config.getString(OutgraderPropertiesImpl.PROXY_REWRITE_MODE) >> null
+
+		when:
+		properties.initialize()
+		and:
+		properties.rewriteMode
+
+		then:
+		thrown(IllegalArgumentException)
+	}
+
+	def "check IllegalArgumentException if rewriteMode value is not of enum"() {
+		setup:
+		source.getConfiguration() >> config
+		config.getString(OutgraderPropertiesImpl.PROXY_REWRITE_MODE) >> 'lalala'
+
+		when:
+		properties.initialize()
+		and:
+		properties.rewriteMode
+
+		then:
+		thrown(IllegalArgumentException)
+	}
+
 	def "check all properties came from config"(def method) {
 		setup:
 		source.getConfiguration() >> config
@@ -79,7 +107,8 @@ class OutgraderPropertiesImplSpec extends Specification {
 			'statisticsExportPeriod',
 			'statisticsExportDirectory',
 			'advertismentListLocations',
-			'supportedTags'
+			'supportedTags',
+			'rewriteMode'
 		]
 	}
 }
