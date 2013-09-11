@@ -3,6 +3,7 @@ package com.outgrader.proxy.properties.impl
 import org.apache.commons.configuration.Configuration
 
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import com.outgrader.proxy.properties.source.IPropertiesSource
 
@@ -87,16 +88,21 @@ class OutgraderPropertiesImplSpec extends Specification {
 		thrown(IllegalArgumentException)
 	}
 
+	@Unroll("check property #method came from config")
 	def "check all properties came from config"(def method) {
 		setup:
 		source.getConfiguration() >> config
 		properties.initialize()
 
-		when: "call method <${method}>"
+		when:
 		properties."get${method.capitalize()}"()
 
 		then:
-		1 * config./get.*/(_)
+		if (method != 'rewriteMode') {
+			1 * config./get.*/(_)
+		} else {
+			1 * config./get.*/(_) >> 'ON'
+		}
 
 		where:
 		method << [
