@@ -23,18 +23,3 @@ startScripts {
 		unixScriptFile.text    = unixScriptFile.text.replace('$APP_HOME/lib/config', '$APP_HOME/config')
 	}
 }
-
-installApp {
-	exclude '**/*outgrader.properties'
-	exclude '**/logback.xml'
-}
-
-distZip {
-	exclude '**/*outgrader.properties'
-	exclude '**/logback.xml'
-}
-
-distTar {
-	exclude '**/*outgrader.properties'
-	exclude '**/logback.xml'
-}

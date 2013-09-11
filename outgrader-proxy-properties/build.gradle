@@ -3,3 +3,7 @@ dependencies {
 	
 	compile group: 'commons-configuration', name: 'commons-configuration', version: commonsConfigurationVersion
 }
+
+jar {
+	exclude 'default-outgrader.properties'
+}

@@ -22,8 +22,14 @@ class AdvertismentRuleStorateImplSpec extends Specification {
 
 	def setup() {
 		def source = new FilePropertiesSource()
-		properties = new OutgraderPropertiesImpl(source)
+		properties = Mock(OutgraderPropertiesImpl)
+		properties.propertiesSource >> source
 		properties.initialize()
+
+		properties.advertismentListLocations >> [
+			'advertisment-storage/advblock.txt',
+			'advertisment-storage/easylist.txt'
+		]
 	}
 
 	def "check storage successfully loaded from file"() {
