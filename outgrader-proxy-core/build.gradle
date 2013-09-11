@@ -5,3 +5,7 @@ dependencies {
 	compile group: 'org.springframework',	name: 'spring-context',	version: springVersion
 	compile group: 'javax.inject',			name: 'javax.inject',	version: injectVersion
 }
+
+jar {
+	exclude 'logback.xml'
+}

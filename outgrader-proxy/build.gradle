@@ -12,5 +12,14 @@ dependencies {
 mainClassName = 'com.outgrader.proxy.Outgrader'
 
 startScripts {
-	optsEnvironmentVar = '-Dlog.base=\$APP_HOME/logs/'	
+	classpath += files('src/dist/config')
+	
+	doLast {
+		def windowsScriptFile = file getWindowsScript()
+		def unixScriptFile    = file getUnixScript()
+		
+		//fixing classpath problem
+		windowsScriptFile.text = windowsScriptFile.text.replace('%APP_HOME%\\lib\\config', '%APP_HOME%\\config')
+		unixScriptFile.text    = unixScriptFile.text.replace('$APP_HOME/lib/config', '$APP_HOME/config')
+	}
 }
