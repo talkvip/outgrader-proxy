@@ -10,3 +10,7 @@ dependencies {
 }
 
 mainClassName = 'com.outgrader.proxy.Outgrader'
+
+startScripts {
+	optsEnvironmentVar = '-Dlog.base=\$APP_HOME/logs/'	
+}
