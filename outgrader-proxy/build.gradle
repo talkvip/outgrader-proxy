@@ -19,7 +19,10 @@ startScripts {
 		def unixScriptFile    = file getUnixScript()
 		
 		//fixing classpath problem
-		windowsScriptFile.text = windowsScriptFile.text.replace('%APP_HOME%\\lib\\config', '%APP_HOME%\\config')
-		unixScriptFile.text    = unixScriptFile.text.replace('$APP_HOME/lib/config', '$APP_HOME/config')
+		windowsScriptFile.text	= windowsScriptFile.text.replace('%APP_HOME%\\lib\\config', '%APP_HOME%\\config')
+		unixScriptFile.text		= unixScriptFile.text.replace('$APP_HOME/lib/config', '$APP_HOME/config')
+		
+		unixScriptFile.text = unixScriptFile.text.replace('$DEFAULT_JVM_OPTS', '-Doutgrader.base=$APP_HOME')
+		
 	}
 }
