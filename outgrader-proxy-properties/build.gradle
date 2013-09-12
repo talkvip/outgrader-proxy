@@ -5,7 +5,7 @@ dependencies {
 }
 
 jar {
-	exclude 'outgrader-default.properties'
+	exclude 'default-outgrader.properties'
 }
 
 task copyConfig(type: Copy) {
