@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.codec.http.LastHttpContent;
 
 import javax.inject.Inject;
 
@@ -46,7 +47,9 @@ public class OutgraderFrontendHandler extends SimpleChannelInboundHandler<Object
 		if (msg instanceof HttpRequest) {
 			handleHttpRequest(ctx, (HttpRequest) msg);
 		} else {
-			LOGGER.error("Cannot handle message <" + msg + ">");
+			if (!msg.equals(LastHttpContent.EMPTY_LAST_CONTENT)) {
+				LOGGER.error("Cannot handle message <" + msg + ">");
+			}
 		}
 
 		if (LOGGER.isDebugEnabled()) {
