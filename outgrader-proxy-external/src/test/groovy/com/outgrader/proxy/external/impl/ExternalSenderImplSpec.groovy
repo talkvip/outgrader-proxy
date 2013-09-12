@@ -329,6 +329,6 @@ class ExternalSenderImplSpec extends Specification {
 		sender.processContent(_ as String, httpResponse)
 
 		then:
-		processor.process(_ as String, stream, HTTP.DEF_CONTENT_CHARSET)
+		1 * processor.process(_ as String, stream, HTTP.DEF_CONTENT_CHARSET)
 	}
 }
