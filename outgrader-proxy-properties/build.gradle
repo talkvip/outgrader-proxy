@@ -3,3 +3,15 @@ dependencies {
 	
 	compile group: 'commons-configuration', name: 'commons-configuration', version: commonsConfigurationVersion
 }
+
+jar {
+	exclude 'outgrader-default.properties'
+}
+
+task copyConfig(type: Copy) {
+	from ('src/main/resources') {
+		include 'default-outgrader.properties'
+	}
+	into project(':outgrader-proxy').file('src/dist/config')}
+
+jar.dependsOn copyConfig
