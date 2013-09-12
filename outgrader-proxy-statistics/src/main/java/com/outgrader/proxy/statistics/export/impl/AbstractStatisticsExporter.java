@@ -1,8 +1,12 @@
 package com.outgrader.proxy.statistics.export.impl;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
 import com.outgrader.proxy.statistics.exceptions.StatisticsExportException;
 import com.outgrader.proxy.statistics.export.IStatisticsExporter;
 import com.outgrader.proxy.statistics.impl.StatisticsEntry;
@@ -54,7 +58,11 @@ public abstract class AbstractStatisticsExporter implements IStatisticsExporter 
 	}
 
 	protected Iterable<StatisticsEntry> getStatistics() {
-		return manager.exportStatistics();
+		List<StatisticsEntry> result = Lists.newArrayList(manager.exportStatistics());
+
+		Collections.sort(result);
+
+		return result;
 	}
 
 	protected abstract void exportEntry(StatisticsEntry entry) throws StatisticsExportException;

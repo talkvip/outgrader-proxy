@@ -5,7 +5,7 @@ package com.outgrader.proxy.statistics.impl;
  * @since 0.2.0-SNAPSHOT
  * 
  */
-public final class StatisticsEntry {
+public final class StatisticsEntry implements Comparable<StatisticsEntry> {
 
 	public static class StatisticsEntryBuilder {
 
@@ -120,6 +120,11 @@ public final class StatisticsEntry {
 
 	public long getErrorCount() {
 		return errorCount;
+	}
+
+	@Override
+	public int compareTo(final StatisticsEntry o) {
+		return (int) (o.getAdvertismentCandidateCount() - getAdvertismentCandidateCount());
 	}
 
 }
