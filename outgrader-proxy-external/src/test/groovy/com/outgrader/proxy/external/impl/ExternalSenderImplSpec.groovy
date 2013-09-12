@@ -25,6 +25,7 @@ import org.apache.http.entity.StringEntity
 import org.apache.http.message.BasicHeader
 import org.apache.http.message.BasicHttpResponse
 import org.apache.http.message.BasicStatusLine
+import org.apache.http.protocol.HTTP
 
 import spock.lang.Specification
 
@@ -311,5 +312,23 @@ class ExternalSenderImplSpec extends Specification {
 		then:
 		0 * processor.process(_ as String, _ as GZIPInputStream, _)
 		1 * processor.process(_ as String, _ as InputStream, _)
+	}
+
+	def "check default charset used if response charset is null"() {
+		def stream = Mock(InputStream)
+		def entity = Mock(HttpEntity)
+		entity.getContent() >> stream
+
+		setup:
+		entity.getContentType() >> new BasicHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, ContentType.TEXT_HTML.getMimeType())
+		httpResponse.setStatusLine(new BasicStatusLine(org.apache.http.HttpVersion.HTTP_1_1, HttpStatus.SC_OK, 'phrase'))
+
+		httpResponse.setEntity(entity)
+
+		when:
+		sender.processContent(_ as String, httpResponse)
+
+		then:
+		processor.process(_ as String, stream, HTTP.DEF_CONTENT_CHARSET)
 	}
 }

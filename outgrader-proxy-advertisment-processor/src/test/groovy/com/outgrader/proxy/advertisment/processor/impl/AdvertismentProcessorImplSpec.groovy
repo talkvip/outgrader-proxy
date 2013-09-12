@@ -178,14 +178,6 @@ class AdvertismentProcessorImplSpec extends Specification {
 		1 * rewriter.rewrite(tag, rule, CHARSET, tagReader) >> Unpooled.EMPTY_BUFFER
 	}
 
-	def "check default charset is used when no charset given"() {
-		when:
-		processor.process(URI, stream, null)
-
-		then:
-		1 * processor.createTagReader(stream, Charset.defaultCharset()) >> tagReader
-	}
-
 	def "check tag not analasyable if it's not anylysable by property"() {
 		when:
 		tag.analysable >> false
