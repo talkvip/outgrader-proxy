@@ -93,7 +93,7 @@ public class StatisticsHandlerImpl implements IStatisticsHandler {
 		LOGGER.info("Initializing Export statistics Task");
 
 		exportExecutor = Executors.newSingleThreadScheduledExecutor();
-		exportExecutor.scheduleAtFixedRate(exporter, properties.getStatisticsExportPeriod(), properties.getStatisticsExportPeriod(),
+		exportExecutor.scheduleWithFixedDelay(exporter, properties.getStatisticsExportPeriod(), properties.getStatisticsExportPeriod(),
 				TimeUnit.MINUTES);
 
 		LOGGER.info("Export statistics task initialized and scheduled");
