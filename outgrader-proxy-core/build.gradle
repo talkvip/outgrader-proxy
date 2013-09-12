@@ -9,3 +9,11 @@ dependencies {
 jar {
 	exclude 'logback.xml'
 }
+
+task copyConfig(type: Copy) {
+	from ('src/main/resources') {
+		include 'logback.xml'
+	}
+	into project(':outgrader-proxy').file('src/dist/config')}
+
+jar.dependsOn copyConfig

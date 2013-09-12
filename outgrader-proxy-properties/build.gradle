@@ -5,5 +5,13 @@ dependencies {
 }
 
 jar {
-	exclude 'default-outgrader.properties'
+	exclude 'outgrader-default.properties'
 }
+
+task copyConfig(type: Copy) {
+	from ('src/main/resources') {
+		include 'default-outgrader.properties'
+	}
+	into project(':outgrader-proxy').file('src/dist/config')}
+
+jar.dependsOn copyConfig
