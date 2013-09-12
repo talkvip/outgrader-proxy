@@ -12,6 +12,7 @@ import io.netty.handler.codec.http.HttpVersion;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
@@ -108,8 +109,10 @@ public class ExternalSenderImpl implements IExternalSender {
 		return result;
 	}
 
-	private HttpResponse convertResponse(final String uri, final org.apache.http.HttpResponse response, final HttpVersion httpVersion) throws IOException, AbstractOutgraderException {
-		HttpResponse result = new DefaultFullHttpResponse(httpVersion, convertStatus(response.getStatusLine()), processContent(uri, response));
+	private HttpResponse convertResponse(final String uri, final org.apache.http.HttpResponse response, final HttpVersion httpVersion)
+			throws IOException, AbstractOutgraderException {
+		HttpResponse result = new DefaultFullHttpResponse(httpVersion, convertStatus(response.getStatusLine()), processContent(uri,
+				response));
 
 		copyHeaders(response, result);
 
@@ -126,7 +129,8 @@ public class ExternalSenderImpl implements IExternalSender {
 		return new GZIPInputStream(stream);
 	}
 
-	protected ByteBuf processContent(final String uri, final org.apache.http.HttpResponse response) throws IOException, AbstractOutgraderException {
+	protected ByteBuf processContent(final String uri, final org.apache.http.HttpResponse response) throws IOException,
+			AbstractOutgraderException {
 		if (response.getEntity() != null) {
 			int code = response.getStatusLine().getStatusCode();
 			ContentType contentType = ContentType.get(response.getEntity());
@@ -142,7 +146,12 @@ public class ExternalSenderImpl implements IExternalSender {
 					stream = gzipWrapper(stream);
 				}
 
-				content = responseProcessor.process(uri, stream, contentType.getCharset());
+				Charset charset = contentType.getCharset();
+				if (charset == null) {
+					charset = HTTP.DEF_CONTENT_CHARSET;
+				}
+
+				content = responseProcessor.process(uri, stream, charset);
 			} else {
 				content = Unpooled.copiedBuffer(IOUtils.toByteArray(response.getEntity().getContent()));
 			}

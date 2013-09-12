@@ -7,8 +7,6 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
@@ -26,10 +24,10 @@ import com.outgrader.proxy.statistics.manager.IStatisticsManager;
  * 
  */
 @Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class StatisticsCSVExporterImpl extends AbstractStatisticsExporter {
 
-	private static final String[] HEADERS = { "uri", "requestCount", "advertismentCandidateCount", "responseCount", "minDuration", "averageDuration", "maxDuration", "errorCount" };
+	private static final String[] HEADERS = { "uri", "requestCount", "advertismentCandidateCount", "responseCount", "minDuration",
+			"averageDuration", "maxDuration", "errorCount" };
 
 	private ICsvBeanWriter writer;
 

@@ -56,9 +56,7 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 	public ByteBuf process(final String uri, final InputStream stream, final Charset charset) throws AbstractOutgraderException {
 		ByteBuf result = Unpooled.EMPTY_BUFFER;
 
-		Charset actualCharset = charset == null ? Charset.defaultCharset() : charset;
-
-		try (TagReader reader = createTagReader(stream, actualCharset)) {
+		try (TagReader reader = createTagReader(stream, charset)) {
 			for (ITag tag : reader) {
 				if (isAnalysable(tag)) {
 					boolean isRewritten = false;
@@ -69,17 +67,17 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 
 							isRewritten = true;
 
-							result = Unpooled.copiedBuffer(result, rewriter.rewrite(tag, rule, actualCharset, reader));
+							result = Unpooled.copiedBuffer(result, rewriter.rewrite(tag, rule, charset, reader));
 
 							break;
 						}
 					}
 
 					if (!isRewritten) {
-						result = Unpooled.copiedBuffer(result, rewriter.rewrite(tag, actualCharset));
+						result = Unpooled.copiedBuffer(result, rewriter.rewrite(tag, charset));
 					}
 				} else {
-					result = Unpooled.copiedBuffer(result, rewriter.rewrite(tag, actualCharset));
+					result = Unpooled.copiedBuffer(result, rewriter.rewrite(tag, charset));
 				}
 			}
 		} catch (IOException e) {

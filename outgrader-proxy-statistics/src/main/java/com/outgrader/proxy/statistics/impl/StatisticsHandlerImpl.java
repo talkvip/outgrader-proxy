@@ -93,7 +93,7 @@ public class StatisticsHandlerImpl implements IStatisticsHandler {
 		LOGGER.info("Initializing Export statistics Task");
 
 		exportExecutor = Executors.newSingleThreadScheduledExecutor();
-		exportExecutor.scheduleAtFixedRate(exporter, properties.getStatisticsExportPeriod(), properties.getStatisticsExportPeriod(),
+		exportExecutor.scheduleWithFixedDelay(exporter, properties.getStatisticsExportPeriod(), properties.getStatisticsExportPeriod(),
 				TimeUnit.MINUTES);
 
 		LOGGER.info("Export statistics task initialized and scheduled");
@@ -115,7 +115,7 @@ public class StatisticsHandlerImpl implements IStatisticsHandler {
 	}
 
 	@Override
-	public void onError(final String uri, final Object source, final String errorText, final Exception error) {
+	public void onError(final String uri, final Object source, final String errorText, final Throwable error) {
 		handleEvent(new ErrorEvent(uri, source, errorText, error));
 
 	}
