@@ -14,9 +14,9 @@ public class ErrorEvent extends AbstractStatisticsEvent {
 
 	private final String message;
 
-	private final Exception error;
+	private final Throwable error;
 
-	public ErrorEvent(final String uri, final Object source, final String message, final Exception e) {
+	public ErrorEvent(final String uri, final Object source, final String message, final Throwable e) {
 		super(StatisticsEventType.ERROR, uri);
 
 		this.source = source;
@@ -32,7 +32,7 @@ public class ErrorEvent extends AbstractStatisticsEvent {
 		return message;
 	}
 
-	public Exception getError() {
+	public Throwable getError() {
 		return error;
 	}
 }

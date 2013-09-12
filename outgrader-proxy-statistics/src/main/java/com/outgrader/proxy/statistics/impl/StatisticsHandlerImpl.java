@@ -115,7 +115,7 @@ public class StatisticsHandlerImpl implements IStatisticsHandler {
 	}
 
 	@Override
-	public void onError(final String uri, final Object source, final String errorText, final Exception error) {
+	public void onError(final String uri, final Object source, final String errorText, final Throwable error) {
 		handleEvent(new ErrorEvent(uri, source, errorText, error));
 
 	}

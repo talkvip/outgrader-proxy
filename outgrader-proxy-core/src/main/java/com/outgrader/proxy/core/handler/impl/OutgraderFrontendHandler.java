@@ -69,4 +69,11 @@ public class OutgraderFrontendHandler extends SimpleChannelInboundHandler<Object
 
 		ctx.writeAndFlush(response);
 	}
+
+	@Override
+	public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
+		statisticsHandler.onError("", this, cause.getMessage(), cause);
+
+		super.exceptionCaught(ctx, cause);
+	}
 }

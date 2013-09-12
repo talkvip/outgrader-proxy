@@ -13,6 +13,6 @@ public interface IStatisticsHandler {
 
 	void onAdvertismentCandidateFound(String uri, String ruleText);
 
-	void onError(String uri, Object source, String errorText, Exception error);
+	void onError(String uri, Object source, String errorText, Throwable error);
 
 }
