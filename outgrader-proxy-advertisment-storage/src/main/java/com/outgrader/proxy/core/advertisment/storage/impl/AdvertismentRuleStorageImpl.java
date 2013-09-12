@@ -86,6 +86,8 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 
 		Collection<IAdvertismentRule> result = new ArrayList<>();
 
+		int ruleCount = 0;
+
 		for (String location : properties.getAdvertismentListLocations()) {
 			LOGGER.info("Initializing rule set from <" + location + ">");
 
@@ -99,21 +101,24 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 
 					IFilter filter = null;
 
-					if (type != null) {
-						switch (type) {
-						case BASIC:
-							filter = getBasicFilter(line);
-							break;
-						case EXTENDED:
-							filter = getExtendedFilter(line);
-							break;
-						case ELEMENT_HIDING:
-							filter = getHidingElementFilter(line);
-							break;
-						default:
-							// skip
-							break;
+					if (type != LineType.COMMENT) {
+						if (type != null) {
+							switch (type) {
+							case BASIC:
+								filter = getBasicFilter(line);
+								break;
+							case EXTENDED:
+								filter = getExtendedFilter(line);
+								break;
+							case ELEMENT_HIDING:
+								filter = getHidingElementFilter(line);
+								break;
+							default:
+								// skip
+								break;
+							}
 						}
+						ruleCount++;
 					}
 
 					if (filter != null) {
@@ -127,7 +132,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 			}
 		}
 
-		LOGGER.info("It was loaded <" + result.size() + "> rules");
+		LOGGER.info("It was loaded <" + result.size() + "> from <" + ruleCount + "> existing rule");
 
 		ruleSet = result.toArray(new IAdvertismentRule[result.size()]);
 	}
