@@ -28,6 +28,7 @@ import org.apache.http.message.BasicStatusLine
 import org.apache.http.protocol.HTTP
 
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import com.outgrader.proxy.core.advertisment.processor.IAdvertismentProcessor
 import com.outgrader.proxy.external.impl.exceptions.ExternalSenderException
@@ -104,6 +105,7 @@ class ExternalSenderImplSpec extends Specification {
 		thrown(IllegalArgumentException)
 	}
 
+	@Unroll("check method #method supported by sender")
 	def "check supported http request methods"(def method) {
 		when:
 		def value = sender.getRequest(method, 'uri')
@@ -118,6 +120,7 @@ class ExternalSenderImplSpec extends Specification {
 		}
 	}
 
+	@Unroll("check request uri not null for method #method")
 	def "check http request contains uri"(def method) {
 		when:
 		def value = sender.getRequest(method, 'http://example.com')

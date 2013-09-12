@@ -1,6 +1,7 @@
 package com.outgrader.proxy.core.advertisment.filter.impl
 
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import com.outgrader.proxy.core.advertisment.filter.IFilter
 import com.outgrader.proxy.core.advertisment.filter.IFilterSource
@@ -16,6 +17,7 @@ class MatchingFilterSpec extends Specification {
 
 	IFilterSource source = Mock(IFilterSource)
 
+	@Unroll("check that #line matches #pattern with result #result")
 	def "check result of matching same as result of contains"(def pattern, def line, def result) {
 		setup:
 		filter = new MatchingFilter(pattern, source)
@@ -36,6 +38,7 @@ class MatchingFilterSpec extends Specification {
 		result << [true, false, false]
 	}
 
+	@Unroll("check that #line matches (ignoring case) #pattern with result #result")
 	def "check result of matching same as result of contains ignoring case"(def pattern, def line, def result) {
 		setup:
 		filter = new MatchingFilter(pattern, source)

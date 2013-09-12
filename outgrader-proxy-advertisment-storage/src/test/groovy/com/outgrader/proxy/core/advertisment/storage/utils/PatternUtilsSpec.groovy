@@ -1,6 +1,7 @@
 package com.outgrader.proxy.core.advertisment.storage.utils
 
 import spock.lang.Specification
+import spock.lang.Unroll
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
@@ -9,6 +10,7 @@ import spock.lang.Specification
  */
 class PatternUtilsSpec extends Specification {
 
+	@Unroll("check #line matches #pattern")
 	def "line should match a pattern"(def pattern, def line) {
 		when:
 		def compiled = PatternUtils.createPattern(pattern)

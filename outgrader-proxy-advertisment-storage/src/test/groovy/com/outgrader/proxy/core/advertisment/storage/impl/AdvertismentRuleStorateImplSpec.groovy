@@ -3,6 +3,7 @@ package com.outgrader.proxy.core.advertisment.storage.impl
 import org.apache.commons.io.IOUtils
 
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import com.outgrader.proxy.core.properties.IOutgraderProperties
 import com.outgrader.proxy.core.storage.IAdvertismentRuleStorage
@@ -107,6 +108,7 @@ class AdvertismentRuleStorateImplSpec extends Specification {
 		result.filters[1].pattern == 'rule'
 	}
 
+	@Unroll("check rule parsing from #line")
 	def "check hiding element rule filters"(def line) {
 		setup:
 		storage = createStorage(line)

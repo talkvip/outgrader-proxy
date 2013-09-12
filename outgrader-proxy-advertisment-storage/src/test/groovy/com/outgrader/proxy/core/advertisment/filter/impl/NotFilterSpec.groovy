@@ -1,6 +1,7 @@
 package com.outgrader.proxy.core.advertisment.filter.impl
 
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import com.outgrader.proxy.core.advertisment.filter.IFilter
 import com.outgrader.proxy.core.model.ITag
@@ -16,6 +17,7 @@ class NotFilterSpec extends Specification {
 
 	ITag tag = Mock(ITag)
 
+	@Unroll("check NotFilter result with #result input")
 	def "check not filter"(def result) {
 		setup:
 		IFilter source = Mock(IFilter)
