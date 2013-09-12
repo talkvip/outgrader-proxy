@@ -1,9 +1,12 @@
 package com.outgrader.proxy.statistics.manager.impl;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.http.HttpHost;
+import org.apache.http.client.utils.URIUtils;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Function;
@@ -45,10 +48,19 @@ public class StatisticsManager implements IStatisticsManager {
 	@Override
 	public void updateStatistics(final IStatisticsEvent event) {
 		String uri = event.getURI();
-		InternalStatisticsEntry entry = statistics.get(uri);
+
+		HttpHost httpHost = URIUtils.extractHost(URI.create(uri));
+		String host = null;
+		if (httpHost == null) {
+			host = uri;
+		} else {
+			host = httpHost.getHostName();
+		}
+
+		InternalStatisticsEntry entry = statistics.get(host);
 		if (entry == null) {
 			entry = new InternalStatisticsEntry();
-			statistics.put(uri, entry);
+			statistics.put(host, entry);
 		}
 
 		switch (event.getType()) {
