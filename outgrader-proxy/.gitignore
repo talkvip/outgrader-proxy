@@ -1,4 +1,5 @@
 /build
 /bin
 statistics
+logs
 src/dist/config/*

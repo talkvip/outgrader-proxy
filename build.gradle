@@ -27,7 +27,14 @@ subprojects {
 	
 	dependencies {
 		compile group: 'ch.qos.logback',	name: 'logback-classic', 	version: logbackVersion
-		compile group: 'org.slf4j',			name: 'jcl-over-slf4j',		version: jclOverSlf4jVeresion
+		compile group: 'org.slf4j',			name: 'jcl-over-slf4j',		version: slf4jVersion		
+		
+		//perf4j and it's dependencies
+		compile group: 'org.perf4j',		name: 'perf4j',				version: perf4jVersion	
+		compile group: 'org.aspectj',		name: 'aspectjrt',			version: aspectjVersion
+		compile group: 'org.aspectj',		name: 'aspectjweaver',		version: aspectjVersion
+		compile group: 'commons-jexl',		name: 'commons-jexl',		version: jexlVersion	
+		
 		
 		testCompile group: 'org.spockframework', 	name: 'spock-core', 	version: spockVersion
 		testCompile group: 'org.objenesis',			name: 'objenesis',		version: objenesisVersion	

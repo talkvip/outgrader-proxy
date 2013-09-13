@@ -43,6 +43,7 @@ import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
+import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -71,6 +72,7 @@ public class ExternalSenderImpl implements IExternalSender {
 		this.responseProcessor = responseProcessor;
 	}
 
+	@Profiled
 	@Override
 	public HttpResponse send(final HttpRequest request) throws AbstractOutgraderException {
 		if (LOGGER.isDebugEnabled()) {
