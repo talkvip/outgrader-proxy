@@ -132,6 +132,27 @@ class AdvertismentRuleStorateImplSpec extends Specification {
 		]
 	}
 
+	@Unroll("check rule parsing from #line")
+	def "check hiding element rule with domains  filter"(def line) {
+		setup:
+		storage = createStorage(line)
+
+		when:
+		storage.initializeRuleSet()
+
+		then:
+		2 * storage.getHidingElementFilter(_)
+		1 * storage.createDomainFilter(_, _)
+		storage.rules != null
+		storage.rules.size() == 1
+
+		where:
+		line << [
+			'domain.com,another.org##id',
+			'domain.com##id'
+		]
+	}
+
 	private IAdvertismentRuleStorage createStorage(String fileContent) {
 		AdvertismentRuleStorageImpl result = Spy(AdvertismentRuleStorageImpl, constructorArgs: [properties])
 

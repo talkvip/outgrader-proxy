@@ -141,31 +141,44 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 		IFilterSource source = null;
 		String pattern = null;
 
-		pattern = getHidingElementPattern(line, "###");
-		if (pattern != null) {
-			source = FilterBuilderUtils.getCSSIdFilterSource();
+		int firstSharp = line.indexOf("#");
+		if (firstSharp > 0) {
+			String domains = line.substring(0, firstSharp);
+			String rule = line.substring(firstSharp);
+
+			IFilter domainFilter = createDomainFilter(domains, ",");
+			IFilter ruleFilter = getHidingElementFilter(rule);
+
+			if (ruleFilter != null) {
+				return FilterBuilderUtils.joinAnd(domainFilter, ruleFilter);
+			}
 		} else {
-			pattern = getHidingElementPattern(line, "##*#");
+			pattern = getHidingElementPattern(line, "###");
 			if (pattern != null) {
 				source = FilterBuilderUtils.getCSSIdFilterSource();
 			} else {
-				pattern = getHidingElementPattern(line, "##.");
+				pattern = getHidingElementPattern(line, "##*#");
 				if (pattern != null) {
-					source = FilterBuilderUtils.getCSSSelectorFilterSource();
-					pattern = "." + pattern;
+					source = FilterBuilderUtils.getCSSIdFilterSource();
 				} else {
-					pattern = getHidingElementPattern(line, "##");
-
+					pattern = getHidingElementPattern(line, "##.");
 					if (pattern != null) {
-						if (!pattern.contains("[")) {
-							if (pattern.contains(".")) {
-								source = FilterBuilderUtils.getCSSSelectorFilterSource();
-							} else {
-								if (pattern.contains("#")) {
+						source = FilterBuilderUtils.getCSSSelectorFilterSource();
+						pattern = "." + pattern;
+					} else {
+						pattern = getHidingElementPattern(line, "##");
+
+						if (pattern != null) {
+							if (!pattern.contains("[")) {
+								if (pattern.contains(".")) {
 									source = FilterBuilderUtils.getCSSSelectorFilterSource();
-									pattern = pattern.replace("#", ".");
 								} else {
-									source = FilterBuilderUtils.getTagNameFilterSource();
+									if (pattern.contains("#")) {
+										source = FilterBuilderUtils.getCSSSelectorFilterSource();
+										pattern = pattern.replace("#", ".");
+									} else {
+										source = FilterBuilderUtils.getTagNameFilterSource();
+									}
 								}
 							}
 						}
@@ -237,20 +250,24 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 		int domainIndex = parametersLine.indexOf(DOMAIN_PREFIX);
 
 		if (domainIndex != StringUtils.INDEX_NOT_FOUND) {
-			StringTokenizer tokenizer = new StringTokenizer(parametersLine.substring(domainIndex + DOMAIN_PREFIX.length()), "|", false);
-
-			IFilterSource filterSource = FilterBuilderUtils.getDomainFilterSource();
-
-			List<IFilter> filters = new ArrayList<>();
-
-			while (tokenizer.hasMoreTokens()) {
-				filters.add(FilterBuilderUtils.build(tokenizer.nextToken(), filterSource, true));
-			}
-
-			return FilterBuilderUtils.joinAnd(filters);
+			return createDomainFilter(parametersLine.substring(domainIndex + DOMAIN_PREFIX.length()), "|");
 		}
 
 		return null;
+	}
+
+	protected IFilter createDomainFilter(final String domainsLine, final String separator) {
+		StringTokenizer tokenizer = new StringTokenizer(domainsLine, separator, false);
+
+		IFilterSource filterSource = FilterBuilderUtils.getDomainFilterSource();
+
+		List<IFilter> filters = new ArrayList<>();
+
+		while (tokenizer.hasMoreTokens()) {
+			filters.add(FilterBuilderUtils.build(tokenizer.nextToken(), filterSource, true));
+		}
+
+		return FilterBuilderUtils.joinAnd(filters);
 	}
 
 	protected IFilter getBasicFilter(final String line) {

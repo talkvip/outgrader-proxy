@@ -4,5 +4,5 @@
 .classpath
 .gs
 /build
-
+logs
 gs_ide.properties

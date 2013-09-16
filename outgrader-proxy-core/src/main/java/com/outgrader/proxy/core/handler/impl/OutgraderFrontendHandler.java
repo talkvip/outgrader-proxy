@@ -9,7 +9,6 @@ import io.netty.handler.codec.http.LastHttpContent;
 
 import javax.inject.Inject;
 
-import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -39,7 +38,6 @@ public class OutgraderFrontendHandler extends SimpleChannelInboundHandler<Object
 		this.statisticsHandler = statisticsHandler;
 	}
 
-	@Profiled
 	@Override
 	protected void channelRead0(final ChannelHandlerContext ctx, final Object msg) throws Exception {
 		if (LOGGER.isDebugEnabled()) {
