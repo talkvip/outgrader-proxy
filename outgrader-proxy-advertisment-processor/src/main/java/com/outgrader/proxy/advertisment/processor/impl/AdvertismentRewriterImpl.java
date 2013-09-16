@@ -45,7 +45,7 @@ public class AdvertismentRewriterImpl implements IAdvertismentRewriter {
 				// iterate until end of adv. not found
 				do {
 
-				} while (tagReader.hasNext() && (rule.isFinished(advStartTag, tagReader.next())));
+				} while (tagReader.hasNext() && !advStartTag.equals(tagReader.next().getOpeningTag()));
 
 			}
 		} else {

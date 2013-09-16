@@ -9,13 +9,13 @@ import com.outgrader.proxy.core.model.ITag;
  * @since 0.3.0-SNAPSHOT
  * 
  */
-public class AdvertismentRuleImpl implements IAdvertismentRule {
+public class CurrentTagRule implements IAdvertismentRule {
 
 	private final String text;
 
 	private final IFilter filter;
 
-	public AdvertismentRuleImpl(final String text, final IFilter filter) {
+	public CurrentTagRule(final String text, final IFilter filter) {
 		this.text = text;
 		this.filter = filter;
 	}
@@ -32,11 +32,6 @@ public class AdvertismentRuleImpl implements IAdvertismentRule {
 	@Override
 	public boolean matches(final String uri, final ITag tag) {
 		return filter.matches(uri, tag);
-	}
-
-	@Override
-	public boolean isFinished(final ITag startTag, final ITag currentTag) {
-		return currentTag.getOpeningTag().equals(startTag);
 	}
 
 	@Override

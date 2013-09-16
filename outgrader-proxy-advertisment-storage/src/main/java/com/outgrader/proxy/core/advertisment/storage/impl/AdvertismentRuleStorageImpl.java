@@ -21,7 +21,7 @@ import com.google.common.base.Charsets;
 import com.outgrader.proxy.core.advertisment.filter.IFilter;
 import com.outgrader.proxy.core.advertisment.filter.IFilterSource;
 import com.outgrader.proxy.core.advertisment.filter.impl.FilterBuilderUtils;
-import com.outgrader.proxy.core.advertisment.rule.impl.internal.AdvertismentRuleImpl;
+import com.outgrader.proxy.core.advertisment.rule.impl.internal.CurrentTagRule;
 import com.outgrader.proxy.core.model.IAdvertismentRule;
 import com.outgrader.proxy.core.properties.IOutgraderProperties;
 import com.outgrader.proxy.core.storage.IAdvertismentRuleStorage;
@@ -122,7 +122,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 					}
 
 					if (filter != null) {
-						result.add(new AdvertismentRuleImpl(line, filter));
+						result.add(new CurrentTagRule(line, filter));
 					}
 				}
 			} catch (IOException e) {
