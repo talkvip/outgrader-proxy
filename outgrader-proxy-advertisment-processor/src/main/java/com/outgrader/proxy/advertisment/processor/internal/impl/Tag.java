@@ -170,7 +170,6 @@ public class Tag implements ITag {
 		this.name = name;
 	}
 
-	@Override
 	public void setParent(final ITag tag) {
 		this.parent = tag;
 	}

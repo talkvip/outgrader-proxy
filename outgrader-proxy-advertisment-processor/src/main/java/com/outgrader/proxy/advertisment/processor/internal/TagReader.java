@@ -16,6 +16,7 @@ import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.outgrader.proxy.advertisment.processor.internal.impl.Tag;
 import com.outgrader.proxy.advertisment.processor.internal.impl.Tag.TagBuilder;
 import com.outgrader.proxy.core.model.ITag;
 
@@ -26,8 +27,7 @@ import com.outgrader.proxy.core.model.ITag;
  */
 public class TagReader implements Iterable<ITag>, Iterator<ITag>, Closeable {
 
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(TagReader.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TagReader.class);
 
 	private static final int BUFFER_SIZE = 4096;
 
@@ -35,7 +35,7 @@ public class TagReader implements Iterable<ITag>, Iterator<ITag>, Closeable {
 
 	private final Reader source;
 
-	private ITag currentTag;
+	private Tag currentTag;
 
 	private StringBuilder textCollector = new StringBuilder();
 
@@ -50,8 +50,7 @@ public class TagReader implements Iterable<ITag>, Iterator<ITag>, Closeable {
 	private final Map<String, ITag> unclosedTags = new HashMap<>();
 
 	public TagReader(final InputStream source, final Charset charset) {
-		this.source = new BufferedReader(
-				new InputStreamReader(source, charset), BUFFER_SIZE);
+		this.source = new BufferedReader(new InputStreamReader(source, charset), BUFFER_SIZE);
 	}
 
 	@Override
@@ -76,8 +75,7 @@ public class TagReader implements Iterable<ITag>, Iterator<ITag>, Closeable {
 							parent = currentTag;
 							break;
 						case CLOSING:
-							currentTag.setOpeningTag(unclosedTags
-									.remove(currentTag.getName()));
+							currentTag.setOpeningTag(unclosedTags.remove(currentTag.getName()));
 
 							if (currentTag.getOpeningTag() != null) {
 								parent = currentTag.getOpeningTag().getParent();
@@ -120,12 +118,11 @@ public class TagReader implements Iterable<ITag>, Iterator<ITag>, Closeable {
 
 	@Override
 	public void remove() {
-		throw new UnsupportedOperationException(
-				"Remove operation is not supported in TagReader");
+		throw new UnsupportedOperationException("Remove operation is not supported in TagReader");
 	}
 
-	private ITag getNextTag() throws IOException {
-		ITag result = null;
+	private Tag getNextTag() throws IOException {
+		Tag result = null;
 		TagBuilder builder = null;
 
 		boolean tagStarted = false;
@@ -140,15 +137,12 @@ public class TagReader implements Iterable<ITag>, Iterator<ITag>, Closeable {
 				int endTagIndex = currentTextPiece.indexOf(">");
 
 				if (endTagIndex >= 0) {
-					textCollector.append(currentTextPiece.subSequence(0,
-							endTagIndex + 1));
+					textCollector.append(currentTextPiece.subSequence(0, endTagIndex + 1));
 
 					result = builder.withText(textCollector.toString()).build();
 					textCollector = new StringBuilder();
 
-					currentTextPiece = new StringBuilder(
-							currentTextPiece.subSequence(endTagIndex + 1,
-									currentTextPiece.length()));
+					currentTextPiece = new StringBuilder(currentTextPiece.subSequence(endTagIndex + 1, currentTextPiece.length()));
 				} else {
 					textCollector.append(currentTextPiece);
 					needMoreData = true;
@@ -159,28 +153,22 @@ public class TagReader implements Iterable<ITag>, Iterator<ITag>, Closeable {
 				if (startTagIndex < 0) {
 					textCollector.append(currentTextPiece);
 					needMoreData = true;
-				} else if ((startTagIndex == 0)
-						&& (textCollector.length() == 0)) {
+				} else if ((startTagIndex == 0) && (textCollector.length() == 0)) {
 					tagStarted = true;
 					builder = TagBuilder.create();
 				} else {
-					textCollector.append(currentTextPiece.subSequence(0,
-							startTagIndex));
+					textCollector.append(currentTextPiece.subSequence(0, startTagIndex));
 
-					result = TagBuilder.createSpaceTag()
-							.withText(textCollector.toString()).build();
+					result = TagBuilder.createSpaceTag().withText(textCollector.toString()).build();
 					textCollector = new StringBuilder();
 
-					currentTextPiece = new StringBuilder(
-							currentTextPiece.subSequence(startTagIndex,
-									currentTextPiece.length()));
+					currentTextPiece = new StringBuilder(currentTextPiece.subSequence(startTagIndex, currentTextPiece.length()));
 				}
 			}
 		}
 
 		if ((result == null) && (textCollector.length() > 0)) {
-			result = TagBuilder.createSpaceTag()
-					.withText(textCollector.toString()).build();
+			result = TagBuilder.createSpaceTag().withText(textCollector.toString()).build();
 		}
 
 		return result;
