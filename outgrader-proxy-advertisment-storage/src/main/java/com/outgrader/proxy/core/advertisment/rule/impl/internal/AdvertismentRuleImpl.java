@@ -34,4 +34,14 @@ public class AdvertismentRuleImpl implements IAdvertismentRule {
 		return filter.matches(uri, tag);
 	}
 
+	@Override
+	public boolean isFinished(final ITag startTag, final ITag currentTag) {
+		return currentTag.getOpeningTag().equals(startTag);
+	}
+
+	@Override
+	public boolean isRewritable(final ITag startTag, final ITag currentTag) {
+		return true;
+	}
+
 }

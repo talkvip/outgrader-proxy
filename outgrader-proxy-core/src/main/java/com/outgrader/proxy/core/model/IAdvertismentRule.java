@@ -9,4 +9,8 @@ public interface IAdvertismentRule {
 
 	boolean matches(String uri, ITag tag);
 
+	boolean isFinished(ITag startTag, ITag currentTag);
+
+	boolean isRewritable(ITag startTag, ITag currentTag);
+
 }

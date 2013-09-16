@@ -36,10 +36,17 @@ public class AdvertismentRewriterImpl implements IAdvertismentRewriter {
 	public ByteBuf rewrite(final ITag tag, final IAdvertismentRule rule, final Charset charset, final TagReader tagReader) {
 		if (rewriteMode == RewriteMode.ON) {
 			if (tag.getTagType() != TagType.OPEN_AND_CLOSING) {
-				ITag nextTag = null;
+				// iterate until tag that should be start of adv.
+				ITag advStartTag = null;
+				while (tagReader.hasNext() && (advStartTag != null) && rule.isRewritable(tag, advStartTag)) {
+					advStartTag = tagReader.next();
+				}
+
+				// iterate until end of adv. not found
 				do {
-					nextTag = tagReader.next();
-				} while ((nextTag != null) && ((nextTag.getOpeningTag() == null) || !nextTag.getOpeningTag().equals(tag)));
+
+				} while (tagReader.hasNext() && (rule.isFinished(advStartTag, tagReader.next())));
+
 			}
 		} else {
 			return rewrite(tag, charset);

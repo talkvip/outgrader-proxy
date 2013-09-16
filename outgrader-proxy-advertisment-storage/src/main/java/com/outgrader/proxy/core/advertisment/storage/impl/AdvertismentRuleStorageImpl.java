@@ -177,6 +177,9 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 										source = FilterBuilderUtils.getCSSSelectorFilterSource();
 										pattern = pattern.replace("#", ".");
 									} else {
+										if (pattern.contains("[")) {
+											source = FilterBuilderUtils.getCSSSelectorFilterSource();
+										}
 										source = FilterBuilderUtils.getTagNameFilterSource();
 									}
 								}
