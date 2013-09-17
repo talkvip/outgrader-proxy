@@ -23,6 +23,7 @@ public interface IOutgraderProperties {
 	/**
 	 * Number of Boss Threads for netty.io
 	 */
+	@Deprecated
 	int getBossThreadNumber();
 
 	/**
