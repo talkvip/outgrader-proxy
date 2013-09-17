@@ -67,7 +67,7 @@ class InternalStatisticsEntry {
 	}
 
 	public AtomicLong getMinDuration() {
-		return minDuration;
+		return minDuration == null ? new AtomicLong() : minDuration;
 	}
 
 	public AtomicLong getMaxDuration() {
