@@ -33,23 +33,27 @@ public abstract class AbstractStatisticsExporter implements IStatisticsExporter 
 			LOGGER.debug("start run()");
 		}
 
-		LOGGER.info("Starting statistics export");
-
 		try {
-			for (StatisticsEntry entry : getStatistics()) {
-				exportEntry(entry);
-			}
-		} catch (StatisticsExportException e) {
-			LOGGER.error("An error occured during statistics export", e);
-		} finally {
-			try {
-				finish();
-			} catch (StatisticsExportException e) {
-				LOGGER.error("An error occured during finishing exporter", e);
-			}
-		}
+			LOGGER.info("Starting statistics export");
 
-		LOGGER.info("Finishing statistics export");
+			try {
+				for (StatisticsEntry entry : getStatistics()) {
+					exportEntry(entry);
+				}
+			} catch (StatisticsExportException e) {
+				LOGGER.error("An error occured during statistics export", e);
+			} finally {
+				try {
+					finish();
+				} catch (StatisticsExportException e) {
+					LOGGER.error("An error occured during finishing exporter", e);
+				}
+			}
+
+			LOGGER.info("Finishing statistics export");
+		} catch (Throwable e) {
+			LOGGER.error("An error occured during Statistics Export", e);
+		}
 
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("finish run()");
