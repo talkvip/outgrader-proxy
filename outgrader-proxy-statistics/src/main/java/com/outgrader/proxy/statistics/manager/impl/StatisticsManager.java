@@ -1,7 +1,7 @@
 package com.outgrader.proxy.statistics.manager.impl;
 
 import java.net.URI;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -85,6 +85,6 @@ public class StatisticsManager implements IStatisticsManager {
 
 	@Override
 	public Iterable<StatisticsEntry> exportStatistics() {
-		return Iterables.transform(Collections.unmodifiableMap(statistics).entrySet(), STATISTICS_CONVERTER);
+		return Iterables.transform(new HashMap<String, InternalStatisticsEntry>(statistics).entrySet(), STATISTICS_CONVERTER);
 	}
 }
