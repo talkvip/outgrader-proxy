@@ -13,7 +13,6 @@ import com.outgrader.proxy.advertisment.processor.IAdvertismentRewriter;
 import com.outgrader.proxy.advertisment.processor.internal.TagReader;
 import com.outgrader.proxy.core.model.IAdvertismentRule;
 import com.outgrader.proxy.core.model.ITag;
-import com.outgrader.proxy.core.model.ITag.TagType;
 import com.outgrader.proxy.core.properties.IOutgraderProperties;
 import com.outgrader.proxy.core.properties.IOutgraderProperties.RewriteMode;
 
@@ -34,25 +33,40 @@ public class AdvertismentRewriterImpl implements IAdvertismentRewriter {
 
 	@Override
 	public ByteBuf rewrite(final ITag tag, final IAdvertismentRule rule, final Charset charset, final TagReader tagReader) {
+		ByteBuf result = Unpooled.EMPTY_BUFFER;
+
 		if (rewriteMode == RewriteMode.ON) {
-			if (tag.getTagType() != TagType.OPEN_AND_CLOSING) {
-				// iterate until tag that should be start of adv.
-				ITag advStartTag = null;
-				while (tagReader.hasNext() && (advStartTag != null) && rule.isRewritable(tag, advStartTag)) {
-					advStartTag = tagReader.next();
+			// check tags until rule is matching and adv. rewrite start tag
+			// found
+			ITag currentTag = tag;
+			ITag advStartTag = null;
+
+			while (rule.isRuleContinues(tag, currentTag) && (advStartTag == null) && tagReader.hasNext()) {
+				if (rule.isRuleRewriteStarted(tag, currentTag)) {
+					advStartTag = currentTag;
+				} else {
+					result = append(result, currentTag, charset);
+
+					currentTag = tagReader.next();
 				}
+			}
 
-				// iterate until end of adv. not found
-				do {
-
-				} while (tagReader.hasNext() && !advStartTag.equals(tagReader.next().getOpeningTag()));
-
+			if (advStartTag != null) {
+				// if tags still matching a rule - remove all tags until end of
+				// adv.
+				while (rule.isRuleRewriteContinues(advStartTag, currentTag) && tagReader.hasNext()) {
+					currentTag = tagReader.next();
+				}
 			}
 		} else {
-			return rewrite(tag, charset);
+			result = rewrite(tag, charset);
 		}
 
-		return Unpooled.EMPTY_BUFFER;
+		return result;
+	}
+
+	private ByteBuf append(final ByteBuf original, final ITag tag, final Charset charset) {
+		return Unpooled.wrappedBuffer(original, rewrite(tag, charset));
 	}
 
 	@Override

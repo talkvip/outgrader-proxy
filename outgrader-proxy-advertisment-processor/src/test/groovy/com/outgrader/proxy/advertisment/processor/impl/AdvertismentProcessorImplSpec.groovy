@@ -97,13 +97,13 @@ class AdvertismentProcessorImplSpec extends Specification {
 		processor.process(URI, stream, CHARSET)
 
 		then:
-		1 * rule.matches(URI, tag)
+		1 * rule.isRuleStarted(URI, tag)
 	}
 
 	def "check statistics updated on rule matching"() {
 		setup:
 		rule.toString() >> 'some string'
-		rule.matches(URI, tag) >> true
+		rule.isRuleStarted(URI, tag) >> true
 
 		when:
 		processor.isAnalysable(tag) >> true
@@ -122,7 +122,7 @@ class AdvertismentProcessorImplSpec extends Specification {
 		and:
 		processor.process(URI, stream, CHARSET)
 		and:
-		rule.matches(tag) >> false
+		rule.isRuleStarted(tag) >> false
 
 		then:
 		0 * statisticsHandler._
@@ -156,7 +156,7 @@ class AdvertismentProcessorImplSpec extends Specification {
 	def "check rewriter on non-matched tag"() {
 		setup:
 		processor.isAnalysable(tag) >> true
-		rule.matches(tag) >> false
+		rule.isRuleStarted(tag) >> false
 
 		when:
 		processor.process(URI, stream, CHARSET)
@@ -169,7 +169,7 @@ class AdvertismentProcessorImplSpec extends Specification {
 		setup:
 		processor.isAnalysable(tag) >> true
 		tag.tagType >> TagType.OPEN_AND_CLOSING
-		rule.matches(URI, tag) >> true
+		rule.isRuleStarted(URI, tag) >> true
 
 		when:
 		processor.process(URI, stream, CHARSET)

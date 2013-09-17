@@ -1,5 +1,7 @@
 package com.outgrader.proxy.core.advertisment.rule.impl.internal;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 import com.outgrader.proxy.core.advertisment.filter.IFilter;
 import com.outgrader.proxy.core.model.IAdvertismentRule;
 import com.outgrader.proxy.core.model.ITag;
@@ -30,13 +32,23 @@ public class CurrentTagRule implements IAdvertismentRule {
 	}
 
 	@Override
-	public boolean matches(final String uri, final ITag tag) {
-		return filter.matches(uri, tag);
+	public boolean isRuleStarted(final String uri, final ITag tag) {
+		return getFilter().matches(uri, tag);
 	}
 
 	@Override
-	public boolean isRewritable(final ITag startTag, final ITag currentTag) {
-		return true;
+	public boolean isRuleRewriteStarted(final ITag startTag, final ITag currentTag) {
+		return startTag.equals(currentTag);
+	}
+
+	@Override
+	public boolean isRuleContinues(final ITag ruleStartTag, final ITag currentTag) {
+		return ruleStartTag.equals(currentTag);
+	}
+
+	@Override
+	public boolean isRuleRewriteContinues(final ITag ruleRewriteStartTag, final ITag currentTag) {
+		return !ObjectUtils.equals(currentTag.getOpeningTag(), ruleRewriteStartTag);
 	}
 
 }

@@ -15,7 +15,7 @@ public class ChildTagRule extends CurrentTagRule {
 	}
 
 	@Override
-	public boolean isRewritable(final ITag startTag, final ITag currentTag) {
+	public boolean isRuleRewriteStarted(final ITag startTag, final ITag currentTag) {
 		return true;
 	}
 

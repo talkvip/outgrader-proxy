@@ -7,8 +7,12 @@ package com.outgrader.proxy.core.model;
  */
 public interface IAdvertismentRule {
 
-	boolean matches(String uri, ITag tag);
+	boolean isRuleStarted(String uri, ITag tag);
 
-	boolean isRewritable(ITag startTag, ITag currentTag);
+	boolean isRuleContinues(ITag ruleStartTag, ITag currentTag);
+
+	boolean isRuleRewriteStarted(ITag startTag, ITag currentTag);
+
+	boolean isRuleRewriteContinues(ITag ruleRewriteStartTag, ITag currentTag);
 
 }
