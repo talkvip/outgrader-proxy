@@ -1,5 +1,6 @@
 package com.outgrader.proxy.advertisment.processor.internal.impl;
 
+import java.text.MessageFormat;
 import java.util.Map;
 
 import com.outgrader.proxy.advertisment.processor.internal.impl.utils.TagUtils;
@@ -11,6 +12,8 @@ import com.outgrader.proxy.core.model.ITag;
  * 
  */
 public class Tag implements ITag {
+
+	private static final String PATH_FORMAT = "{0}>{1}";
 
 	public static class TagBuilder {
 
@@ -110,6 +113,8 @@ public class Tag implements ITag {
 
 	private Map<String, String> attributes = null;
 
+	private String path;
+
 	protected Tag() {
 
 	}
@@ -172,6 +177,12 @@ public class Tag implements ITag {
 
 	public void setParent(final ITag tag) {
 		this.parent = tag;
+
+		if (parent != null) {
+			this.path = MessageFormat.format(PATH_FORMAT, tag.getPath(), name);
+		} else {
+			this.path = name;
+		}
 	}
 
 	@Override
@@ -181,5 +192,14 @@ public class Tag implements ITag {
 		}
 
 		return attributes.get(name);
+	}
+
+	@Override
+	public String getPath() {
+		if (path == null) {
+			return name;
+		}
+
+		return path;
 	}
 }

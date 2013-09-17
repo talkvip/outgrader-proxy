@@ -17,6 +17,8 @@ public interface ITag {
 
 	ITag getParent();
 
+	String getPath();
+
 	String getText();
 
 	TagType getTagType();
