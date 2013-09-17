@@ -31,6 +31,7 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 import com.outgrader.proxy.core.advertisment.processor.IAdvertismentProcessor
+import com.outgrader.proxy.core.statistics.IStatisticsHandler
 import com.outgrader.proxy.external.impl.exceptions.ExternalSenderException
 
 
@@ -59,8 +60,10 @@ class ExternalSenderImplSpec extends Specification {
 
 	IAdvertismentProcessor processor = Mock(IAdvertismentProcessor)
 
+	IStatisticsHandler statistics = Mock(IStatisticsHandler)
+
 	def setup() {
-		sender = Spy(ExternalSenderImpl, constructorArgs: [processor])
+		sender = Spy(ExternalSenderImpl, constructorArgs: [processor, statistics])
 
 		sender.client >> httpClient
 	}
@@ -333,5 +336,14 @@ class ExternalSenderImplSpec extends Specification {
 
 		then:
 		1 * processor.process(_ as String, stream, HTTP.DEF_CONTENT_CHARSET)
+	}
+
+	def "check exception handled on bad uri"() {
+		when:
+		sender.getRequest(HttpMethod.GET, "blablabla")
+
+		then:
+		noExceptionThrown()
+		1 * statistics.onError(_, _, _, _)
 	}
 }
