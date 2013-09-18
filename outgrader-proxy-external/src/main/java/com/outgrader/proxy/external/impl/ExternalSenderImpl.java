@@ -240,7 +240,7 @@ public class ExternalSenderImpl implements IExternalSender {
 		} else if (method.equals(HttpMethod.TRACE)) {
 			result = new HttpTrace();
 		} else {
-			throw new IllegalArgumentException("Unsupported HTTP Method <" + method + ">");
+			throw new IllegalArgumentException("Unsupported HTTP Method <" + method + "> for <" + uri + ">");
 		}
 
 		try {
