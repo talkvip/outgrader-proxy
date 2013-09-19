@@ -15,7 +15,7 @@ startScripts {
 	classpath += files('src/dist/config')
 	
 	//TODO: LN: 12.09.2013, will work for *nix only for now
-	defaultJvmOpts = ['-Doutgrader.home=$APP_HOME']
+	defaultJvmOpts = ['-server -XX:+AggressiveOpts -XX:+OptimizeStringConcat -Doutgrader.home=$APP_HOME']
 	
 	doLast {
 		def windowsScriptFile = file getWindowsScript()
