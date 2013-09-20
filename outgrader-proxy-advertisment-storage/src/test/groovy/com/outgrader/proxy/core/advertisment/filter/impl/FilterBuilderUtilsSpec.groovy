@@ -35,6 +35,8 @@ class FilterBuilderUtilsSpec extends Specification {
 		tag.getText() >> TAG_TEXT
 		tag.getAttribute(ITag.ID_ATTRIBUTE) >> TAG_ID
 		tag.getName() >> TAG_NAME
+		tag.getId() >> TAG_ID
+		tag.getCSSId() >> TAG_NAME + '.' + TAG_ID
 	}
 
 	def "check simple matching filter"() {
@@ -144,7 +146,7 @@ class FilterBuilderUtilsSpec extends Specification {
 
 	def "check basic filter souce"() {
 		setup:
-		IFilterSource source = FilterBuilderUtils.getBasicFilterSource()
+		IFilterSource source = FilterBuilderUtils.BASIC_FILTER_SOURCE
 
 		when:
 		def result = source.getFilterSource(URI, tag)
@@ -169,7 +171,7 @@ class FilterBuilderUtilsSpec extends Specification {
 
 	def "check domain filter source"() {
 		setup:
-		IFilterSource source = FilterBuilderUtils.getDomainFilterSource()
+		IFilterSource source = FilterBuilderUtils.DOMAIN_FILTER_SOURCE
 
 		when:
 		def result = source.getFilterSource(URI, tag)
@@ -191,7 +193,7 @@ class FilterBuilderUtilsSpec extends Specification {
 
 	def "check css id filter source"() {
 		setup:
-		IFilterSource source = FilterBuilderUtils.getCSSIdFilterSource()
+		IFilterSource source = FilterBuilderUtils.CSS_ID_FILTER_SOURCE
 
 		when:
 		def result = source.getFilterSource(URI, tag)
@@ -202,7 +204,7 @@ class FilterBuilderUtilsSpec extends Specification {
 
 	def "check tag name filter source"() {
 		setup:
-		IFilterSource source = FilterBuilderUtils.getTagNameFilterSource()
+		IFilterSource source = FilterBuilderUtils.TAG_NAME_FILTER_SOURCE
 
 		when:
 		def result = source.getFilterSource(URI, tag)
@@ -213,7 +215,7 @@ class FilterBuilderUtilsSpec extends Specification {
 
 	def "check css selector filter source"() {
 		setup:
-		IFilterSource source = FilterBuilderUtils.getCSSSelectorFilterSource()
+		IFilterSource source = FilterBuilderUtils.CSS_SELECTOR_FILTER_SOURCE
 
 		when:
 		def result = source.getFilterSource(URI, tag)
