@@ -170,7 +170,7 @@ public final class FilterBuilderUtils {
 
 			@Override
 			public String getFilterSource(final String uri, final ITag tag) {
-				StringBuilder builder = new StringBuilder(uri);
+				StringBuilder builder = new StringBuilder(tag.getName());
 
 				builder.append(POINT_SYMBOL).append(tag.getAttribute(ITag.ID_ATTRIBUTE));
 
