@@ -177,15 +177,15 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 		} else {
 			pattern = getHidingElementPattern(line, "###");
 			if (pattern != null) {
-				source = FilterBuilderUtils.getCSSIdFilterSource();
+				source = FilterBuilderUtils.CSS_ID_FILTER_SOURCE;
 			} else {
 				pattern = getHidingElementPattern(line, "##*#");
 				if (pattern != null) {
-					source = FilterBuilderUtils.getCSSIdFilterSource();
+					source = FilterBuilderUtils.CSS_ID_FILTER_SOURCE;
 				} else {
 					pattern = getHidingElementPattern(line, "##.");
 					if (pattern != null) {
-						source = FilterBuilderUtils.getCSSSelectorFilterSource();
+						source = FilterBuilderUtils.CSS_SELECTOR_FILTER_SOURCE;
 						pattern = "." + pattern;
 					} else {
 						pattern = getHidingElementPattern(line, "##");
@@ -193,16 +193,16 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 						if (pattern != null) {
 							if (!pattern.contains("[")) {
 								if (pattern.contains(".")) {
-									source = FilterBuilderUtils.getCSSSelectorFilterSource();
+									source = FilterBuilderUtils.CSS_SELECTOR_FILTER_SOURCE;
 								} else {
 									if (pattern.contains("#")) {
-										source = FilterBuilderUtils.getCSSSelectorFilterSource();
+										source = FilterBuilderUtils.CSS_SELECTOR_FILTER_SOURCE;
 										pattern = pattern.replace("#", ".");
 									} else {
 										if (pattern.contains("[")) {
-											source = FilterBuilderUtils.getCSSSelectorFilterSource();
+											source = FilterBuilderUtils.CSS_SELECTOR_FILTER_SOURCE;
 										}
-										source = FilterBuilderUtils.getTagNameFilterSource();
+										source = FilterBuilderUtils.TAG_NAME_FILTER_SOURCE;
 									}
 								}
 							}
@@ -284,7 +284,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 	protected IFilter createDomainFilter(final String domainsLine, final String separator) {
 		StringTokenizer tokenizer = new StringTokenizer(domainsLine, separator, false);
 
-		IFilterSource filterSource = FilterBuilderUtils.getDomainFilterSource();
+		IFilterSource filterSource = FilterBuilderUtils.DOMAIN_FILTER_SOURCE;
 
 		List<IFilter> filters = new ArrayList<>();
 
@@ -296,7 +296,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 	}
 
 	protected IFilter getBasicFilter(final String line) {
-		IFilterSource basicSource = FilterBuilderUtils.getBasicFilterSource();
+		IFilterSource basicSource = FilterBuilderUtils.BASIC_FILTER_SOURCE;
 		IFilter filter = FilterBuilderUtils.build(line, basicSource);
 
 		return filter;

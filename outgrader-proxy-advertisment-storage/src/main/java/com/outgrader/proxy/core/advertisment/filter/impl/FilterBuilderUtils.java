@@ -160,55 +160,45 @@ public final class FilterBuilderUtils {
 		}
 	};
 
-	public static IFilterSource getCSSSelectorFilterSource() {
-		return new AbstractFilterSource() {
+	public static final IFilterSource CSS_SELECTOR_FILTER_SOURCE = new AbstractFilterSource() {
 
-			@Override
-			public String getFilterSource(final String uri, final ITag tag) {
-				return tag.getCSSId();
-			}
-		};
-	}
+		@Override
+		public String getFilterSource(final String uri, final ITag tag) {
+			return tag.getCSSId();
+		}
+	};
 
-	public static IFilterSource getCSSIdFilterSource() {
-		return new AbstractFilterSource() {
+	public static final IFilterSource CSS_ID_FILTER_SOURCE = new AbstractFilterSource() {
 
-			@Override
-			public String getFilterSource(final String uri, final ITag tag) {
-				return tag.getId();
-			}
-		};
-	}
+		@Override
+		public String getFilterSource(final String uri, final ITag tag) {
+			return tag.getId();
+		}
+	};
 
-	public static IFilterSource getTagNameFilterSource() {
-		return new AbstractFilterSource() {
+	public static final IFilterSource TAG_NAME_FILTER_SOURCE = new AbstractFilterSource() {
 
-			@Override
-			public String getFilterSource(final String uri, final ITag tag) {
-				return tag.getName();
-			}
-		};
-	}
+		@Override
+		public String getFilterSource(final String uri, final ITag tag) {
+			return tag.getName();
+		}
+	};
 
-	public static IFilterSource getBasicFilterSource() {
-		return new AbstractFilterSource() {
+	public static final IFilterSource BASIC_FILTER_SOURCE = new AbstractFilterSource() {
 
-			@Override
-			public String getFilterSource(final String uri, final ITag tag) {
-				return tag.getText();
-			}
-		};
-	}
+		@Override
+		public String getFilterSource(final String uri, final ITag tag) {
+			return tag.getText();
+		}
+	};
 
-	public static IFilterSource getDomainFilterSource() {
-		return new AbstractFilterSource() {
+	public static final IFilterSource DOMAIN_FILTER_SOURCE = new AbstractFilterSource() {
 
-			@Override
-			public String getFilterSource(final String uri, final ITag tag) {
-				return uri;
-			}
-		};
-	}
+		@Override
+		public String getFilterSource(final String uri, final ITag tag) {
+			return uri;
+		}
+	};
 
 	public static IFilterSource getTagAttributeFilterSource(final String attributeName) {
 		return new AbstractFilterSource() {
