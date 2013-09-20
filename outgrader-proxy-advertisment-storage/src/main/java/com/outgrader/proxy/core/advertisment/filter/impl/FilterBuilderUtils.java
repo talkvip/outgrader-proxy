@@ -219,6 +219,16 @@ public final class FilterBuilderUtils {
 		};
 	}
 
+	public static IFilterSource getTagAttributeFilterSource(final String attributeName) {
+		return new AbstractFilterSource() {
+
+			@Override
+			public String getFilterSource(final String uri, final ITag tag) {
+				return tag.getAttribute(attributeName);
+			}
+		};
+	}
+
 	public static IFilter build(final String rule, final IFilterSource filterSource) {
 		return build(rule, filterSource, false);
 	}

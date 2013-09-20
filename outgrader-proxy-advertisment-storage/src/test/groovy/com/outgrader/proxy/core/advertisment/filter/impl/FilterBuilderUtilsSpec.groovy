@@ -221,4 +221,16 @@ class FilterBuilderUtilsSpec extends Specification {
 		then:
 		result == TAG_NAME + '.' + TAG_ID
 	}
+
+	def "check tag attribute filter source"() {
+		setup:
+		IFilterSource source = FilterBuilderUtils.getTagAttributeFilterSource('attr')
+		tag.getAttribute('attr') >> 'value'
+
+		when:
+		def result = source.getFilterSource(URI, tag)
+
+		then:
+		result == 'value'
+	}
 }
