@@ -31,7 +31,9 @@ class AdvertismentProcessorImplSpec extends Specification {
 
 	IAdvertismentRuleStorage ruleStorage = Mock(IAdvertismentRuleStorage)
 
-	IAdvertismentRule rule = Mock(IAdvertismentRule)
+	IAdvertismentRule includingRule = Mock(IAdvertismentRule)
+
+	IAdvertismentRule excludingRule = Mock(IAdvertismentRule)
 
 	IStatisticsHandler statisticsHandler = Mock(IStatisticsHandler)
 
@@ -62,11 +64,12 @@ class AdvertismentProcessorImplSpec extends Specification {
 
 		processor.createTagReader(stream, CHARSET) >> tagReader
 
-		ruleStorage.getIncludingRules() >> [rule]
+		ruleStorage.getIncludingRules() >> [includingRule]
+		ruleStorage.getExcludingRules() >> [excludingRule]
 
 		rewriter.rewrite(_, _) >> Unpooled.EMPTY_BUFFER
 		rewriter.rewrite(_, _, _) >> Unpooled.EMPTY_BUFFER
-		rewriter.rewrite(tag, rule, _, _) >> Unpooled.EMPTY_BUFFER
+		rewriter.rewrite(tag, includingRule, _, _) >> Unpooled.EMPTY_BUFFER
 	}
 
 	def "check all tags was read"() {
@@ -86,7 +89,7 @@ class AdvertismentProcessorImplSpec extends Specification {
 		processor.process(URI, stream, CHARSET)
 
 		then:
-		0 * rule._(_)
+		0 * includingRule._(_)
 	}
 
 	def "check rule checked if tag is analysable"() {
@@ -97,13 +100,13 @@ class AdvertismentProcessorImplSpec extends Specification {
 		processor.process(URI, stream, CHARSET)
 
 		then:
-		1 * rule.isRuleStarted(URI, tag)
+		1 * includingRule.isRuleStarted(URI, tag)
 	}
 
 	def "check statistics updated on rule matching"() {
 		setup:
-		rule.toString() >> 'some string'
-		rule.isRuleStarted(URI, tag) >> true
+		includingRule.toString() >> 'some string'
+		includingRule.isRuleStarted(URI, tag) >> true
 
 		when:
 		processor.isAnalysable(tag) >> true
@@ -112,7 +115,7 @@ class AdvertismentProcessorImplSpec extends Specification {
 		processor.process(URI, stream, CHARSET)
 
 		then:
-		1 * statisticsHandler.onAdvertismentCandidateFound(URI, rule.toString())
+		1 * statisticsHandler.onAdvertismentCandidateFound(URI, includingRule.toString())
 	}
 
 	def "check no statistics update if rule not matches"() {
@@ -122,7 +125,7 @@ class AdvertismentProcessorImplSpec extends Specification {
 		and:
 		processor.process(URI, stream, CHARSET)
 		and:
-		rule.isRuleStarted(tag) >> false
+		includingRule.isRuleStarted(tag) >> false
 
 		then:
 		0 * statisticsHandler._
@@ -156,7 +159,7 @@ class AdvertismentProcessorImplSpec extends Specification {
 	def "check rewriter on non-matched tag"() {
 		setup:
 		processor.isAnalysable(tag) >> true
-		rule.isRuleStarted(tag) >> false
+		includingRule.isRuleStarted(tag) >> false
 
 		when:
 		processor.process(URI, stream, CHARSET)
@@ -169,13 +172,13 @@ class AdvertismentProcessorImplSpec extends Specification {
 		setup:
 		processor.isAnalysable(tag) >> true
 		tag.tagType >> TagType.OPEN_AND_CLOSING
-		rule.isRuleStarted(URI, tag) >> true
+		includingRule.isRuleStarted(URI, tag) >> true
 
 		when:
 		processor.process(URI, stream, CHARSET)
 
 		then:
-		1 * rewriter.rewrite(tag, rule, CHARSET, tagReader) >> Unpooled.EMPTY_BUFFER
+		1 * rewriter.rewrite(tag, includingRule, CHARSET, tagReader) >> Unpooled.EMPTY_BUFFER
 	}
 
 	def "check tag not analasyable if it's not anylysable by property"() {
@@ -223,6 +226,20 @@ class AdvertismentProcessorImplSpec extends Specification {
 
 		then:
 		result
+	}
+
+	def "check rewriter on matches but exluding rule on tag"() {
+		setup:
+		processor.isAnalysable(tag) >> true
+		tag.tagType >> TagType.OPEN_AND_CLOSING
+		includingRule.isRuleStarted(URI, tag) >> true
+		excludingRule.isRuleStarted(URI, tag) >> true
+
+		when:
+		processor.process(URI, stream, CHARSET)
+
+		then:
+		0 * rewriter.rewrite(tag, includingRule, CHARSET, tagReader) >> Unpooled.EMPTY_BUFFER
 	}
 }
 

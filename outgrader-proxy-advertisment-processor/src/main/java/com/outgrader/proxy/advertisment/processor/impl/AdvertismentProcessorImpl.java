@@ -63,15 +63,26 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 				if (isAnalysable(tag)) {
 					boolean isRewritten = false;
 
-					for (IAdvertismentRule rule : ruleStorage.getIncludingRules()) {
-						if (rule.isRuleStarted(uri, tag)) {
-							statisticsHandler.onAdvertismentCandidateFound(uri, rule.toString());
+					for (IAdvertismentRule includingRule : ruleStorage.getIncludingRules()) {
+						if (includingRule.isRuleStarted(uri, tag)) {
+							boolean stillIncluding = true;
 
-							isRewritten = true;
+							for (IAdvertismentRule excludingRule : ruleStorage.getExcludingRules()) {
+								if (excludingRule.isRuleStarted(uri, tag)) {
+									stillIncluding = false;
+									break;
+								}
+							}
 
-							result = Unpooled.copiedBuffer(result, rewriter.rewrite(tag, rule, charset, reader));
+							if (stillIncluding) {
+								statisticsHandler.onAdvertismentCandidateFound(uri, includingRule.toString());
 
-							break;
+								isRewritten = true;
+
+								result = Unpooled.copiedBuffer(result, rewriter.rewrite(tag, includingRule, charset, reader));
+
+								break;
+							}
 						}
 					}
 
