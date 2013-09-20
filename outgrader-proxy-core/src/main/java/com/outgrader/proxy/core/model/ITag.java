@@ -31,4 +31,8 @@ public interface ITag {
 
 	String getAttribute(String name);
 
+	String getId();
+
+	String getCSSId();
+
 }

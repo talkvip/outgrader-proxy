@@ -17,11 +17,6 @@ import com.outgrader.proxy.core.model.ITag;
  */
 public final class FilterBuilderUtils {
 
-	/**
-	 * 
-	 */
-	private static final String POINT_SYMBOL = ".";
-
 	private static final String NOT_SYMBOL = "~";
 
 	private static final String TOKEN_SEPARATOR = "*";
@@ -170,11 +165,7 @@ public final class FilterBuilderUtils {
 
 			@Override
 			public String getFilterSource(final String uri, final ITag tag) {
-				StringBuilder builder = new StringBuilder(tag.getName());
-
-				builder.append(POINT_SYMBOL).append(tag.getAttribute(ITag.ID_ATTRIBUTE));
-
-				return builder.toString();
+				return tag.getCSSId();
 			}
 		};
 	}
@@ -184,7 +175,7 @@ public final class FilterBuilderUtils {
 
 			@Override
 			public String getFilterSource(final String uri, final ITag tag) {
-				return tag.getAttribute(ITag.ID_ATTRIBUTE);
+				return tag.getId();
 			}
 		};
 	}

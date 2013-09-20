@@ -3,6 +3,8 @@ package com.outgrader.proxy.advertisment.processor.internal.impl;
 import java.text.MessageFormat;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.outgrader.proxy.advertisment.processor.internal.impl.utils.TagUtils;
 import com.outgrader.proxy.core.model.ITag;
 
@@ -14,6 +16,8 @@ import com.outgrader.proxy.core.model.ITag;
 public class Tag implements ITag {
 
 	private static final String PATH_FORMAT = "{0}>{1}";
+
+	private static final String POINT_SYMBOL = ".";
 
 	public static class TagBuilder {
 
@@ -115,6 +119,10 @@ public class Tag implements ITag {
 
 	private String path;
 
+	private String id;
+
+	private String cssId;
+
 	protected Tag() {
 
 	}
@@ -173,6 +181,32 @@ public class Tag implements ITag {
 
 	public void setName(final String name) {
 		this.name = name;
+	}
+
+	@Override
+	public String getId() {
+		if (id == null) {
+			id = getAttribute(ID_ATTRIBUTE);
+
+			if (id == null) {
+				id = StringUtils.EMPTY;
+			}
+		}
+
+		return id;
+	}
+
+	@Override
+	public String getCSSId() {
+		if (cssId == null) {
+			StringBuilder builder = new StringBuilder(getName());
+
+			builder.append(POINT_SYMBOL).append(getId());
+
+			return builder.toString();
+		}
+
+		return cssId;
 	}
 
 	public void setParent(final ITag tag) {
