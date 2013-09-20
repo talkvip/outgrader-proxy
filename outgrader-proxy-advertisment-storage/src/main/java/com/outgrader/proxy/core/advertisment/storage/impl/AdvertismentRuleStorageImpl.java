@@ -41,18 +41,29 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AdvertismentRuleStorageImpl.class);
 
 	private enum LineType {
-		COMMENT("!"), BASIC(null), ELEMENT_HIDING("#"), EXCLUDING("@@"), EXTENDED(PARAMETERS_SEPARATOR);
+		COMMENT("!", true), BASIC(null), ELEMENT_HIDING("#"), EXCLUDING("@@", true), EXTENDED(PARAMETERS_SEPARATOR);
 
 		private String symbol;
 
+		private boolean shouldStart;
+
 		private LineType(final String symbol) {
+			this(symbol, false);
+		}
+
+		private LineType(final String symbol, final boolean shouldStart) {
 			this.symbol = symbol;
+			this.shouldStart = shouldStart;
 		}
 
 		public static LineType getLineType(final String line) {
 			for (LineType type : values()) {
-				if ((type.symbol != null) && line.contains(type.symbol)) {
-					return type;
+				if ((type.symbol != null)) {
+					if (type.shouldStart && line.startsWith(type.symbol)) {
+						return type;
+					} else if (line.contains(type.symbol)) {
+						return type;
+					}
 				}
 			}
 
@@ -62,7 +73,9 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 
 	private final IOutgraderProperties properties;
 
-	private IAdvertismentRule[] ruleSet;
+	private IAdvertismentRule[] includingRuleSet;
+
+	private IAdvertismentRule[] excludingRuleSet;
 
 	@Inject
 	public AdvertismentRuleStorageImpl(final IOutgraderProperties properties) throws Exception {
@@ -70,8 +83,8 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 	}
 
 	@Override
-	public IAdvertismentRule[] getRules() {
-		return ruleSet;
+	public IAdvertismentRule[] getIncludingRules() {
+		return includingRuleSet;
 	}
 
 	protected InputStream openRuleFileStream(final String location) {
@@ -84,7 +97,8 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 			LOGGER.debug("started initializeRuleSet()");
 		}
 
-		Collection<IAdvertismentRule> result = new ArrayList<>();
+		Collection<IAdvertismentRule> mainRules = new ArrayList<>();
+		Collection<IAdvertismentRule> excludingRules = new ArrayList<>();
 
 		int ruleCount = 0;
 
@@ -99,20 +113,24 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 
 					LineType type = LineType.getLineType(line);
 
-					IFilter filter = null;
+					IFilter includingFilter = null;
+					IFilter excludingFilter = null;
 
 					if (type != LineType.COMMENT) {
 						if (type != null) {
 							switch (type) {
 							case BASIC:
-								filter = getBasicFilter(line);
+								includingFilter = getBasicFilter(line);
 								break;
 							case EXTENDED:
-								filter = getExtendedFilter(line);
+								includingFilter = getExtendedFilter(line);
 								break;
 							case ELEMENT_HIDING:
-								filter = getHidingElementFilter(line);
+								includingFilter = getHidingElementFilter(line);
 								break;
+							case EXCLUDING:
+								String excludingRuleLine = line.replace("@@", StringUtils.EMPTY);
+								excludingFilter = getBasicFilter(excludingRuleLine);
 							default:
 								// skip
 								break;
@@ -121,8 +139,11 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 						ruleCount++;
 					}
 
-					if (filter != null) {
-						result.add(new CurrentTagRule(line, filter));
+					if (includingFilter != null) {
+						mainRules.add(new CurrentTagRule(line, includingFilter));
+					}
+					if (excludingFilter != null) {
+						excludingRules.add(new CurrentTagRule(line, excludingFilter));
 					}
 				}
 			} catch (IOException e) {
@@ -132,9 +153,10 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 			}
 		}
 
-		LOGGER.info("It was loaded <" + result.size() + "> from <" + ruleCount + "> existing rule");
+		LOGGER.info("It was loaded <" + (mainRules.size() + excludingRules.size()) + "> from <" + ruleCount + "> existing rule");
 
-		ruleSet = result.toArray(new IAdvertismentRule[result.size()]);
+		includingRuleSet = mainRules.toArray(new IAdvertismentRule[mainRules.size()]);
+		excludingRuleSet = excludingRules.toArray(new IAdvertismentRule[excludingRules.size()]);
 	}
 
 	protected IFilter getHidingElementFilter(final String line) {
@@ -278,5 +300,10 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 		IFilter filter = FilterBuilderUtils.build(line, basicSource);
 
 		return filter;
+	}
+
+	@Override
+	public IAdvertismentRule[] getExcludingRules() {
+		return excludingRuleSet;
 	}
 }

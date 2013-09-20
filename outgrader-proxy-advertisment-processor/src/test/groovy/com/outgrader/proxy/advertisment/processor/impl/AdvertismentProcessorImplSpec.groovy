@@ -62,7 +62,7 @@ class AdvertismentProcessorImplSpec extends Specification {
 
 		processor.createTagReader(stream, CHARSET) >> tagReader
 
-		ruleStorage.getRules() >> [rule]
+		ruleStorage.getIncludingRules() >> [rule]
 
 		rewriter.rewrite(_, _) >> Unpooled.EMPTY_BUFFER
 		rewriter.rewrite(_, _, _) >> Unpooled.EMPTY_BUFFER

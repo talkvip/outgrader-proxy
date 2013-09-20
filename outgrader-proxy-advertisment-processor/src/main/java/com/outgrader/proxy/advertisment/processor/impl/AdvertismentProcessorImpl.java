@@ -63,7 +63,7 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 				if (isAnalysable(tag)) {
 					boolean isRewritten = false;
 
-					for (IAdvertismentRule rule : ruleStorage.getRules()) {
+					for (IAdvertismentRule rule : ruleStorage.getIncludingRules()) {
 						if (rule.isRuleStarted(uri, tag)) {
 							statisticsHandler.onAdvertismentCandidateFound(uri, rule.toString());
 

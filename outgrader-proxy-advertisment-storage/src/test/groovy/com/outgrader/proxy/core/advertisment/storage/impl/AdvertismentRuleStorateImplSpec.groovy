@@ -49,8 +49,8 @@ class AdvertismentRuleStorateImplSpec extends Specification {
 		storage.initializeRuleSet()
 
 		then:
-		storage.rules != null
-		storage.rules.size() == 1
+		storage.includingRules != null
+		storage.includingRules.size() == 1
 		1 * storage.getBasicFilter(_ as String)
 	}
 
@@ -75,8 +75,8 @@ class AdvertismentRuleStorateImplSpec extends Specification {
 		storage.initializeRuleSet()
 
 		then:
-		storage.rules != null
-		storage.rules.size() == 0
+		storage.includingRules != null
+		storage.includingRules.size() == 0
 	}
 
 	def "check extended rule parsed"() {
@@ -87,8 +87,8 @@ class AdvertismentRuleStorateImplSpec extends Specification {
 		storage.initializeRuleSet()
 
 		then:
-		storage.rules != null
-		storage.rules.size() == 1
+		storage.includingRules != null
+		storage.includingRules.size() == 1
 		1 * storage.getExtendedFilter('rule$domain=some.net')
 		1 * storage.getParametersFilter('domain=some.net')
 		1 * storage.getBasicFilter('rule')
@@ -118,8 +118,8 @@ class AdvertismentRuleStorateImplSpec extends Specification {
 
 		then:
 		1 * storage.getHidingElementFilter(line)
-		storage.rules != null
-		storage.rules.size() == 1
+		storage.includingRules != null
+		storage.includingRules.size() == 1
 
 		where:
 		line << [
@@ -143,14 +143,27 @@ class AdvertismentRuleStorateImplSpec extends Specification {
 		then:
 		2 * storage.getHidingElementFilter(_)
 		1 * storage.createDomainFilter(_, _)
-		storage.rules != null
-		storage.rules.size() == 1
+		storage.includingRules != null
+		storage.includingRules.size() == 1
 
 		where:
 		line << [
 			'domain.com,another.org##id',
 			'domain.com##id'
 		]
+	}
+
+	def "check excluding rule"() {
+		setup:
+		storage = createStorage("@@somerule")
+
+		when:
+		storage.initializeRuleSet()
+
+		then:
+		1 * storage.getBasicFilter(_)
+		storage.excludingRules != null
+		storage.excludingRules.size() == 1
 	}
 
 	private IAdvertismentRuleStorage createStorage(String fileContent) {
