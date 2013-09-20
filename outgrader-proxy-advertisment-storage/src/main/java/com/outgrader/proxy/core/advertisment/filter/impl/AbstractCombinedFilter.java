@@ -2,8 +2,7 @@ package com.outgrader.proxy.core.advertisment.filter.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.commons.lang3.ArrayUtils;
 
 import com.outgrader.proxy.core.advertisment.filter.IFilter;
 
@@ -14,15 +13,15 @@ import com.outgrader.proxy.core.advertisment.filter.IFilter;
  */
 abstract class AbstractCombinedFilter implements IFilter {
 
-	private final List<IFilter> filters = new ArrayList<>();
+	private IFilter[] filters = new IFilter[0];
 
 	public void addSubFilter(final IFilter filter) {
 		checkNotNull(filter, "Sub-filter cannot be null");
 
-		filters.add(filter);
+		filters = ArrayUtils.add(filters, filter);
 	}
 
-	protected List<IFilter> getFilters() {
+	protected IFilter[] getFilters() {
 		return filters;
 	}
 
