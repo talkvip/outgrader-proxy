@@ -82,6 +82,10 @@ class TagMatchingSpec extends Specification {
 		'###ads_iframe' | 'some.uri' | '<a id="lalala" />'        | false
 		'###ads_iframe' | 'some.uri' | '<a id="ads_iframe" />'    | true
 		'###ads_iframe' | 'some.uri' | '<a id="no_ads_iframe" />' | false
+
+		'##.advblock' | 'some.uri' | '<a id="advblock" />'     | true
+		'##.advblock' | 'some.uri' | '<div id="advblock" />'   | true
+		'##.advblock' | 'some.uri' | '<a id="not_advblock" />' | false
 	}
 
 	private IAdvertismentProcessor createProcessor(IAdvertismentRuleStorage storage) {

@@ -163,6 +163,8 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 		IFilterSource source = null;
 		String pattern = null;
 
+		boolean shouldBeEquals = false;
+
 		int firstSharp = line.indexOf("#");
 		if (firstSharp > 0) {
 			String domains = line.substring(0, firstSharp);
@@ -180,6 +182,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 			pattern = getHidingElementPattern(line, "###");
 			if (pattern != null) {
 				source = FilterBuilderUtils.CSS_ID_FILTER_SOURCE;
+				shouldBeEquals = true;
 			} else {
 				pattern = getHidingElementPattern(line, "##*#");
 				if (pattern != null) {
@@ -259,7 +262,14 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 				}
 			}
 
-			filters.add(FilterBuilderUtils.buildEqualsFilter(pattern, source));
+			IFilter mainFilter = null;
+			if (shouldBeEquals) {
+				mainFilter = FilterBuilderUtils.buildEqualsFilter(pattern, source);
+			} else {
+				mainFilter = FilterBuilderUtils.buildContainsFilter(pattern, source);
+			}
+
+			filters.add(mainFilter);
 
 			return FilterBuilderUtils.joinAnd(filters);
 		}
