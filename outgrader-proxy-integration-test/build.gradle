@@ -1,6 +1,7 @@
 dependencies {
 	testCompile project(':outgrader-proxy-advertisment-processor')
 	testCompile project(':outgrader-proxy-advertisment-storage')
+	testCompile project(':outgrader-proxy-properties')
 	
 	testCompile group: 'commons-io', name: 'commons-io', version: commonsIOVersion
 }

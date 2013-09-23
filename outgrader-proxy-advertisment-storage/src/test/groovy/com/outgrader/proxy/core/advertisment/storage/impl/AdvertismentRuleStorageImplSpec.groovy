@@ -104,7 +104,6 @@ class AdvertismentRuleStorageImplSpec extends Specification {
 		then:
 		result != null
 		result.filters.size() == 2
-		result.filters[0].filters.size() == 1
 		result.filters[1].pattern == 'rule'
 	}
 
