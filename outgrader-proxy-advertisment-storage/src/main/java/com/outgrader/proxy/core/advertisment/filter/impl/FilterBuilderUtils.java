@@ -81,12 +81,14 @@ public final class FilterBuilderUtils {
 					rule = rule.replace(SEPARATOR_SYMBOL, StringUtils.EMPTY);
 				}
 
-				IFilter matchingFilter = new ContainsFilter(rule.replace(PROTOCOL_SYMBOL, "://"), source);
+				OrFilter protocolFilter = new OrFilter();
+				protocolFilter.addSubFilter(new ContainsFilter(rule.replace(PROTOCOL_SYMBOL, "://"), source));
+				protocolFilter.addSubFilter(new ContainsFilter(rule.replace(PROTOCOL_SYMBOL, "."), source));
 
 				if (subFilter == null) {
-					return matchingFilter;
+					return protocolFilter;
 				} else {
-					return joinAnd(matchingFilter, subFilter);
+					return joinAnd(protocolFilter, subFilter);
 				}
 			}
 
@@ -236,6 +238,14 @@ public final class FilterBuilderUtils {
 
 	public static IFilter buildContainsFilter(final String rule, final IFilterSource filterSource) {
 		return new ContainsFilter(rule, filterSource);
+	}
+
+	public static IFilter buildContainsDomainFilter(final IFilterSource filterSource) {
+		return new ContainsDomainFilter(filterSource);
+	}
+
+	public static IFilter not(final IFilter filter) {
+		return new NotFilter(filter);
 	}
 
 	public static IFilter joinAnd(final IFilter... filters) {

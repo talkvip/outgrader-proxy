@@ -145,6 +145,10 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 					if (excludingFilter != null) {
 						excludingRules.add(new CurrentTagRule(line, excludingFilter));
 					}
+
+					if ((type != LineType.COMMENT) && (includingFilter == null) && (excludingFilter == null)) {
+						System.out.println(line);
+					}
 				}
 			} catch (IOException e) {
 				LOGGER.error("An error occured during reading Advertisment list file", e);
@@ -324,6 +328,22 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 
 		if (domainIndex != StringUtils.INDEX_NOT_FOUND) {
 			return createDomainFilter(parametersLine.substring(domainIndex + DOMAIN_PREFIX.length()), "|");
+		}
+
+		return null;
+	}
+
+	protected IFilter tryThirdPartyFilter(final String parametersLine) {
+		if (parametersLine.contains("third-party")) {
+			IFilterSource filterSource = FilterBuilderUtils.BASIC_FILTER_SOURCE;
+
+			IFilter filter = FilterBuilderUtils.buildContainsDomainFilter(filterSource);
+
+			if (parametersLine.contains("~")) {
+				return filter;
+			}
+
+			return FilterBuilderUtils.not(filter);
 		}
 
 		return null;

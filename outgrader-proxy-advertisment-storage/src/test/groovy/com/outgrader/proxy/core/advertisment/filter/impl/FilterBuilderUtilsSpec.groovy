@@ -86,8 +86,9 @@ class FilterBuilderUtilsSpec extends Specification {
 
 		then:
 		filter != null
-		filter instanceof ContainsFilter
-		filter.pattern == '://' + STARTS_WITH_RULE
+		filter instanceof OrFilter
+		filter.filters[0] instanceof ContainsFilter
+		filter.filters[0].pattern == '://' + STARTS_WITH_RULE
 	}
 
 	def "check separator rule creates amount of possible patterns"() {
@@ -280,11 +281,36 @@ class FilterBuilderUtilsSpec extends Specification {
 		IFilterSource source = FilterBuilderUtils.getTagAttributeFilterSource('attr')
 
 		when:
-		def filter = FilterBuilderUtils.buildTrueFilter(RULE_WITH_WILDCARD, source)
+		def filter = FilterBuilderUtils.buildTrueFilter(source)
 
 		then:
 		filter != null
 		filter instanceof TrueFilter
-		filter.pattern == RULE_WITH_WILDCARD
+	}
+
+	def "check cottains domain filter"() {
+		setup:
+		IFilterSource source = FilterBuilderUtils.getTagAttributeFilterSource('attr')
+
+		when:
+		def filter = FilterBuilderUtils.buildContainsDomainFilter(source)
+
+		then:
+		filter != null
+		filter instanceof ContainsDomainFilter
+	}
+
+	def "check not filter"() {
+		setup:
+		IFilterSource source = FilterBuilderUtils.getTagAttributeFilterSource('attr')
+		IFilter mainFilter = Mock(IFilter)
+
+		when:
+		def filter = FilterBuilderUtils.not(mainFilter)
+
+		then:
+		filter != null
+		filter instanceof NotFilter
+		filter.source == mainFilter
 	}
 }
