@@ -175,6 +175,8 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 				return FilterBuilderUtils.joinAnd(domainFilter, ruleFilter);
 			}
 		} else {
+			// check '>' or '+'
+
 			pattern = getHidingElementPattern(line, "###");
 			if (pattern != null) {
 				source = FilterBuilderUtils.CSS_ID_FILTER_SOURCE;
@@ -191,21 +193,17 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 						pattern = getHidingElementPattern(line, "##");
 
 						if (pattern != null) {
-							if (!pattern.contains("[")) {
-								if (pattern.contains(".")) {
+							if (pattern.contains(".")) {
+								source = FilterBuilderUtils.CSS_SELECTOR_FILTER_SOURCE;
+							} else {
+								if (pattern.contains("#")) {
 									source = FilterBuilderUtils.CSS_SELECTOR_FILTER_SOURCE;
+									pattern = pattern.replace("#", ".");
 								} else {
-									if (pattern.contains("#")) {
-										source = FilterBuilderUtils.CSS_SELECTOR_FILTER_SOURCE;
-										pattern = pattern.replace("#", ".");
-									} else {
-										if (pattern.contains("[")) {
-											source = FilterBuilderUtils.CSS_SELECTOR_FILTER_SOURCE;
-										}
-										source = FilterBuilderUtils.TAG_NAME_FILTER_SOURCE;
-									}
+									source = FilterBuilderUtils.TAG_NAME_FILTER_SOURCE;
 								}
 							}
+
 						}
 					}
 				}
@@ -213,7 +211,35 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 		}
 
 		if ((source != null) && !StringUtils.isEmpty(pattern)) {
-			return FilterBuilderUtils.build(pattern, source);
+			int parametersIndex = pattern.indexOf("[");
+
+			List<IFilter> filters = new ArrayList<>();
+
+			if (parametersIndex > StringUtils.INDEX_NOT_FOUND) {
+				String parameters = pattern.substring(parametersIndex);
+				pattern = pattern.substring(0, parametersIndex);
+
+				StringTokenizer tokenizer = new StringTokenizer(parameters, "[]", false);
+
+				while (tokenizer.hasMoreTokens()) {
+					String token = tokenizer.nextToken();
+
+					int attributeIndex = token.indexOf("=");
+
+					String attribute = token.substring(0, attributeIndex);
+					String value = token.substring(attributeIndex + 1);
+					value = value.substring(1, value.length() - 1);
+
+					IFilterSource attributeFilterSource = FilterBuilderUtils.getTagAttributeFilterSource(attribute);
+					IFilter attributeFilter = FilterBuilderUtils.build(value, attributeFilterSource);
+
+					filters.add(attributeFilter);
+				}
+			}
+
+			filters.add(FilterBuilderUtils.build(pattern, source));
+
+			return FilterBuilderUtils.joinAnd(filters);
 		}
 
 		return null;

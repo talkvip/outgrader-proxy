@@ -166,6 +166,26 @@ class AdvertismentRuleStorageImplSpec extends Specification {
 		storage.excludingRules.size() == 1
 	}
 
+	@Unroll("check rule with attribute filters from <#line>")
+	def "check rule with attribute filters"(def line) {
+		setup:
+		storage = createStorage(line)
+
+		when:
+		storage.initializeRuleSet()
+
+		then:
+		1 * storage.getHidingElementFilter(line)
+		storage.includingRules != null
+		storage.includingRules.size() == 1
+
+		where:
+		line << [
+			'##IMG[width="120"][height="600"]',
+			'##A[href^="http://ad.adriver."]'
+		]
+	}
+
 	private IAdvertismentRuleStorage createStorage(String fileContent) {
 		AdvertismentRuleStorageImpl result = Spy(AdvertismentRuleStorageImpl, constructorArgs: [properties])
 

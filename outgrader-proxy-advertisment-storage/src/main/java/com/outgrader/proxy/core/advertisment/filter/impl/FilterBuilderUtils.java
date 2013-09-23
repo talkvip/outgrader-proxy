@@ -219,6 +219,10 @@ public final class FilterBuilderUtils {
 	}
 
 	public static IFilter joinAnd(final IFilter... filters) {
+		if (filters.length == 1) {
+			return filters[0];
+		}
+
 		AndFilter result = new AndFilter();
 
 		for (IFilter filter : filters) {
