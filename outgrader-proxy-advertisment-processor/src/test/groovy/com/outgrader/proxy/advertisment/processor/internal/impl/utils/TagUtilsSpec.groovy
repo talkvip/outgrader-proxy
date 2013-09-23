@@ -30,6 +30,6 @@ class TagUtilsSpec extends Specification {
 		def result = TagUtils.getAttributes("<hallo attr='value'")
 
 		then:
-		result['attr'] == "'value'"
+		result['attr'] == 'value'
 	}
 }

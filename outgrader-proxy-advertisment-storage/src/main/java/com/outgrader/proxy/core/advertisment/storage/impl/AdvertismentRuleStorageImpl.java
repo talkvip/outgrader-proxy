@@ -259,7 +259,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 				}
 			}
 
-			filters.add(FilterBuilderUtils.build(pattern, source));
+			filters.add(FilterBuilderUtils.buildEqualsFilter(pattern, source));
 
 			return FilterBuilderUtils.joinAnd(filters);
 		}

@@ -59,6 +59,8 @@ class TagMatchingSpec extends Specification {
 		ruleStorage.includingRules.size() > 0
 		if (result) {
 			1 * statistics.onAdvertismentCandidateFound(uri, rule)
+		} else {
+			0 * statistics.onAdvertismentCandidateFound(uri, rule)
 		}
 
 		where:
@@ -70,6 +72,16 @@ class TagMatchingSpec extends Specification {
 		'||biz/includes/js/css-1.2.5.min.js$third-party' | 'some.uri' | '<a href="http://some.biz/includes/js/css-1.2.5.min.js" />' | true
 		'||biz/includes/js/css-1.2.5.min.js$third-party' | 'some.biz' | '<a href="http://some.biz/includes/js/css-1.2.5.min.js" />' | false
 		'||biz/includes/js/css-1.2.5.min.js$third-party' | 'some.uri' | '<a href="http://biz/includes/js/css-1.2.5.min.js" />'      | true
+
+		'||24smile.$third-party,popup' | '24smile.com'    | '<a href="http://not24smile.org" />' 			   | false
+		'||24smile.$third-party,popup' | '24smile.com'    | '<a href="http://24smile.org/advertisment" />'     | true
+		'||24smile.$third-party,popup' | 'not24smile.com' | '<a href="http://adv.24smile.com/advertisment" />' | true
+		'||24smile.$third-party,popup' | '24smile.com'    | '<a href="http://adv.24smile.com/advertisment" />' | false
+
+		'###ads_iframe' | 'some.uri' | '<a />'                    | false
+		'###ads_iframe' | 'some.uri' | '<a id="lalala" />'        | false
+		'###ads_iframe' | 'some.uri' | '<a id="ads_iframe" />'    | true
+		'###ads_iframe' | 'some.uri' | '<a id="no_ads_iframe" />' | false
 	}
 
 	private IAdvertismentProcessor createProcessor(IAdvertismentRuleStorage storage) {
