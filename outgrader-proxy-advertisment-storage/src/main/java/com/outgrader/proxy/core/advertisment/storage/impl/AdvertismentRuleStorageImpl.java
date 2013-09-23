@@ -231,7 +231,25 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 					value = value.substring(1, value.length() - 1);
 
 					IFilterSource attributeFilterSource = FilterBuilderUtils.getTagAttributeFilterSource(attribute);
-					IFilter attributeFilter = FilterBuilderUtils.build(value, attributeFilterSource);
+					IFilter attributeFilter = null;
+
+					if (attribute.endsWith("*")) {
+						attribute.replace("*", StringUtils.EMPTY);
+
+						attributeFilter = FilterBuilderUtils.buildContainsFilter(value, attributeFilterSource);
+					} else if (attribute.endsWith("^")) {
+						attribute.replace("^", StringUtils.EMPTY);
+
+						attributeFilter = FilterBuilderUtils.buildStartsWithFilter(value, attributeFilterSource);
+					} else if (attribute.endsWith("$")) {
+						attribute.replace("$", StringUtils.EMPTY);
+
+						attributeFilter = FilterBuilderUtils.buildEndsWithFilter(value, attributeFilterSource);
+					} else {
+						attributeFilter = FilterBuilderUtils.buildEqualsFilter(value, attributeFilterSource);
+					}
+
+					FilterBuilderUtils.build(value, attributeFilterSource);
 
 					filters.add(attributeFilter);
 				}
