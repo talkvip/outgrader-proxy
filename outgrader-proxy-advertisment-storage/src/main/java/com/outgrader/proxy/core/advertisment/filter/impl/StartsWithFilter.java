@@ -6,14 +6,14 @@ import com.outgrader.proxy.core.advertisment.filter.IFilterSource;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
- * @since 0.4.0-SNAPSHOT
+ * @since 0.4.10-SNAPSHOT
  * 
  */
-class MatchingFilter extends AbstractFilter {
+class StartsWithFilter extends AbstractFilter {
 
 	private final String pattern;
 
-	public MatchingFilter(final String pattern, final IFilterSource source) {
+	public StartsWithFilter(final String pattern, final IFilterSource source) {
 		super(source);
 		this.pattern = pattern;
 	}
@@ -21,9 +21,9 @@ class MatchingFilter extends AbstractFilter {
 	@Override
 	public boolean matches(final String text, final boolean isMatchCase) {
 		if (isMatchCase) {
-			return StringUtils.containsIgnoreCase(text, pattern);
+			return StringUtils.startsWithIgnoreCase(text, pattern);
 		}
 
-		return text.contains(pattern);
+		return text.startsWith(pattern);
 	}
 }

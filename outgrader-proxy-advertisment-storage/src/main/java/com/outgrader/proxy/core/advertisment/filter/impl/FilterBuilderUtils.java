@@ -62,7 +62,7 @@ public final class FilterBuilderUtils {
 				return result;
 			}
 
-			return new MatchingFilter(rule, source);
+			return new ContainsFilter(rule, source);
 		}
 
 	};
@@ -81,7 +81,7 @@ public final class FilterBuilderUtils {
 					rule = rule.replace(SEPARATOR_SYMBOL, StringUtils.EMPTY);
 				}
 
-				IFilter matchingFilter = new MatchingFilter(rule.replace(PROTOCOL_SYMBOL, "://"), source);
+				IFilter matchingFilter = new ContainsFilter(rule.replace(PROTOCOL_SYMBOL, "://"), source);
 
 				if (subFilter == null) {
 					return matchingFilter;
@@ -99,7 +99,7 @@ public final class FilterBuilderUtils {
 		@Override
 		public IFilter build(final String rule, final IFilterSource source, final boolean supportsNot) {
 			if (rule.endsWith(EDGE_SYMBOL)) {
-				return new MatchingFilter(rule.replace(EDGE_SYMBOL, "\""), source);
+				return new ContainsFilter(rule.replace(EDGE_SYMBOL, "\""), source);
 			}
 
 			return null;
@@ -111,7 +111,7 @@ public final class FilterBuilderUtils {
 		@Override
 		public IFilter build(final String rule, final IFilterSource source, final boolean supportsNot) {
 			if (rule.startsWith(EDGE_SYMBOL)) {
-				return new MatchingFilter(rule.replace(EDGE_SYMBOL, "\""), source);
+				return new ContainsFilter(rule.replace(EDGE_SYMBOL, "\""), source);
 			}
 
 			return null;
@@ -153,7 +153,7 @@ public final class FilterBuilderUtils {
 			}
 
 			if (result == null) {
-				result = new MatchingFilter(rule, source);
+				result = new ContainsFilter(rule, source);
 			}
 
 			return result;
@@ -216,6 +216,14 @@ public final class FilterBuilderUtils {
 
 	public static IFilter build(final String rule, final IFilterSource filterSource, final boolean supportsNot) {
 		return MAIN_FILTER_BUILDER.build(rule, filterSource, supportsNot);
+	}
+
+	public static IFilter buildStartsWithFilter(final String rule, final IFilterSource filterSource) {
+		return new StartsWithFilter(rule, filterSource);
+	}
+
+	public static IFilter buildEndsWithFilter(final String rule, final IFilterSource filterSource) {
+		return new EndsWithFilter(rule, filterSource);
 	}
 
 	public static IFilter joinAnd(final IFilter... filters) {

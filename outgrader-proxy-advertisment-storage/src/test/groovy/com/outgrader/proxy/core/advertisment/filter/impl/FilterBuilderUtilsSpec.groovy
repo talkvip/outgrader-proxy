@@ -45,7 +45,7 @@ class FilterBuilderUtilsSpec extends Specification {
 
 		then:
 		filter != null
-		filter instanceof MatchingFilter
+		filter instanceof ContainsFilter
 		filter.pattern == SIMPLE_RULE
 	}
 
@@ -57,7 +57,7 @@ class FilterBuilderUtilsSpec extends Specification {
 		filter != null
 		filter instanceof AndFilter
 		filter.filters.size() == 2
-		filter.filters.each {  it instanceof MatchingFilter }
+		filter.filters.each {  it instanceof ContainsFilter }
 	}
 
 	def "check starts with rule"() {
@@ -66,7 +66,7 @@ class FilterBuilderUtilsSpec extends Specification {
 
 		then:
 		filter != null
-		filter instanceof MatchingFilter
+		filter instanceof ContainsFilter
 		filter.pattern == '"' + STARTS_WITH_RULE
 	}
 
@@ -76,7 +76,7 @@ class FilterBuilderUtilsSpec extends Specification {
 
 		then:
 		filter != null
-		filter instanceof MatchingFilter
+		filter instanceof ContainsFilter
 		filter.pattern == STARTS_WITH_RULE + '"'
 	}
 
@@ -86,7 +86,7 @@ class FilterBuilderUtilsSpec extends Specification {
 
 		then:
 		filter != null
-		filter instanceof MatchingFilter
+		filter instanceof ContainsFilter
 		filter.pattern == '://' + STARTS_WITH_RULE
 	}
 
@@ -234,5 +234,31 @@ class FilterBuilderUtilsSpec extends Specification {
 
 		then:
 		result == 'value'
+	}
+
+	def "check starts with filter"() {
+		setup:
+		IFilterSource source = FilterBuilderUtils.getTagAttributeFilterSource('attr')
+
+		when:
+		def filter = FilterBuilderUtils.buildStartsWithFilter(RULE_WITH_WILDCARD, source)
+
+		then:
+		filter != null
+		filter instanceof StartsWithFilter
+		filter.pattern == RULE_WITH_WILDCARD
+	}
+
+	def "check ends with filter"() {
+		setup:
+		IFilterSource source = FilterBuilderUtils.getTagAttributeFilterSource('attr')
+
+		when:
+		def filter = FilterBuilderUtils.buildEndsWithFilter(RULE_WITH_WILDCARD, source)
+
+		then:
+		filter != null
+		filter instanceof EndsWithFilter
+		filter.pattern == RULE_WITH_WILDCARD
 	}
 }

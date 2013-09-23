@@ -8,10 +8,10 @@ import com.outgrader.proxy.core.advertisment.filter.IFilterSource
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
- * @since 0.4.0-SNAPSHOT
+ * @since 0.4.10-SNAPSHOT
  *
  */
-class MatchingFilterSpec extends Specification {
+class EndsWithFilterSpec extends Specification {
 
 	IFilter filter
 
@@ -20,7 +20,7 @@ class MatchingFilterSpec extends Specification {
 	@Unroll("check that #line matches #pattern with result #result")
 	def "check result of matching same as result of contains"(def pattern, def line, def result) {
 		setup:
-		filter = new ContainsFilter(pattern, source)
+		filter = new EndsWithFilter(pattern, source)
 
 		when:
 		def isMatches = filter.matches(line, false)
@@ -31,17 +31,17 @@ class MatchingFilterSpec extends Specification {
 		where:
 		pattern << ['same', 'error', 'SAME']
 		line << [
-			'this is same line',
-			'successed',
-			'same'
+			'same line',
+			'not error',
+			'not same'
 		]
-		result << [true, false, false]
+		result << [false, true, false]
 	}
 
 	@Unroll("check that #line matches (ignoring case) #pattern with result #result")
 	def "check result of matching same as result of contains ignoring case"(def pattern, def line, def result) {
 		setup:
-		filter = new ContainsFilter(pattern, source)
+		filter = new EndsWithFilter(pattern, source)
 
 		when:
 		def isMatches = filter.matches(line, true)
@@ -52,11 +52,11 @@ class MatchingFilterSpec extends Specification {
 		where:
 		pattern << ['same', 'error', 'SAME']
 		line << [
-			'this is same line',
-			'successed',
-			'same'
+			'same line',
+			'not error',
+			'not same'
 		]
-		result << [true, false, true]
+		result << [false, true, true]
 	}
 }
 
