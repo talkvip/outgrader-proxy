@@ -47,7 +47,7 @@ class TagMatchingSpec extends Specification {
 	}
 
 	@Unroll("check a matching result of line #uri:#line and rule <#rule> is #result")
-	def "check rule matching"(def uri, def rule, def line, def result) {
+	def "check rule matching"(def rule, def uri, def line, def result) {
 		setup:
 		IAdvertismentRuleStorage ruleStorage = createStorage(rule)
 		IAdvertismentProcessor processor = createProcessor(ruleStorage)
@@ -56,15 +56,20 @@ class TagMatchingSpec extends Specification {
 		processor.process(uri, IOUtils.toInputStream(line), Charsets.UTF_8)
 
 		then:
+		ruleStorage.includingRules.size() > 0
 		if (result) {
 			1 * statistics.onAdvertismentCandidateFound(uri, rule)
 		}
 
 		where:
-		uri   | rule       | line                                            | result
-		'uri' | '&ad_box_' | '<a href="http://reklama.by?draw&ad_box_567" />'| true
-		'uri' | '&ad_box_' | '<a href="http://reklama.by?draw&ad_box567" />' | false
-		'uri' | '&ad_box_' | '<a href="http://reklama.by?draw_ad_box_567" />'| false
+		rule       | uri   | line                                            | result
+		'&ad_box_' | 'uri' | '<a href="http://reklama.by?draw&ad_box_567" />'| true
+		'&ad_box_' | 'uri' | '<a href="http://reklama.by?draw&ad_box567" />' | false
+		'&ad_box_' | 'uri' | '<a href="http://reklama.by?draw_ad_box_567" />'| false
+
+		'||biz/includes/js/css-1.2.5.min.js$third-party' | 'some.uri' | '<a href="http://some.biz/includes/js/css-1.2.5.min.js" />' | true
+		'||biz/includes/js/css-1.2.5.min.js$third-party' | 'some.biz' | '<a href="http://some.biz/includes/js/css-1.2.5.min.js" />' | false
+		'||biz/includes/js/css-1.2.5.min.js$third-party' | 'some.uri' | '<a href="http://biz/includes/js/css-1.2.5.min.js" />'      | true
 	}
 
 	private IAdvertismentProcessor createProcessor(IAdvertismentRuleStorage storage) {

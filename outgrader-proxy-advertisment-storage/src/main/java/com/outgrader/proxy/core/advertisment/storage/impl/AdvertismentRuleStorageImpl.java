@@ -316,6 +316,11 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 			return result;
 		}
 
+		result = tryThirdPartyFilter(parametersLine);
+		if (result != null) {
+			return result;
+		}
+
 		return result;
 	}
 
