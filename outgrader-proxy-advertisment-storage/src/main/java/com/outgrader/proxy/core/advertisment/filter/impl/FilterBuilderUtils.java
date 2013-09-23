@@ -230,6 +230,10 @@ public final class FilterBuilderUtils {
 		return new EqualsFilter(rule, filterSource);
 	}
 
+	public static IFilter buildTrueFilter(final IFilterSource filterSource) {
+		return new TrueFilter(filterSource);
+	}
+
 	public static IFilter buildContainsFilter(final String rule, final IFilterSource filterSource) {
 		return new ContainsFilter(rule, filterSource);
 	}

@@ -226,30 +226,34 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 
 					int attributeIndex = token.indexOf("=");
 
-					String attribute = token.substring(0, attributeIndex);
-					String value = token.substring(attributeIndex + 1);
-					value = value.substring(1, value.length() - 1);
-
-					IFilterSource attributeFilterSource = FilterBuilderUtils.getTagAttributeFilterSource(attribute);
 					IFilter attributeFilter = null;
 
-					if (attribute.endsWith("*")) {
-						attribute.replace("*", StringUtils.EMPTY);
+					if (attributeIndex != StringUtils.INDEX_NOT_FOUND) {
+						String attribute = token.substring(0, attributeIndex);
+						String value = token.substring(attributeIndex + 1);
+						value = value.substring(1, value.length() - 1);
 
-						attributeFilter = FilterBuilderUtils.buildContainsFilter(value, attributeFilterSource);
-					} else if (attribute.endsWith("^")) {
-						attribute.replace("^", StringUtils.EMPTY);
+						IFilterSource attributeFilterSource = FilterBuilderUtils.getTagAttributeFilterSource(attribute);
 
-						attributeFilter = FilterBuilderUtils.buildStartsWithFilter(value, attributeFilterSource);
-					} else if (attribute.endsWith("$")) {
-						attribute.replace("$", StringUtils.EMPTY);
+						if (attribute.endsWith("*")) {
+							attribute.replace("*", StringUtils.EMPTY);
 
-						attributeFilter = FilterBuilderUtils.buildEndsWithFilter(value, attributeFilterSource);
+							attributeFilter = FilterBuilderUtils.buildContainsFilter(value, attributeFilterSource);
+						} else if (attribute.endsWith("^")) {
+							attribute.replace("^", StringUtils.EMPTY);
+
+							attributeFilter = FilterBuilderUtils.buildStartsWithFilter(value, attributeFilterSource);
+						} else if (attribute.endsWith("$")) {
+							attribute.replace("$", StringUtils.EMPTY);
+
+							attributeFilter = FilterBuilderUtils.buildEndsWithFilter(value, attributeFilterSource);
+						} else {
+							attributeFilter = FilterBuilderUtils.buildEqualsFilter(value, attributeFilterSource);
+						}
 					} else {
-						attributeFilter = FilterBuilderUtils.buildEqualsFilter(value, attributeFilterSource);
+						IFilterSource attributeFilterSource = FilterBuilderUtils.getTagAttributeFilterSource(token);
+						attributeFilter = FilterBuilderUtils.buildTrueFilter(attributeFilterSource);
 					}
-
-					FilterBuilderUtils.build(value, attributeFilterSource);
 
 					filters.add(attributeFilter);
 				}
