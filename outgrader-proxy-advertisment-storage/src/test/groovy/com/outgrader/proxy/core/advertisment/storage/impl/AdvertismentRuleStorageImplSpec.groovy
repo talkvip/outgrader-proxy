@@ -15,7 +15,7 @@ import com.outgrader.proxy.properties.source.file.FilePropertiesSource
  * @since 0.4.0-SNAPSHOT
  *
  */
-class AdvertismentRuleStorateImplSpec extends Specification {
+class AdvertismentRuleStorageImplSpec extends Specification {
 
 	IOutgraderProperties properties
 
