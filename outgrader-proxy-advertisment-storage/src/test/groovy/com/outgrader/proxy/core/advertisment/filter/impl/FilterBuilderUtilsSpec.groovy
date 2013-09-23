@@ -261,4 +261,17 @@ class FilterBuilderUtilsSpec extends Specification {
 		filter instanceof EndsWithFilter
 		filter.pattern == RULE_WITH_WILDCARD
 	}
+
+	def "check equals filter"() {
+		setup:
+		IFilterSource source = FilterBuilderUtils.getTagAttributeFilterSource('attr')
+
+		when:
+		def filter = FilterBuilderUtils.buildEqualsFilter(RULE_WITH_WILDCARD, source)
+
+		then:
+		filter != null
+		filter instanceof EqualsFilter
+		filter.pattern == RULE_WITH_WILDCARD
+	}
 }

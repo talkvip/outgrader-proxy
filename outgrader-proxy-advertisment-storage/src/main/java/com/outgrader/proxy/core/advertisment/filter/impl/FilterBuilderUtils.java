@@ -153,7 +153,7 @@ public final class FilterBuilderUtils {
 			}
 
 			if (result == null) {
-				result = new ContainsFilter(rule, source);
+				buildContainsFilter(rule, source);
 			}
 
 			return result;
@@ -224,6 +224,14 @@ public final class FilterBuilderUtils {
 
 	public static IFilter buildEndsWithFilter(final String rule, final IFilterSource filterSource) {
 		return new EndsWithFilter(rule, filterSource);
+	}
+
+	public static IFilter buildEqualsFilter(final String rule, final IFilterSource filterSource) {
+		return new EqualsFilter(rule, filterSource);
+	}
+
+	public static IFilter buildContainsFilter(final String rule, final IFilterSource filterSource) {
+		return new ContainsFilter(rule, filterSource);
 	}
 
 	public static IFilter joinAnd(final IFilter... filters) {
