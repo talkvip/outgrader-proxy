@@ -145,10 +145,6 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 					if (excludingFilter != null) {
 						excludingRules.add(new CurrentTagRule(line, excludingFilter));
 					}
-
-					if ((type != LineType.COMMENT) && (includingFilter == null) && (excludingFilter == null)) {
-						System.out.println(line);
-					}
 				}
 			} catch (IOException e) {
 				LOGGER.error("An error occured during reading Advertisment list file", e);
