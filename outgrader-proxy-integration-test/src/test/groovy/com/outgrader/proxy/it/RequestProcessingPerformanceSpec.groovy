@@ -72,7 +72,7 @@ class RequestProcessingPerformanceSpec extends Specification {
 	}
 
 	@Unroll('#featureName for #uri')
-	def "check delay factory between outgrader and clean request"(def uri) {
+	def "check delay factor between outgrader and clean request"(def uri) {
 		setup:
 		def outgraderTimes = getRequestTimesForOutgrader(uri)
 		def cleanTimes = getCleanRequestTimes(uri)
