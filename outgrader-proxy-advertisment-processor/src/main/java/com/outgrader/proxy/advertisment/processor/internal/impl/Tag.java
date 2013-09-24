@@ -1,6 +1,5 @@
 package com.outgrader.proxy.advertisment.processor.internal.impl;
 
-import java.text.MessageFormat;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,7 +14,7 @@ import com.outgrader.proxy.core.model.ITag;
  */
 public class Tag implements ITag {
 
-	private static final String PATH_FORMAT = "{0}>{1}";
+	private static final String PATH_SEPARATOR = ">";
 
 	private static final String POINT_SYMBOL = ".";
 
@@ -27,7 +26,7 @@ public class Tag implements ITag {
 
 		private static final String OPEN_AND_CLOSE_TAG_END = "/>";
 
-		private static final String TAG_END = ">";
+		private static final String TAG_END = PATH_SEPARATOR;
 
 		private static final String CLOSING_TAG_START = "</";
 
@@ -203,7 +202,7 @@ public class Tag implements ITag {
 
 			builder.append(POINT_SYMBOL).append(getId());
 
-			return builder.toString();
+			cssId = builder.toString();
 		}
 
 		return cssId;
@@ -213,7 +212,7 @@ public class Tag implements ITag {
 		this.parent = tag;
 
 		if (parent != null) {
-			this.path = MessageFormat.format(PATH_FORMAT, tag.getPath(), name);
+			this.path = new StringBuilder(tag.getPath()).append(PATH_SEPARATOR).append(name).toString();
 		} else {
 			this.path = name;
 		}
