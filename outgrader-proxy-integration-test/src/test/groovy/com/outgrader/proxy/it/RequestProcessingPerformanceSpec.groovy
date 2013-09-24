@@ -36,6 +36,8 @@ class RequestProcessingPerformanceSpec extends Specification {
 
 	static final ATTEMPTS = 20
 
+	static final SLEEP = 3
+
 	@Autowired
 	IExternalSender outgraderSender
 
@@ -106,7 +108,7 @@ class RequestProcessingPerformanceSpec extends Specification {
 
 			times << after - before
 
-			Thread.sleep(20 * 1000) //sleep for 20 second to prevent blocking on site side
+			Thread.sleep(SLEEP * 1000) //sleep for 20 second to prevent blocking on site side
 		}
 
 		times
@@ -132,7 +134,7 @@ class RequestProcessingPerformanceSpec extends Specification {
 
 			times << after - before
 
-			Thread.sleep(20 * 1000) //sleep for 20 second to prevent blocking on site side
+			Thread.sleep(SLEEP * 1000) //sleep for 20 second to prevent blocking on site side
 		}
 
 		times
