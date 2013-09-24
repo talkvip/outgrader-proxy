@@ -2,6 +2,11 @@ dependencies {
 	testCompile project(':outgrader-proxy-advertisment-processor')
 	testCompile project(':outgrader-proxy-advertisment-storage')
 	testCompile project(':outgrader-proxy-properties')
+	testCompile project(':outgrader-proxy-core')
+	testCompile project(':outgrader-proxy-external')
+	testCompile project(':outgrader-proxy-statistics')
 	
-	testCompile group: 'commons-io', name: 'commons-io', version: commonsIOVersion
+	testCompile group: 'commons-io',			name: 'commons-io', 	version: commonsIOVersion
+	testCompile group: 'org.spockframework',	name: 'spock-spring',	version: spockVersion
+	testCompile group: 'org.springframework',	name: 'spring-test',	version: springVersion
 }
