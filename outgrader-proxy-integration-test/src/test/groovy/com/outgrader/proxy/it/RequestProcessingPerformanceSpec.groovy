@@ -17,6 +17,7 @@ import org.apache.http.util.EntityUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
 
+import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -27,6 +28,7 @@ import com.outgrader.proxy.core.external.IExternalSender
  * @since 0.4.10-SNAPSHOT
  *
  */
+@Ignore
 @ContextConfiguration(locations = 'classpath*:META-INF/*/applicationContext.xml')
 class RequestProcessingPerformanceSpec extends Specification {
 
