@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -213,6 +214,8 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 			}
 		}
 
+		boolean rotateFilters = false;
+
 		if ((source != null) && !StringUtils.isEmpty(pattern)) {
 			int parametersIndex = pattern.indexOf("[");
 
@@ -239,15 +242,21 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 						IFilterSource attributeFilterSource = FilterBuilderUtils.getTagAttributeFilterSource(attribute);
 
 						if (attribute.endsWith("*")) {
-							attribute.replace("*", StringUtils.EMPTY);
+							attribute = attribute.replace("*", StringUtils.EMPTY);
+
+							attributeFilterSource = FilterBuilderUtils.getTagAttributeFilterSource(attribute);
 
 							attributeFilter = FilterBuilderUtils.buildContainsFilter(value, attributeFilterSource);
 						} else if (attribute.endsWith("^")) {
-							attribute.replace("^", StringUtils.EMPTY);
+							attribute = attribute.replace("^", StringUtils.EMPTY);
+
+							attributeFilterSource = FilterBuilderUtils.getTagAttributeFilterSource(attribute);
 
 							attributeFilter = FilterBuilderUtils.buildStartsWithFilter(value, attributeFilterSource);
 						} else if (attribute.endsWith("$")) {
-							attribute.replace("$", StringUtils.EMPTY);
+							attribute = attribute.replace("$", StringUtils.EMPTY);
+
+							attributeFilterSource = FilterBuilderUtils.getTagAttributeFilterSource(attribute);
 
 							attributeFilter = FilterBuilderUtils.buildEndsWithFilter(value, attributeFilterSource);
 						} else {
@@ -259,6 +268,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 					}
 
 					filters.add(attributeFilter);
+					rotateFilters = true;
 				}
 			}
 
@@ -270,6 +280,10 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 			}
 
 			filters.add(mainFilter);
+
+			if (rotateFilters) {
+				Collections.rotate(filters, 1);
+			}
 
 			return FilterBuilderUtils.joinAnd(filters);
 		}

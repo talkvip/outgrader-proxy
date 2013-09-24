@@ -162,7 +162,7 @@ public final class FilterBuilderUtils {
 		}
 	};
 
-	public static final IFilterSource CSS_SELECTOR_FILTER_SOURCE = new AbstractFilterSource() {
+	public static final IFilterSource CSS_SELECTOR_FILTER_SOURCE = new AbstractFilterSource(true) {
 
 		@Override
 		public String getFilterSource(final String uri, final ITag tag) {
@@ -170,7 +170,7 @@ public final class FilterBuilderUtils {
 		}
 	};
 
-	public static final IFilterSource CSS_ID_FILTER_SOURCE = new AbstractFilterSource() {
+	public static final IFilterSource CSS_ID_FILTER_SOURCE = new AbstractFilterSource(true) {
 
 		@Override
 		public String getFilterSource(final String uri, final ITag tag) {
@@ -178,7 +178,7 @@ public final class FilterBuilderUtils {
 		}
 	};
 
-	public static final IFilterSource TAG_NAME_FILTER_SOURCE = new AbstractFilterSource() {
+	public static final IFilterSource TAG_NAME_FILTER_SOURCE = new AbstractFilterSource(true) {
 
 		@Override
 		public String getFilterSource(final String uri, final ITag tag) {
@@ -194,7 +194,7 @@ public final class FilterBuilderUtils {
 		}
 	};
 
-	public static final IFilterSource DOMAIN_FILTER_SOURCE = new AbstractFilterSource() {
+	public static final IFilterSource DOMAIN_FILTER_SOURCE = new AbstractFilterSource(true) {
 
 		@Override
 		public String getFilterSource(final String uri, final ITag tag) {
@@ -203,7 +203,7 @@ public final class FilterBuilderUtils {
 	};
 
 	public static IFilterSource getTagAttributeFilterSource(final String attributeName) {
-		return new AbstractFilterSource() {
+		return new AbstractFilterSource(true) {
 
 			@Override
 			public String getFilterSource(final String uri, final ITag tag) {

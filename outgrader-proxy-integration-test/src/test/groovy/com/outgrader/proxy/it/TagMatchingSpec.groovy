@@ -92,6 +92,7 @@ class TagMatchingSpec extends Specification {
 		'##DIV[id^="cpa_rotator_block"]' | 'some.uri' | '<div id="cpa_rotator_block" />'          | true
 		'##DIV[id^="cpa_rotator_block"]' | 'some.uri' | '<div id="not_startcpa_rotator_block" />' | false
 		'##DIV[id^="cpa_rotator_block"]' | 'some.uri' | '<div class="cpa_rotator_block" />'       | false
+		'##DIV[id^="cpa_rotator_block"]' | 'some.uri' | '<div id="cpa_rotator_block_block" />'    | true
 	}
 
 	private IAdvertismentProcessor createProcessor(IAdvertismentRuleStorage storage) {
