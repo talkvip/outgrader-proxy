@@ -15,6 +15,8 @@ import com.outgrader.proxy.core.model.ITag;
  */
 public class Tag implements ITag {
 
+	private static final String EMBED_TAG = "embed";
+
 	private static final String PATH_FORMAT = "{0}>{1}";
 
 	private static final String POINT_SYMBOL = ".";
@@ -181,6 +183,11 @@ public class Tag implements ITag {
 
 	public void setName(final String name) {
 		this.name = name;
+
+		if (name.equals(EMBED_TAG)) {
+			setTagType(TagType.OPEN_AND_CLOSING);
+			setOpeningTag(this);
+		}
 	}
 
 	@Override

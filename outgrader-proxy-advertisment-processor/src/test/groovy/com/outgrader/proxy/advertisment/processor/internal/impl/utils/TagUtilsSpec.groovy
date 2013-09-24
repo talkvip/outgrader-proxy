@@ -32,4 +32,12 @@ class TagUtilsSpec extends Specification {
 		then:
 		result['attr'] == 'value'
 	}
+
+	def "check tag text with spaces"() {
+		when:
+		def result = TagUtils.getAttributes('<div title="Hallo World!" />')
+
+		then:
+		result['title'] == 'Hallo World!'
+	}
 }
