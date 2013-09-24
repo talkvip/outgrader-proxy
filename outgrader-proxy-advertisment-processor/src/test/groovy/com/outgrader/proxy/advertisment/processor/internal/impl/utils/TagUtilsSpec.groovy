@@ -17,19 +17,12 @@ class TagUtilsSpec extends Specification {
 		result.isEmpty()
 	}
 
-	def "check tag with attributes"() {
+	def "check tag attribute value"() {
 		when:
-		def result = TagUtils.getAttributes("<hallo attr='value'")
+		def result = TagUtils.getAttributes('<hallo attr="value" />')
 
 		then:
 		result.isEmpty() == false
-	}
-
-	def "check tag attribute value"() {
-		when:
-		def result = TagUtils.getAttributes("<hallo attr='value'")
-
-		then:
 		result['attr'] == 'value'
 	}
 
@@ -39,5 +32,14 @@ class TagUtilsSpec extends Specification {
 
 		then:
 		result['title'] == 'Hallo World!'
+	}
+
+	def "check tag multiple attribute values"() {
+		when:
+		def result = TagUtils.getAttributes('<hallo attr1="value1" attr2="value2" />')
+
+		then:
+		result['attr1'] == 'value1'
+		result['attr2'] == 'value2'
 	}
 }
