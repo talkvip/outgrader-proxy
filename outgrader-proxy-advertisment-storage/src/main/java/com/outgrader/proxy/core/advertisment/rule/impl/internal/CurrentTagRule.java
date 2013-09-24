@@ -52,6 +52,6 @@ public class CurrentTagRule implements IAdvertismentRule {
 	@Override
 	public boolean isRuleRewriteContinues(final ITag ruleRewriteStartTag, final ITag currentTag) {
 		return !ObjectUtils.equals(currentTag.getOpeningTag(), ruleRewriteStartTag)
-				|| ((ruleRewriteStartTag.getTagType() == TagType.OPENING) && ruleRewriteStartTag.getName().equals(EMBED_TAG));
+				&& !((ruleRewriteStartTag.getTagType() == TagType.OPENING) && ruleRewriteStartTag.getName().equals(EMBED_TAG));
 	}
 }
