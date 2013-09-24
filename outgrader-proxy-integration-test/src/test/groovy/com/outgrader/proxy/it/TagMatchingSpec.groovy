@@ -64,7 +64,8 @@ class TagMatchingSpec extends Specification {
 		}
 
 		where:
-		rule       | uri   | line                                            | result
+		rule | uri | line | result
+
 		'&ad_box_' | 'uri' | '<a href="http://reklama.by?draw&ad_box_567" />'| true
 		'&ad_box_' | 'uri' | '<a href="http://reklama.by?draw&ad_box567" />' | false
 		'&ad_box_' | 'uri' | '<a href="http://reklama.by?draw_ad_box_567" />'| false
