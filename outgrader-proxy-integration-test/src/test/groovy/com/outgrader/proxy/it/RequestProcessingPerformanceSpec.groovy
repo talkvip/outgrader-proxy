@@ -34,7 +34,7 @@ class RequestProcessingPerformanceSpec extends Specification {
 
 	static final DELAY = 200
 
-	static final ATTEMPTS = 20
+	static final ATTEMPTS = 10
 
 	static final SLEEP = 1
 
