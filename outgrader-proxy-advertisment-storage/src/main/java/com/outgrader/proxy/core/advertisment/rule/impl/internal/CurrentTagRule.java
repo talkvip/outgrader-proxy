@@ -5,6 +5,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import com.outgrader.proxy.core.advertisment.filter.IFilter;
 import com.outgrader.proxy.core.model.IAdvertismentRule;
 import com.outgrader.proxy.core.model.ITag;
+import com.outgrader.proxy.core.model.ITag.TagType;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
@@ -12,6 +13,8 @@ import com.outgrader.proxy.core.model.ITag;
  * 
  */
 public class CurrentTagRule implements IAdvertismentRule {
+
+	private static final String EMBED_TAG = "embed";
 
 	private final String text;
 
@@ -48,7 +51,7 @@ public class CurrentTagRule implements IAdvertismentRule {
 
 	@Override
 	public boolean isRuleRewriteContinues(final ITag ruleRewriteStartTag, final ITag currentTag) {
-		return !ObjectUtils.equals(currentTag.getOpeningTag(), ruleRewriteStartTag);
+		return !ObjectUtils.equals(currentTag.getOpeningTag(), ruleRewriteStartTag)
+				|| ((ruleRewriteStartTag.getTagType() == TagType.OPENING) && ruleRewriteStartTag.getName().equals(EMBED_TAG));
 	}
-
 }
