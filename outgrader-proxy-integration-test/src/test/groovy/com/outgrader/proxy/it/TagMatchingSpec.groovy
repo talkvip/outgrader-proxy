@@ -40,7 +40,7 @@ class TagMatchingSpec extends Specification {
 		properties.advertismentListLocations >> [
 			'advertisment-storage/advblock.txt',
 		]
-		properties.supportedTags >> ['a', 'div']
+		properties.supportedTags >> ['a', 'div', 'head', 'body']
 
 		rewriter.rewrite(_, _) >> Unpooled.EMPTY_BUFFER
 		rewriter.rewrite(_, _, _, _) >> Unpooled.EMPTY_BUFFER
