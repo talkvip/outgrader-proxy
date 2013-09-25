@@ -19,6 +19,14 @@ class AdvertismentRuleVault implements IAdvertismentRuleVault {
 
 	private final Map<String, AdvertismentRuleVault> subVaults = new ConcurrentHashMap<>();
 
+	public AdvertismentRuleVault() {
+		this(IAdvertismentRule.EMPTY_SUB_RULES);
+	}
+
+	private AdvertismentRuleVault(final IAdvertismentRule[] rules) {
+		this.rules = rules;
+	}
+
 	@Override
 	public IAdvertismentRule[] getIncludingRules() {
 		return rules;
@@ -29,8 +37,18 @@ class AdvertismentRuleVault implements IAdvertismentRuleVault {
 		return subVaults.get(key);
 	}
 
-	public void addSubVault(final String key, final AdvertismentRuleVault subVault) {
-		subVaults.put(key, subVault);
+	public IAdvertismentRuleVault createSubVault(final String key) {
+		IAdvertismentRuleVault result = getSubVault(key);
+
+		if (result == null) {
+			AdvertismentRuleVault newVault = new AdvertismentRuleVault(getIncludingRules());
+
+			subVaults.put(key, newVault);
+
+			result = newVault;
+		}
+
+		return result;
 	}
 
 	public void addRule(final IAdvertismentRule rule) {
