@@ -3,6 +3,8 @@ package com.outgrader.proxy.core.advertisment.storage.impl;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import com.outgrader.proxy.core.model.IAdvertismentRule;
 import com.outgrader.proxy.core.storage.IAdvertismentRuleVault;
 
@@ -13,9 +15,9 @@ import com.outgrader.proxy.core.storage.IAdvertismentRuleVault;
  */
 class AdvertismentRuleVault implements IAdvertismentRuleVault {
 
-	private final IAdvertismentRule[] rules = IAdvertismentRule.EMPTY_SUB_RULES;
+	private IAdvertismentRule[] rules = IAdvertismentRule.EMPTY_SUB_RULES;
 
-	private final Map<String, IAdvertismentRuleVault> subVaults = new ConcurrentHashMap<>();
+	private final Map<String, AdvertismentRuleVault> subVaults = new ConcurrentHashMap<>();
 
 	@Override
 	public IAdvertismentRule[] getIncludingRules() {
@@ -27,4 +29,15 @@ class AdvertismentRuleVault implements IAdvertismentRuleVault {
 		return subVaults.get(key);
 	}
 
+	public void addSubVault(final String key, final AdvertismentRuleVault subVault) {
+		subVaults.put(key, subVault);
+	}
+
+	public void addRule(final IAdvertismentRule rule) {
+		rules = ArrayUtils.add(rules, rule);
+
+		for (AdvertismentRuleVault subVault : subVaults.values()) {
+			subVault.addRule(rule);
+		}
+	}
 }

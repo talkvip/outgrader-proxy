@@ -9,10 +9,7 @@ import io.netty.handler.codec.http.HttpVersion
 import org.apache.http.HttpResponse
 import org.apache.http.client.HttpClient
 import org.apache.http.client.methods.HttpGet
-import org.apache.http.client.params.ClientPNames
-import org.apache.http.conn.ClientConnectionManager
 import org.apache.http.impl.client.DefaultHttpClient
-import org.apache.http.impl.conn.PoolingClientConnectionManager
 import org.apache.http.util.EntityUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
@@ -46,10 +43,11 @@ class RequestProcessingPerformanceSpec extends Specification {
 	HttpClient httpClient
 
 	def setup() {
-		ClientConnectionManager connectionManager = new PoolingClientConnectionManager()
+		httpClient = new DefaultHttpClient()
+	}
 
-		httpClient = new DefaultHttpClient(connectionManager)
-		httpClient.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false)
+	def cleanup() {
+		httpClient.getConnectionManager().shutdown()
 	}
 
 	@Unroll('#featureName for #uri')
