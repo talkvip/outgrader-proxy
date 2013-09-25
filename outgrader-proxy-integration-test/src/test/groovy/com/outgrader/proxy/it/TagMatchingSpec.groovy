@@ -4,6 +4,8 @@ import io.netty.buffer.Unpooled
 
 import org.apache.commons.io.Charsets
 import org.apache.commons.io.IOUtils
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.test.context.ContextConfiguration
 
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -15,33 +17,23 @@ import com.outgrader.proxy.core.advertisment.storage.impl.AdvertismentRuleStorag
 import com.outgrader.proxy.core.properties.IOutgraderProperties
 import com.outgrader.proxy.core.statistics.IStatisticsHandler
 import com.outgrader.proxy.core.storage.IAdvertismentRuleStorage
-import com.outgrader.proxy.properties.impl.OutgraderPropertiesImpl
-import com.outgrader.proxy.properties.source.file.FilePropertiesSource
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
  * @since 0.4.10-SNAPSHOT
  *
  */
+@ContextConfiguration(locations = 'classpath*:META-INF/*/applicationContext.xml')
 class TagMatchingSpec extends Specification {
 
-	IOutgraderProperties properties = Mock(IOutgraderProperties)
+	@Autowired
+	IOutgraderProperties properties
 
 	IStatisticsHandler statistics = Mock(IStatisticsHandler)
 
 	IAdvertismentRewriter rewriter = Mock(IAdvertismentRewriter)
 
 	def setup() {
-		def source = new FilePropertiesSource()
-		properties = Mock(OutgraderPropertiesImpl)
-		properties.propertiesSource >> source
-		properties.initialize()
-
-		properties.advertismentListLocations >> [
-			'advertisment-storage/advblock.txt',
-		]
-		properties.supportedTags >> ['a', 'div', 'head', 'body']
-
 		rewriter.rewrite(_, _) >> Unpooled.EMPTY_BUFFER
 		rewriter.rewrite(_, _, _, _) >> Unpooled.EMPTY_BUFFER
 	}
@@ -101,6 +93,17 @@ class TagMatchingSpec extends Specification {
 		'##BODY > #flydiv' | 'some.uri' | '<head><a id="flydiv" />'        | false
 		'##BODY > #flydiv' | 'some.uri' | '<body><a id="something" />'     | false
 		'##BODY > #flydiv' | 'some.uri' | '<body></body><a id="flydiv" />' | false
+
+		'##NOINDEX > .search_result[class*="search_result_"]' | 'some.uri' | '<noindex><a id="search_result" class="search_result_" />'          | true
+		'##NOINDEX > .search_result[class*="search_result_"]' | 'some.uri' | '<noindex><a id="search_result" class="start_search_result_end" />' | true
+		'##NOINDEX > .search_result[class*="search_result_"]' | 'some.uri' | '<noindex><div id="search_result" class="search_result_" />'        | true
+		'##NOINDEX > .search_result[class*="search_result_"]' | 'some.uri' | '<noindex><a id="not_search_result" class="search_result_" />'      | false
+		'##NOINDEX > .search_result[class*="search_result_"]' | 'some.uri' | '<start><a id="search_result" class="search_result_" />'            | false
+		'##NOINDEX > .search_result[class*="search_result_"]' | 'some.uri' | '<noindex><a id="search_result" type="search_result_" />' 			 | false
+
+		'www.google.com,www.google.ru##BODY > TABLE[style="border: 1px solid #369"]' | 'www.google.com' | '<body><table style="border: 1px solid #369" table/>' | true
+		'www.google.com,www.google.ru##BODY > TABLE[style="border: 1px solid #369"]' | 'www.google.ru'  | '<body><table style="border: 1px solid #369" table/>' | true
+		'www.google.com,www.google.ru##BODY > TABLE[style="border: 1px solid #369"]' | 'www.tut.by'     | '<body><table style="border: 1px solid #369" table/>' | false
 	}
 
 	private IAdvertismentProcessor createProcessor(IAdvertismentRuleStorage storage) {

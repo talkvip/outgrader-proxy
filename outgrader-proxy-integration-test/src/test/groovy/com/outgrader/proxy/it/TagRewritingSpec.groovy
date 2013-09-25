@@ -1,7 +1,10 @@
 package com.outgrader.proxy.it
 
+
 import org.apache.commons.io.Charsets
 import org.apache.commons.io.IOUtils
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.test.context.ContextConfiguration
 
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -12,44 +15,25 @@ import com.outgrader.proxy.advertisment.processor.impl.AdvertismentRewriterImpl
 import com.outgrader.proxy.core.advertisment.processor.IAdvertismentProcessor
 import com.outgrader.proxy.core.advertisment.storage.impl.AdvertismentRuleStorageImpl
 import com.outgrader.proxy.core.properties.IOutgraderProperties
-import com.outgrader.proxy.core.properties.IOutgraderProperties.RewriteMode
 import com.outgrader.proxy.core.statistics.IStatisticsHandler
 import com.outgrader.proxy.core.storage.IAdvertismentRuleStorage
-import com.outgrader.proxy.properties.impl.OutgraderPropertiesImpl
-import com.outgrader.proxy.properties.source.file.FilePropertiesSource
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
  * @since 0.4.10-SNAPSHOT
  *
  */
+@ContextConfiguration(locations = 'classpath*:META-INF/*/applicationContext.xml')
 class TagRewritingSpec extends Specification {
 
-	IOutgraderProperties properties = Mock(IOutgraderProperties)
+	@Autowired
+	IOutgraderProperties properties
 
 	IStatisticsHandler statistics = Mock(IStatisticsHandler)
 
 	IAdvertismentRewriter rewriter = Mock(IAdvertismentRewriter)
 
 	def setup() {
-		def source = new FilePropertiesSource()
-		properties = Mock(OutgraderPropertiesImpl)
-		properties.propertiesSource >> source
-		properties.initialize()
-
-		properties.advertismentListLocations >> [
-			'advertisment-storage/advblock.txt',
-		]
-		properties.supportedTags >> [
-			'a',
-			'div',
-			'start',
-			'end',
-			'body',
-			'something'
-		]
-		properties.rewriteMode >> RewriteMode.ON
-
 		rewriter = new AdvertismentRewriterImpl(properties)
 	}
 
@@ -69,14 +53,14 @@ class TagRewritingSpec extends Specification {
 		where:
 		rule | uri | line | result
 
-		'&ad_box_' | 'uri' | '<start><a href="http://reklama.by?draw&ad_box_567" /><end>'             | '<start><end>'
-		'&ad_box_' | 'uri' | '<start><a href="http://reklama.by?draw&ad_box_567"></a><end>'           | '<start><end>'
-		'&ad_box_' | 'uri' | '<start><a href="http://reklama.by?draw&ad_box_567"><something></a><end>'| '<start><end>'
+		'&ad_box_' | 'uri' | '<script><a href="http://reklama.by?draw&ad_box_567" /><object>'       | '<script><object>'
+		'&ad_box_' | 'uri' | '<script><a href="http://reklama.by?draw&ad_box_567"></a><object>'     | '<script><object>'
+		'&ad_box_' | 'uri' | '<script><a href="http://reklama.by?draw&ad_box_567"><img></a><object>'| '<script><object>'
 
-		'##BODY > #flydiv' | 'some.uri' | '<start><body><a id="flydiv" /></end>'              | '<start><body></end>'
-		'##BODY > #flydiv' | 'some.uri' | '<start><body><a id="flydiv"></a></end>'            | '<start><body></end>'
-		'##BODY > #flydiv' | 'some.uri' | '<start><body><a id="flydiv"><something></a></end>' | '<start><body></end>'
-		'##BODY > #flydiv' | 'some.uri' | '<start><body><something></a></end>' 				  | '<start><body><something></a></end>'
+		'##BODY > #flydiv' | 'some.uri' | '<script><body><a id="flydiv" /></object>'        | '<script><body></object>'
+		'##BODY > #flydiv' | 'some.uri' | '<script><body><a id="flydiv"></a></object>'      | '<script><body></object>'
+		'##BODY > #flydiv' | 'some.uri' | '<script><body><a id="flydiv"><img></a></object>' | '<script><body></object>'
+		'##BODY > #flydiv' | 'some.uri' | '<script><body><img></a></object>' 				| '<script><body><img></a></object>'
 	}
 
 	private IAdvertismentProcessor createProcessor(IAdvertismentRuleStorage storage) {
