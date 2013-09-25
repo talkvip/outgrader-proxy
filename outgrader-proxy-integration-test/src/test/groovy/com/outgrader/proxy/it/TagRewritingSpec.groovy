@@ -70,12 +70,13 @@ class TagRewritingSpec extends Specification {
 		rule | uri | line | result
 
 		'&ad_box_' | 'uri' | '<start><a href="http://reklama.by?draw&ad_box_567" /><end>'             | '<start><end>'
-		'&ad_box_' | 'uri' | '<start><a href="http://reklama.by?draw&ad_box_567"></a><end>'            | '<start><end>'
+		'&ad_box_' | 'uri' | '<start><a href="http://reklama.by?draw&ad_box_567"></a><end>'           | '<start><end>'
 		'&ad_box_' | 'uri' | '<start><a href="http://reklama.by?draw&ad_box_567"><something></a><end>'| '<start><end>'
 
-		'##BODY > #flydiv' | 'some.uri' | '<start><body><a id="flydiv" /></end>'              | '<start><body><end>'
-		'##BODY > #flydiv' | 'some.uri' | '<start><body><a id="flydiv"></a></end>'            | '<start><body><end>'
-		'##BODY > #flydiv' | 'some.uri' | '<start><body><a id="flydiv"><something></a></end>' | '<start><body><end>'
+		'##BODY > #flydiv' | 'some.uri' | '<start><body><a id="flydiv" /></end>'              | '<start><body></end>'
+		'##BODY > #flydiv' | 'some.uri' | '<start><body><a id="flydiv"></a></end>'            | '<start><body></end>'
+		'##BODY > #flydiv' | 'some.uri' | '<start><body><a id="flydiv"><something></a></end>' | '<start><body></end>'
+		'##BODY > #flydiv' | 'some.uri' | '<start><body><something></a></end>' 				  | '<start><body><something></a></end>'
 	}
 
 	private IAdvertismentProcessor createProcessor(IAdvertismentRuleStorage storage) {

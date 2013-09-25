@@ -22,7 +22,7 @@ import com.google.common.base.Charsets;
 import com.outgrader.proxy.core.advertisment.filter.IFilter;
 import com.outgrader.proxy.core.advertisment.filter.IFilterSource;
 import com.outgrader.proxy.core.advertisment.filter.impl.FilterBuilderUtils;
-import com.outgrader.proxy.core.advertisment.rule.impl.internal.CurrentTagRule;
+import com.outgrader.proxy.core.advertisment.rule.impl.internal.AdvertismentRuleImpl;
 import com.outgrader.proxy.core.model.IAdvertismentRule;
 import com.outgrader.proxy.core.properties.IOutgraderProperties;
 import com.outgrader.proxy.core.storage.IAdvertismentRuleStorage;
@@ -40,8 +40,6 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 	private static final String DOMAIN_PREFIX = "domain=";
 
 	private static final String PARAMETERS_SEPARATOR = "$";
-
-	private static final String[] HIDING_RULE_SEPARATORS = { ">", "+" };
 
 	private enum LineType {
 		COMMENT("!", true), BASIC(null), ELEMENT_HIDING("#"), EXCLUDING("@@", true), EXTENDED(PARAMETERS_SEPARATOR);
@@ -118,8 +116,6 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 
 					IFilter includingFilter = null;
 					IFilter excludingFilter = null;
-					IFilter nextTagFitler = null;
-					IFilter childTagFilter = null;
 
 					if (type != LineType.COMMENT) {
 						if (type != null) {
@@ -131,6 +127,27 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 								includingFilter = getExtendedFilter(line);
 								break;
 							case ELEMENT_HIDING:
+								if (line.contains(">")) {
+									StringTokenizer tokenizer = new StringTokenizer(line, ">");
+
+									AdvertismentRuleImpl rule = null;
+
+									while (tokenizer.hasMoreTokens()) {
+										String subLine = tokenizer.nextToken().trim();
+										if (!subLine.startsWith("##")) {
+											subLine = "##" + subLine;
+										}
+
+										if (rule == null) {
+											rule = new AdvertismentRuleImpl(line, getHidingElementFilter(subLine));
+										} else {
+											rule.addSubRule(new AdvertismentRuleImpl(subLine, getHidingElementFilter(subLine)));
+										}
+									}
+
+									mainRules.add(rule);
+									continue;
+								}
 
 								includingFilter = getHidingElementFilter(line);
 								break;
@@ -146,10 +163,10 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 					}
 
 					if (includingFilter != null) {
-						mainRules.add(new CurrentTagRule(line, includingFilter));
+						mainRules.add(new AdvertismentRuleImpl(line, includingFilter));
 					}
 					if (excludingFilter != null) {
-						excludingRules.add(new CurrentTagRule(line, excludingFilter));
+						excludingRules.add(new AdvertismentRuleImpl(line, excludingFilter));
 					}
 				}
 			} catch (IOException e) {
@@ -166,6 +183,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 	}
 
 	protected IAdvertismentRule getHidingElementTagRule(final String line, final String separator) {
+
 		return null;
 	}
 

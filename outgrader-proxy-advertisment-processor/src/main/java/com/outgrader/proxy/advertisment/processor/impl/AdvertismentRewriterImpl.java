@@ -36,37 +36,16 @@ public class AdvertismentRewriterImpl implements IAdvertismentRewriter {
 		ByteBuf result = Unpooled.EMPTY_BUFFER;
 
 		if (rewriteMode == RewriteMode.ON) {
-			// check tags until rule is matching and adv. rewrite start tag
-			// found
-			ITag currentTag = tag;
-			ITag advStartTag = null;
+			ITag nextTag = tag;
 
-			while (rule.isRuleContinues(tag, currentTag) && (advStartTag == null) && tagReader.hasNext()) {
-				if (rule.isRuleRewriteStarted(tag, currentTag)) {
-					advStartTag = currentTag;
-				} else {
-					result = append(result, currentTag, charset);
-
-					currentTag = tagReader.next();
-				}
-			}
-
-			if (advStartTag != null) {
-				// if tags still matching a rule - remove all tags until end of
-				// adv.
-				while (rule.isRuleRewriteContinues(advStartTag, currentTag) && tagReader.hasNext()) {
-					currentTag = tagReader.next();
-				}
+			while (tagReader.hasNext() && rule.isRuleRewriteContinues(tag, nextTag)) {
+				nextTag = tagReader.next();
 			}
 		} else {
 			result = rewrite(tag, charset);
 		}
 
 		return result;
-	}
-
-	private ByteBuf append(final ByteBuf original, final ITag tag, final Charset charset) {
-		return Unpooled.wrappedBuffer(original, rewrite(tag, charset));
 	}
 
 	@Override

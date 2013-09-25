@@ -21,7 +21,7 @@ class CurrentTagRuleSpec extends Specification {
 	IFilter filter = Mock(IFilter)
 
 	def setup() {
-		rule = new CurrentTagRule("some rule", filter)
+		rule = new AdvertismentRuleImpl("some rule", filter)
 	}
 
 	@Unroll("check isRuleStarted returned #isMatches when filter returns #isMatches")
@@ -30,43 +30,13 @@ class CurrentTagRuleSpec extends Specification {
 		filter.matches(_, _) >> isMatches
 
 		when:
-		def result = rule.isRuleStarted(_ as String, _ as ITag)
+		def result = rule.matches(_ as String, _ as ITag)
 
 		then:
 		result == isMatches
 
 		where:
 		isMatches << [true, false]
-	}
-
-	@Unroll("check isRuleContinues returned #isEquals when tag.equals returns #isEquals")
-	def "check rule continues"(def isEquals) {
-		setup:
-		startTag.equals(currentTag) >> isEquals
-
-		when:
-		def isRewritable = rule.isRuleContinues(startTag, currentTag)
-
-		then:
-		isRewritable == isEquals
-
-		where:
-		isEquals << [true, false]
-	}
-
-	@Unroll("check isRuleRewriteStarted returned #isEquals when tag.equals returns #isEquals")
-	def "check rule rewrite started"(def isEquals) {
-		setup:
-		startTag.equals(currentTag) >> isEquals
-
-		when:
-		def isRewritable = rule.isRuleRewriteStarted(startTag, currentTag)
-
-		then:
-		isRewritable == isEquals
-
-		where:
-		isEquals << [true, false]
 	}
 
 	@Unroll("check isRuleRewriteContinues returned #isEquals when tag.parent.equals returns not #isEquals")

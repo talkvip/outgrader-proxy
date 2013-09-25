@@ -70,6 +70,8 @@ class AdvertismentProcessorImplSpec extends Specification {
 		rewriter.rewrite(_, _) >> Unpooled.EMPTY_BUFFER
 		rewriter.rewrite(_, _, _) >> Unpooled.EMPTY_BUFFER
 		rewriter.rewrite(tag, includingRule, _, _) >> Unpooled.EMPTY_BUFFER
+
+		includingRule.subRules >> []
 	}
 
 	def "check all tags was read"() {
@@ -100,13 +102,13 @@ class AdvertismentProcessorImplSpec extends Specification {
 		processor.process(URI, stream, CHARSET)
 
 		then:
-		1 * includingRule.isRuleStarted(URI, tag)
+		1 * includingRule.matches(URI, tag)
 	}
 
 	def "check statistics updated on rule matching"() {
 		setup:
 		includingRule.toString() >> 'some string'
-		includingRule.isRuleStarted(URI, tag) >> true
+		includingRule.matches(URI, tag) >> true
 
 		when:
 		processor.isAnalysable(tag) >> true
@@ -125,7 +127,7 @@ class AdvertismentProcessorImplSpec extends Specification {
 		and:
 		processor.process(URI, stream, CHARSET)
 		and:
-		includingRule.isRuleStarted(tag) >> false
+		includingRule.matches(tag) >> false
 
 		then:
 		0 * statisticsHandler._
@@ -159,7 +161,7 @@ class AdvertismentProcessorImplSpec extends Specification {
 	def "check rewriter on non-matched tag"() {
 		setup:
 		processor.isAnalysable(tag) >> true
-		includingRule.isRuleStarted(tag) >> false
+		includingRule.matches(tag) >> false
 
 		when:
 		processor.process(URI, stream, CHARSET)
@@ -172,7 +174,7 @@ class AdvertismentProcessorImplSpec extends Specification {
 		setup:
 		processor.isAnalysable(tag) >> true
 		tag.tagType >> TagType.OPEN_AND_CLOSING
-		includingRule.isRuleStarted(URI, tag) >> true
+		includingRule.matches(URI, tag) >> true
 
 		when:
 		processor.process(URI, stream, CHARSET)
@@ -232,8 +234,8 @@ class AdvertismentProcessorImplSpec extends Specification {
 		setup:
 		processor.isAnalysable(tag) >> true
 		tag.tagType >> TagType.OPEN_AND_CLOSING
-		includingRule.isRuleStarted(URI, tag) >> true
-		excludingRule.isRuleStarted(URI, tag) >> true
+		includingRule.matches(URI, tag) >> true
+		excludingRule.matches(URI, tag) >> true
 
 		when:
 		processor.process(URI, stream, CHARSET)

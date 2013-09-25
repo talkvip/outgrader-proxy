@@ -64,11 +64,38 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 					boolean isRewritten = false;
 
 					for (IAdvertismentRule includingRule : ruleStorage.getIncludingRules()) {
-						if (includingRule.isRuleStarted(uri, tag)) {
+						if (includingRule.matches(uri, tag)) {
 							boolean stillIncluding = true;
 
+							ITag advertismentTag = tag;
+
+							int subRuleLength = includingRule.getSubRules().length;
+							int lastSubRuleIndex = subRuleLength - 1;
+
+							if (subRuleLength > 0) {
+								result = append(result, tag, charset);
+								isRewritten = true;
+							}
+
+							for (int i = 0; (i < subRuleLength) && reader.hasNext(); i++) {
+								IAdvertismentRule subRule = includingRule.getSubRules()[i];
+								advertismentTag = reader.next();
+
+								boolean matches = subRule.matches(uri, advertismentTag);
+								boolean last = i == lastSubRuleIndex;
+
+								if (!last || (last && !matches)) {
+									result = append(result, advertismentTag, charset);
+								}
+
+								if (!matches) {
+									stillIncluding = false;
+									break;
+								}
+							}
+
 							for (IAdvertismentRule excludingRule : ruleStorage.getExcludingRules()) {
-								if (excludingRule.isRuleStarted(uri, tag)) {
+								if (excludingRule.matches(uri, advertismentTag)) {
 									stillIncluding = false;
 									break;
 								}
@@ -79,7 +106,7 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 
 								isRewritten = true;
 
-								result = Unpooled.copiedBuffer(result, rewriter.rewrite(tag, includingRule, charset, reader));
+								result = Unpooled.copiedBuffer(result, rewriter.rewrite(advertismentTag, includingRule, charset, reader));
 
 								break;
 							}
@@ -87,10 +114,10 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 					}
 
 					if (!isRewritten) {
-						result = Unpooled.copiedBuffer(result, rewriter.rewrite(tag, charset));
+						result = append(result, tag, charset);
 					}
 				} else {
-					result = Unpooled.copiedBuffer(result, rewriter.rewrite(tag, charset));
+					result = append(result, tag, charset);
 				}
 			}
 		} catch (IOException e) {
@@ -100,6 +127,10 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 		}
 
 		return result;
+	}
+
+	private ByteBuf append(final ByteBuf original, final ITag tag, final Charset charset) {
+		return Unpooled.copiedBuffer(original, rewriter.rewrite(tag, charset));
 	}
 
 	protected TagReader createTagReader(final InputStream stream, final Charset charset) {
