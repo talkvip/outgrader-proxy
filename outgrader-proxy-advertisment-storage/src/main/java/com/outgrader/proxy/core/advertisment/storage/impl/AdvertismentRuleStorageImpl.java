@@ -35,11 +35,13 @@ import com.outgrader.proxy.core.storage.IAdvertismentRuleStorage;
 @Component
 public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(AdvertismentRuleStorageImpl.class);
+
 	private static final String DOMAIN_PREFIX = "domain=";
 
 	private static final String PARAMETERS_SEPARATOR = "$";
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AdvertismentRuleStorageImpl.class);
+	private static final String[] HIDING_RULE_SEPARATORS = { ">", "+" };
 
 	private enum LineType {
 		COMMENT("!", true), BASIC(null), ELEMENT_HIDING("#"), EXCLUDING("@@", true), EXTENDED(PARAMETERS_SEPARATOR);
@@ -116,6 +118,8 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 
 					IFilter includingFilter = null;
 					IFilter excludingFilter = null;
+					IFilter nextTagFitler = null;
+					IFilter childTagFilter = null;
 
 					if (type != LineType.COMMENT) {
 						if (type != null) {
@@ -127,6 +131,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 								includingFilter = getExtendedFilter(line);
 								break;
 							case ELEMENT_HIDING:
+
 								includingFilter = getHidingElementFilter(line);
 								break;
 							case EXCLUDING:
@@ -158,6 +163,10 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 
 		includingRuleSet = mainRules.toArray(new IAdvertismentRule[mainRules.size()]);
 		excludingRuleSet = excludingRules.toArray(new IAdvertismentRule[excludingRules.size()]);
+	}
+
+	protected IAdvertismentRule getHidingElementTagRule(final String line, final String separator) {
+		return null;
 	}
 
 	protected IFilter getHidingElementFilter(final String line) {

@@ -93,6 +93,14 @@ class TagMatchingSpec extends Specification {
 		'##DIV[id^="cpa_rotator_block"]' | 'some.uri' | '<div id="not_startcpa_rotator_block" />' | false
 		'##DIV[id^="cpa_rotator_block"]' | 'some.uri' | '<div class="cpa_rotator_block" />'       | false
 		'##DIV[id^="cpa_rotator_block"]' | 'some.uri' | '<div id="cpa_rotator_block_block" />'    | true
+
+		'###PopWin[onmousemove]' | 'some.uri' | '<a id="PopWin" onmousemove="dosomething" />' | true
+		'###PopWin[onmousemove]' | 'some.uri' | '<a id="PopWin" />'                           | false
+
+		'##BODY > #flydiv' | 'some.uri' | '<body><a id="flydiv" />'        | true
+		'##BODY > #flydiv' | 'some.uri' | '<head><a id="flydiv" />'        | false
+		'##BODY > #flydiv' | 'some.uri' | '<body><a id="something" />'     | false
+		'##BODY > #flydiv' | 'some.uri' | '<body></body><a id="flydiv" />' | false
 	}
 
 	private IAdvertismentProcessor createProcessor(IAdvertismentRuleStorage storage) {
