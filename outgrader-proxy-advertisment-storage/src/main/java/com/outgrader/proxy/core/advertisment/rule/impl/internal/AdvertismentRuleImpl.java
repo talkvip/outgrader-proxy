@@ -15,8 +15,6 @@ import com.outgrader.proxy.core.model.ITag.TagType;
  */
 public class AdvertismentRuleImpl implements IAdvertismentRule {
 
-	private static final IAdvertismentRule[] EMPTY_SUB_RULES = new IAdvertismentRule[0];
-
 	private static final String EMBED_TAG = "embed";
 
 	private final String text;

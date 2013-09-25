@@ -4,15 +4,13 @@ import com.outgrader.proxy.core.model.IAdvertismentRule;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
- * @since 0.3.0-SNAPSHOT
+ * @since 0.4.11-SNAPSHOT
  * 
  */
-public interface IAdvertismentRuleStorage {
+public interface IAdvertismentRuleVault {
 
 	IAdvertismentRule[] getIncludingRules();
 
-	IAdvertismentRule[] getExcludingRules();
-
-	IAdvertismentRuleVault getIncludingRulesVault();
+	IAdvertismentRuleVault getSubVault(String key);
 
 }

@@ -26,6 +26,7 @@ import com.outgrader.proxy.core.advertisment.rule.impl.internal.AdvertismentRule
 import com.outgrader.proxy.core.model.IAdvertismentRule;
 import com.outgrader.proxy.core.properties.IOutgraderProperties;
 import com.outgrader.proxy.core.storage.IAdvertismentRuleStorage;
+import com.outgrader.proxy.core.storage.IAdvertismentRuleVault;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
@@ -77,6 +78,8 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 	private IAdvertismentRule[] includingRuleSet;
 
 	private IAdvertismentRule[] excludingRuleSet;
+
+	private AdvertismentRuleVault includingRulesVault;
 
 	@Inject
 	public AdvertismentRuleStorageImpl(final IOutgraderProperties properties) throws Exception {
@@ -425,5 +428,10 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 	@Override
 	public IAdvertismentRule[] getExcludingRules() {
 		return excludingRuleSet;
+	}
+
+	@Override
+	public IAdvertismentRuleVault getIncludingRulesVault() {
+		return includingRulesVault;
 	}
 }
