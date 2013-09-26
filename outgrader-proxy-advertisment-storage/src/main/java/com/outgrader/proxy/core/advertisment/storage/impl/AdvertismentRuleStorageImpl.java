@@ -393,7 +393,37 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 			return result;
 		}
 
+		result = tryObjectFilter(parametersLine);
+		if (result != null) {
+			return result;
+		}
+
 		return result;
+	}
+
+	protected IFilter tryObjectFilter(String parametersLine) {
+		int objectIndex = parametersLine.indexOf("object");
+
+		if (objectIndex != StringUtils.INDEX_NOT_FOUND) {
+			IFilterSource filterSource = FilterBuilderUtils.TAG_NAME_FILTER_SOURCE;
+
+			boolean not = false;
+
+			if (parametersLine.contains("~")) {
+				not = true;
+				parametersLine = parametersLine.replace("~", StringUtils.EMPTY);
+			}
+
+			IFilter filter = FilterBuilderUtils.buildEqualsFilter(parametersLine, filterSource);
+
+			if (not) {
+				filter = FilterBuilderUtils.not(filter);
+			}
+
+			return filter;
+		}
+
+		return null;
 	}
 
 	protected IFilter tryDomainFilter(final String parametersLine) {

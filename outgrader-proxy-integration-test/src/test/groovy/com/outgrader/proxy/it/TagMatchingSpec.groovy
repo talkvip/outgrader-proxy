@@ -104,6 +104,16 @@ class TagMatchingSpec extends Specification {
 		'www.google.com,www.google.ru##BODY > TABLE[style="border: 1px solid #369"]' | 'www.google.com' | '<body><table style="border: 1px solid #369" />' | true
 		'www.google.com,www.google.ru##BODY > TABLE[style="border: 1px solid #369"]' | 'www.google.ru'  | '<body><table style="border: 1px solid #369" />' | true
 		'www.google.com,www.google.ru##BODY > TABLE[style="border: 1px solid #369"]' | 'www.tut.by'     | '<body><table style="border: 1px solid #369" />' | false
+
+		'##IMG[width="120"][height="600"]' | 'some.uri' | '<img width="120" height="600" />' | true
+		'##IMG[width="120"][height="600"]' | 'some.uri' | '<img width="120" />'              | false
+		'##IMG[width="120"][height="600"]' | 'some.uri' | '<img width="120" height="800" />' | false
+		'##IMG[width="120"][height="600"]' | 'some.uri' | '<img height="600" />'             | false
+		'##IMG[width="120"][height="600"]' | 'some.uri' | '<img width="220" height="600" />' | false
+
+		'/ad_click/*$object' | 'some.uri' | '<object data="http://another.uri/ad_click/1" />' | true
+		'/ad_click/*$object' | 'some.uri' | '<img src="http://another.uri/ad_click/" />'      | false
+		'/ad_click/*$object' | 'some.uri' | '<object data="http://another.uri/ad_click" />'   | false
 	}
 
 	private IAdvertismentProcessor createProcessor(IAdvertismentRuleStorage storage) {
