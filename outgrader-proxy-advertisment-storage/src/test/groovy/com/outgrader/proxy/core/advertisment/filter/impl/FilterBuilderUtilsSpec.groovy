@@ -170,6 +170,20 @@ class FilterBuilderUtilsSpec extends Specification {
 		result.filters.each { assert it == filter }
 	}
 
+	def "check filters joining with or"() {
+		setup:
+		IFilter filter = Mock(IFilter)
+
+		when:
+		IFilter result = FilterBuilderUtils.joinOr([filter]* 10)
+
+		then:
+		result != null
+		result instanceof OrFilter
+		result.filters.size() == 10
+		result.filters.each { assert it == filter }
+	}
+
 	def "check domain filter source"() {
 		setup:
 		IFilterSource source = FilterBuilderUtils.DOMAIN_FILTER_SOURCE

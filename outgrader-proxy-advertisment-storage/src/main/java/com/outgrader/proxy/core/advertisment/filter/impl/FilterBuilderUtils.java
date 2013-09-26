@@ -266,4 +266,18 @@ public final class FilterBuilderUtils {
 		return joinAnd(filters.toArray(new IFilter[filters.size()]));
 	}
 
+	public static IFilter joinOr(final List<IFilter> filters) {
+		if (filters.size() == 1) {
+			return filters.get(0);
+		}
+
+		OrFilter result = new OrFilter();
+
+		for (IFilter filter : filters) {
+			result.addSubFilter(filter);
+		}
+
+		return result;
+	}
+
 }

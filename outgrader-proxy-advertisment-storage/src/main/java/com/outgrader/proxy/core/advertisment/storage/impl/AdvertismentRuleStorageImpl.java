@@ -131,7 +131,19 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 								break;
 							case ELEMENT_HIDING:
 								if (line.contains(">")) {
-									StringTokenizer tokenizer = new StringTokenizer(line, ">");
+									IFilter domainFilter = null;
+
+									String workingLine = new String(line);
+
+									int firstSharp = workingLine.indexOf("#");
+									if (firstSharp > 0) {
+										String domains = workingLine.substring(0, firstSharp);
+										workingLine = workingLine.substring(firstSharp);
+
+										domainFilter = createDomainFilter(domains, ",");
+									}
+
+									StringTokenizer tokenizer = new StringTokenizer(workingLine, ">");
 
 									AdvertismentRuleImpl rule = null;
 
@@ -141,10 +153,16 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 											subLine = "##" + subLine;
 										}
 
+										IFilter filter = getHidingElementFilter(subLine, false);
+										if (domainFilter != null) {
+											filter = FilterBuilderUtils.joinAnd(domainFilter, filter);
+											domainFilter = null;
+										}
+
 										if (rule == null) {
-											rule = new AdvertismentRuleImpl(line, getHidingElementFilter(subLine));
+											rule = new AdvertismentRuleImpl(line, filter);
 										} else {
-											rule.addSubRule(new AdvertismentRuleImpl(subLine, getHidingElementFilter(subLine)));
+											rule.addSubRule(new AdvertismentRuleImpl(subLine, filter));
 										}
 									}
 
@@ -185,19 +203,18 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 		excludingRuleSet = excludingRules.toArray(new IAdvertismentRule[excludingRules.size()]);
 	}
 
-	protected IAdvertismentRule getHidingElementTagRule(final String line, final String separator) {
-
-		return null;
+	protected IFilter getHidingElementFilter(final String line) {
+		return getHidingElementFilter(line, false);
 	}
 
-	protected IFilter getHidingElementFilter(final String line) {
+	protected IFilter getHidingElementFilter(final String line, final boolean checkDomain) {
 		IFilterSource source = null;
 		String pattern = null;
 
 		boolean shouldBeEquals = false;
 
 		int firstSharp = line.indexOf("#");
-		if (firstSharp > 0) {
+		if ((firstSharp > 0) && checkDomain) {
 			String domains = line.substring(0, firstSharp);
 			String rule = line.substring(firstSharp);
 
@@ -208,8 +225,6 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 				return FilterBuilderUtils.joinAnd(domainFilter, ruleFilter);
 			}
 		} else {
-			// check '>' or '+'
-
 			pattern = getHidingElementPattern(line, "###");
 			if (pattern != null) {
 				source = FilterBuilderUtils.CSS_ID_FILTER_SOURCE;
@@ -230,7 +245,10 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 							if (pattern.contains(".")) {
 								source = FilterBuilderUtils.CSS_SELECTOR_FILTER_SOURCE;
 							} else {
-								if (pattern.contains("#")) {
+								int sharpIndex = pattern.indexOf("#");
+								int quoteIndex = pattern.indexOf("\"");
+
+								if ((sharpIndex != StringUtils.INDEX_NOT_FOUND) && (sharpIndex < quoteIndex)) {
 									source = FilterBuilderUtils.CSS_SELECTOR_FILTER_SOURCE;
 									pattern = pattern.replace("#", ".");
 								} else {
@@ -323,7 +341,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 
 	private String getHidingElementPattern(final String line, final String prefix) {
 		if (line.startsWith(prefix)) {
-			return line.replace(prefix, StringUtils.EMPTY);
+			return line.replaceFirst(prefix, StringUtils.EMPTY);
 		}
 
 		return null;
@@ -415,7 +433,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 			filters.add(FilterBuilderUtils.build(tokenizer.nextToken(), filterSource, true));
 		}
 
-		return FilterBuilderUtils.joinAnd(filters);
+		return FilterBuilderUtils.joinOr(filters);
 	}
 
 	protected IFilter getBasicFilter(final String line) {

@@ -101,9 +101,9 @@ class TagMatchingSpec extends Specification {
 		'##NOINDEX > .search_result[class*="search_result_"]' | 'some.uri' | '<start><a id="search_result" class="search_result_" />'            | false
 		'##NOINDEX > .search_result[class*="search_result_"]' | 'some.uri' | '<noindex><a id="search_result" type="search_result_" />' 			 | false
 
-		'www.google.com,www.google.ru##BODY > TABLE[style="border: 1px solid #369"]' | 'www.google.com' | '<body><table style="border: 1px solid #369" table/>' | true
-		'www.google.com,www.google.ru##BODY > TABLE[style="border: 1px solid #369"]' | 'www.google.ru'  | '<body><table style="border: 1px solid #369" table/>' | true
-		'www.google.com,www.google.ru##BODY > TABLE[style="border: 1px solid #369"]' | 'www.tut.by'     | '<body><table style="border: 1px solid #369" table/>' | false
+		'www.google.com,www.google.ru##BODY > TABLE[style="border: 1px solid #369"]' | 'www.google.com' | '<body><table style="border: 1px solid #369" />' | true
+		'www.google.com,www.google.ru##BODY > TABLE[style="border: 1px solid #369"]' | 'www.google.ru'  | '<body><table style="border: 1px solid #369" />' | true
+		'www.google.com,www.google.ru##BODY > TABLE[style="border: 1px solid #369"]' | 'www.tut.by'     | '<body><table style="border: 1px solid #369" />' | false
 	}
 
 	private IAdvertismentProcessor createProcessor(IAdvertismentRuleStorage storage) {
