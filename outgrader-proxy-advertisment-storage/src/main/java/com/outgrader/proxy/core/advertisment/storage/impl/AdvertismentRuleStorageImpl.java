@@ -204,7 +204,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 	}
 
 	protected IFilter getHidingElementFilter(final String line) {
-		return getHidingElementFilter(line, false);
+		return getHidingElementFilter(line, true);
 	}
 
 	protected IFilter getHidingElementFilter(final String line, final boolean checkDomain) {
