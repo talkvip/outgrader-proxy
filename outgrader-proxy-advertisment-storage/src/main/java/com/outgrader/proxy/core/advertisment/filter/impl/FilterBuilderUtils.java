@@ -249,6 +249,9 @@ public final class FilterBuilderUtils {
 	}
 
 	public static IFilter joinAnd(final IFilter... filters) {
+		if (filters.length == 0) {
+			return null;
+		}
 		if (filters.length == 1) {
 			return filters[0];
 		}

@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -41,6 +39,60 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 	private static final String DOMAIN_PREFIX = "domain=";
 
 	private static final String PARAMETERS_SEPARATOR = "$";
+
+	private static class FilterResult {
+
+		private final IFilter filter;
+
+		private final List<IFilter> subRules;
+
+		private final List<String> domains;
+
+		public FilterResult(final IFilter filter) {
+			this(filter, new ArrayList<String>(0));
+		}
+
+		public FilterResult(final IFilter filter, final List<String> domains) {
+			this(filter, domains, new ArrayList<IFilter>(0));
+		}
+
+		public FilterResult(final IFilter filter, final List<String> domains, final List<IFilter> subRules) {
+			this.filter = filter;
+			this.domains = domains;
+			this.subRules = subRules;
+		}
+
+		public List<String> getDomains() {
+			return domains;
+		}
+
+		public IFilter getFilter() {
+			return filter;
+		}
+
+		public List<IFilter> getSubRules() {
+			return subRules;
+		}
+
+		public static FilterResult mergeAnd(final FilterResult first, final FilterResult second) {
+			List<String> domains = first.domains;
+			domains.addAll(second.domains);
+
+			List<IFilter> subRules = first.subRules;
+			subRules.addAll(second.subRules);
+
+			IFilter filter = first.getFilter();
+			if (filter == null) {
+				filter = second.getFilter();
+			} else {
+				if (second.getFilter() != null) {
+					filter = FilterBuilderUtils.joinAnd(filter, second.getFilter());
+				}
+			}
+
+			return new FilterResult(filter, domains, subRules);
+		}
+	}
 
 	private enum LineType {
 		COMMENT("!", true), BASIC(null), ELEMENT_HIDING("#"), EXCLUDING("@@", true), EXTENDED(PARAMETERS_SEPARATOR);
@@ -79,7 +131,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 
 	private IAdvertismentRule[] excludingRuleSet;
 
-	private AdvertismentRuleVault includingRulesVault;
+	private final AdvertismentRuleVault includingRulesVault = new AdvertismentRuleVault();
 
 	@Inject
 	public AdvertismentRuleStorageImpl(final IOutgraderProperties properties) throws Exception {
@@ -117,77 +169,60 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 
 					LineType type = LineType.getLineType(line);
 
-					IFilter includingFilter = null;
-					IFilter excludingFilter = null;
+					FilterResult includingFilterResult = null;
+					FilterResult excludingFilterResult = null;
 
 					if (type != LineType.COMMENT) {
-						if (type != null) {
-							switch (type) {
-							case BASIC:
-								includingFilter = getBasicFilter(line);
-								break;
-							case EXTENDED:
-								includingFilter = getExtendedFilter(line);
-								break;
-							case ELEMENT_HIDING:
-								if (line.contains(">")) {
-									IFilter domainFilter = null;
-
-									String workingLine = new String(line);
-
-									int firstSharp = workingLine.indexOf("#");
-									if (firstSharp > 0) {
-										String domains = workingLine.substring(0, firstSharp);
-										workingLine = workingLine.substring(firstSharp);
-
-										domainFilter = createDomainFilter(domains, ",");
+						switch (type) {
+						case BASIC:
+							includingFilterResult = getBasicFilter(line);
+							break;
+						case ELEMENT_HIDING:
+							if (!line.contains(" + ")) {
+								boolean first = true;
+								for (String component : line.split(" > ")) {
+									if (!first) {
+										component = "##" + component.trim();
 									}
 
-									StringTokenizer tokenizer = new StringTokenizer(workingLine, ">");
+									FilterResult componentResult = getHidingElementFilter(component.trim(), first);
 
-									AdvertismentRuleImpl rule = null;
+									first = false;
 
-									while (tokenizer.hasMoreTokens()) {
-										String subLine = tokenizer.nextToken().trim();
-										if (!subLine.startsWith("##")) {
-											subLine = "##" + subLine;
-										}
-
-										IFilter filter = getHidingElementFilter(subLine, false);
-										if (domainFilter != null) {
-											filter = FilterBuilderUtils.joinAnd(domainFilter, filter);
-											domainFilter = null;
-										}
-
-										if (rule == null) {
-											rule = new AdvertismentRuleImpl(line, filter);
-										} else {
-											rule.addSubRule(new AdvertismentRuleImpl(subLine, filter));
-										}
+									if (includingFilterResult == null) {
+										includingFilterResult = componentResult;
+									} else {
+										includingFilterResult = FilterResult.mergeAnd(includingFilterResult, componentResult);
 									}
-
-									mainRules.add(rule);
-									continue;
 								}
-
-								includingFilter = getHidingElementFilter(line);
-								break;
-							case EXCLUDING:
-								String excludingRuleLine = line.replace("@@", StringUtils.EMPTY);
-								excludingFilter = getBasicFilter(excludingRuleLine);
-							default:
-								// skip
-								break;
 							}
+							break;
+						case EXCLUDING:
+							excludingFilterResult = getBasicFilter(line);
+							break;
+						case EXTENDED:
+							includingFilterResult = getExtendedFilter(line);
+							break;
+						default:
+							break;
 						}
 						ruleCount++;
 					}
 
-					if (includingFilter != null) {
-						mainRules.add(new AdvertismentRuleImpl(line, includingFilter));
+					if (excludingFilterResult != null) {
+						excludingRules.add(new AdvertismentRuleImpl(line, excludingFilterResult.getFilter()));
 					}
-					if (excludingFilter != null) {
-						excludingRules.add(new AdvertismentRuleImpl(line, excludingFilter));
+					if (includingFilterResult != null) {
+						AdvertismentRuleImpl rule = new AdvertismentRuleImpl(line, includingFilterResult.getFilter());
+						for (IFilter filter : includingFilterResult.getSubRules()) {
+							rule.addSubRule(new AdvertismentRuleImpl(line, filter));
+						}
+
+						mainRules.add(rule);
+
+						for (AdvertismentRuleVault vault : getVaults(includingFilterResult)) {
+							vault.addRule(rule);
+						}
 					}
 				}
 			} catch (IOException e) {
@@ -203,274 +238,96 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 		excludingRuleSet = excludingRules.toArray(new IAdvertismentRule[excludingRules.size()]);
 	}
 
-	protected IFilter getHidingElementFilter(final String line) {
-		return getHidingElementFilter(line, true);
-	}
+	private List<AdvertismentRuleVault> getVaults(final FilterResult filterResult) {
+		List<AdvertismentRuleVault> result = new ArrayList<>();
 
-	protected IFilter getHidingElementFilter(final String line, final boolean checkDomain) {
-		IFilterSource source = null;
-		String pattern = null;
+		for (String domain : filterResult.getDomains()) {
+			AdvertismentRuleVault domainVault = includingRulesVault.createSubVault(domain);
 
-		boolean shouldBeEquals = false;
-
-		int firstSharp = line.indexOf("#");
-		if ((firstSharp > 0) && checkDomain) {
-			String domains = line.substring(0, firstSharp);
-			String rule = line.substring(firstSharp);
-
-			IFilter domainFilter = createDomainFilter(domains, ",");
-			IFilter ruleFilter = getHidingElementFilter(rule);
-
-			if (ruleFilter != null) {
-				return FilterBuilderUtils.joinAnd(domainFilter, ruleFilter);
-			}
-		} else {
-			pattern = getHidingElementPattern(line, "###");
-			if (pattern != null) {
-				source = FilterBuilderUtils.CSS_ID_FILTER_SOURCE;
-				shouldBeEquals = true;
-			} else {
-				pattern = getHidingElementPattern(line, "##*#");
-				if (pattern != null) {
-					source = FilterBuilderUtils.CSS_ID_FILTER_SOURCE;
-				} else {
-					pattern = getHidingElementPattern(line, "##.");
-					if (pattern != null) {
-						source = FilterBuilderUtils.CSS_SELECTOR_FILTER_SOURCE;
-						pattern = "." + pattern;
-					} else {
-						pattern = getHidingElementPattern(line, "##");
-
-						if (pattern != null) {
-							if (pattern.contains(".")) {
-								source = FilterBuilderUtils.CSS_SELECTOR_FILTER_SOURCE;
-							} else {
-								int sharpIndex = pattern.indexOf("#");
-								int quoteIndex = pattern.indexOf("\"");
-
-								if ((sharpIndex != StringUtils.INDEX_NOT_FOUND) && (sharpIndex < quoteIndex)) {
-									source = FilterBuilderUtils.CSS_SELECTOR_FILTER_SOURCE;
-									pattern = pattern.replace("#", ".");
-								} else {
-									source = FilterBuilderUtils.TAG_NAME_FILTER_SOURCE;
-								}
-							}
-
-						}
-					}
-				}
-			}
+			result.add(domainVault);
 		}
 
-		boolean rotateFilters = false;
-
-		if ((source != null) && !StringUtils.isEmpty(pattern)) {
-			int parametersIndex = pattern.indexOf("[");
-
-			List<IFilter> filters = new ArrayList<>();
-
-			if (parametersIndex > StringUtils.INDEX_NOT_FOUND) {
-				String parameters = pattern.substring(parametersIndex);
-				pattern = pattern.substring(0, parametersIndex);
-
-				StringTokenizer tokenizer = new StringTokenizer(parameters, "[]", false);
-
-				while (tokenizer.hasMoreTokens()) {
-					String token = tokenizer.nextToken();
-
-					int attributeIndex = token.indexOf("=");
-
-					IFilter attributeFilter = null;
-
-					if (attributeIndex != StringUtils.INDEX_NOT_FOUND) {
-						String attribute = token.substring(0, attributeIndex);
-						String value = token.substring(attributeIndex + 1);
-						value = value.substring(1, value.length() - 1);
-
-						IFilterSource attributeFilterSource = FilterBuilderUtils.getTagAttributeFilterSource(attribute);
-
-						if (attribute.endsWith("*")) {
-							attribute = attribute.replace("*", StringUtils.EMPTY);
-
-							attributeFilterSource = FilterBuilderUtils.getTagAttributeFilterSource(attribute);
-
-							attributeFilter = FilterBuilderUtils.buildContainsFilter(value, attributeFilterSource);
-						} else if (attribute.endsWith("^")) {
-							attribute = attribute.replace("^", StringUtils.EMPTY);
-
-							attributeFilterSource = FilterBuilderUtils.getTagAttributeFilterSource(attribute);
-
-							attributeFilter = FilterBuilderUtils.buildStartsWithFilter(value, attributeFilterSource);
-						} else if (attribute.endsWith("$")) {
-							attribute = attribute.replace("$", StringUtils.EMPTY);
-
-							attributeFilterSource = FilterBuilderUtils.getTagAttributeFilterSource(attribute);
-
-							attributeFilter = FilterBuilderUtils.buildEndsWithFilter(value, attributeFilterSource);
-						} else {
-							attributeFilter = FilterBuilderUtils.buildEqualsFilter(value, attributeFilterSource);
-						}
-					} else {
-						IFilterSource attributeFilterSource = FilterBuilderUtils.getTagAttributeFilterSource(token);
-						attributeFilter = FilterBuilderUtils.buildTrueFilter(attributeFilterSource);
-					}
-
-					filters.add(attributeFilter);
-					rotateFilters = true;
-				}
-			}
-
-			IFilter mainFilter = null;
-			if (shouldBeEquals) {
-				mainFilter = FilterBuilderUtils.buildEqualsFilter(pattern, source);
-			} else {
-				mainFilter = FilterBuilderUtils.buildContainsFilter(pattern, source);
-			}
-
-			filters.add(mainFilter);
-
-			if (rotateFilters) {
-				Collections.rotate(filters, 1);
-			}
-
-			return FilterBuilderUtils.joinAnd(filters);
-		}
-
-		return null;
-	}
-
-	private String getHidingElementPattern(final String line, final String prefix) {
-		if (line.startsWith(prefix)) {
-			return line.replaceFirst(prefix, StringUtils.EMPTY);
-		}
-
-		return null;
-	}
-
-	protected IFilter getExtendedFilter(final String line) {
-		int parametersIndex = line.indexOf(PARAMETERS_SEPARATOR);
-
-		String parametersBlock = line.substring(parametersIndex + 1);
-		String baseBlock = line.substring(0, parametersIndex);
-
-		IFilter parametersFilter = getParametersFilter(parametersBlock);
-		IFilter basicFilter = getBasicFilter(baseBlock);
-
-		if ((parametersFilter != null) && (basicFilter != null)) {
-			return FilterBuilderUtils.joinAnd(parametersFilter, basicFilter);
-		}
-
-		return null;
-	}
-
-	protected IFilter getParametersFilter(final String parametersLine) {
-		int rounds = StringUtils.countMatches(parametersLine, ",");
-
-		if (rounds > 0) {
-			String[] parameters = parametersLine.split(",");
-			List<IFilter> filters = new ArrayList<>(parameters.length);
-
-			for (String param : parameters) {
-				IFilter subFilter = getParametersFilter(param);
-
-				if (subFilter != null) {
-					filters.add(subFilter);
-				}
-			}
-
-			return FilterBuilderUtils.joinAnd(filters);
-		}
-
-		IFilter result = null;
-
-		result = tryDomainFilter(parametersLine);
-		if (result != null) {
-			return result;
-		}
-
-		result = tryThirdPartyFilter(parametersLine);
-		if (result != null) {
-			return result;
-		}
-
-		result = tryObjectFilter(parametersLine);
-		if (result != null) {
-			return result;
+		if (result.isEmpty()) {
+			result.add(includingRulesVault);
 		}
 
 		return result;
 	}
 
-	protected IFilter tryObjectFilter(String parametersLine) {
-		int objectIndex = parametersLine.indexOf("object");
+	private FilterResult getHidingElementFilter(final String line, final boolean isMainFilter) {
 
-		if (objectIndex != StringUtils.INDEX_NOT_FOUND) {
-			IFilterSource filterSource = FilterBuilderUtils.TAG_NAME_FILTER_SOURCE;
+		return null;
+	}
 
-			boolean not = false;
+	private FilterResult getExtendedFilter(final String line) {
+		int parametersIndex = line.indexOf(PARAMETERS_SEPARATOR);
 
-			if (parametersLine.contains("~")) {
-				not = true;
-				parametersLine = parametersLine.replace("~", StringUtils.EMPTY);
-			}
+		String parametersBlock = line.substring(parametersIndex + 1);
+		String baseBlock = line.substring(0, parametersIndex);
 
-			IFilter filter = FilterBuilderUtils.buildEqualsFilter(parametersLine, filterSource);
+		FilterResult basicFilter = getBasicFilter(baseBlock);
+		FilterResult parametersFilter = getParametersFilter(parametersBlock);
 
-			if (not) {
-				filter = FilterBuilderUtils.not(filter);
-			}
-
-			return filter;
+		if (parametersFilter != null) {
+			return FilterResult.mergeAnd(parametersFilter, basicFilter);
 		}
 
 		return null;
 	}
 
-	protected IFilter tryDomainFilter(final String parametersLine) {
-		int domainIndex = parametersLine.indexOf(DOMAIN_PREFIX);
+	private FilterResult getParametersFilter(final String line) {
+		FilterResult result = null;
+
+		for (String parameter : line.split(",")) {
+			FilterResult subResult = null;
+
+			subResult = tryDomainFilter(parameter);
+			if (subResult == null) {
+				// subResult =
+			}
+
+			if (result == null) {
+				result = subResult;
+			} else if (subResult != null) {
+				result = FilterResult.mergeAnd(result, subResult);
+			}
+		}
+
+		return result;
+	}
+
+	private FilterResult tryDomainFilter(final String parameterLine) {
+		int domainIndex = parameterLine.indexOf(DOMAIN_PREFIX);
+
+		List<String> domains = new ArrayList<>();
+		List<IFilter> excludingDomains = new ArrayList<>();
 
 		if (domainIndex != StringUtils.INDEX_NOT_FOUND) {
-			return createDomainFilter(parametersLine.substring(domainIndex + DOMAIN_PREFIX.length()), "|");
-		}
+			String domainsList = parameterLine.substring(domainIndex + DOMAIN_PREFIX.length());
 
-		return null;
-	}
+			for (String domain : domainsList.split("\\|")) {
+				if (domain.startsWith("~")) {
+					IFilterSource filterSource = FilterBuilderUtils.DOMAIN_FILTER_SOURCE;
+					IFilter domainFilter = FilterBuilderUtils.buildContainsFilter(domain, filterSource);
+					domainFilter = FilterBuilderUtils.not(domainFilter);
 
-	protected IFilter tryThirdPartyFilter(final String parametersLine) {
-		if (parametersLine.contains("third-party")) {
-			IFilterSource filterSource = FilterBuilderUtils.BASIC_FILTER_SOURCE;
-
-			IFilter filter = FilterBuilderUtils.buildContainsDomainFilter(filterSource);
-
-			if (parametersLine.contains("~")) {
-				return filter;
+					excludingDomains.add(domainFilter);
+				} else {
+					domains.add(domain);
+				}
 			}
 
-			return FilterBuilderUtils.not(filter);
+			return new FilterResult(FilterBuilderUtils.joinAnd(excludingDomains), domains);
 		}
 
 		return null;
 	}
 
-	protected IFilter createDomainFilter(final String domainsLine, final String separator) {
-		StringTokenizer tokenizer = new StringTokenizer(domainsLine, separator, false);
+	private FilterResult getBasicFilter(final String line) {
+		IFilterSource filterSource = FilterBuilderUtils.BASIC_FILTER_SOURCE;
+		IFilter filter = FilterBuilderUtils.build(line, filterSource);
 
-		IFilterSource filterSource = FilterBuilderUtils.DOMAIN_FILTER_SOURCE;
-
-		List<IFilter> filters = new ArrayList<>();
-
-		while (tokenizer.hasMoreTokens()) {
-			filters.add(FilterBuilderUtils.build(tokenizer.nextToken(), filterSource, true));
-		}
-
-		return FilterBuilderUtils.joinOr(filters);
-	}
-
-	protected IFilter getBasicFilter(final String line) {
-		IFilterSource basicSource = FilterBuilderUtils.BASIC_FILTER_SOURCE;
-		IFilter filter = FilterBuilderUtils.build(line, basicSource);
-
-		return filter;
+		return new FilterResult(filter);
 	}
 
 	@Override

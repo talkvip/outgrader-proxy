@@ -37,8 +37,8 @@ class AdvertismentRuleVault implements IAdvertismentRuleVault {
 		return subVaults.get(key);
 	}
 
-	public IAdvertismentRuleVault createSubVault(final String key) {
-		IAdvertismentRuleVault result = getSubVault(key);
+	public AdvertismentRuleVault createSubVault(final String key) {
+		AdvertismentRuleVault result = (AdvertismentRuleVault) getSubVault(key);
 
 		if (result == null) {
 			AdvertismentRuleVault newVault = new AdvertismentRuleVault(getIncludingRules());
