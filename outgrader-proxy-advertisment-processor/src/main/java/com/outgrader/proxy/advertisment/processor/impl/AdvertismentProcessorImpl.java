@@ -9,7 +9,6 @@ import java.nio.charset.Charset;
 
 import javax.inject.Inject;
 
-import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -54,7 +53,6 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 		this.properties = properties;
 	}
 
-	@Profiled
 	@Override
 	public ByteBuf process(final String uri, final InputStream stream, final Charset charset) throws AbstractOutgraderException {
 		ByteBuf result = Unpooled.EMPTY_BUFFER;

@@ -29,9 +29,13 @@ public class TagReader implements Iterable<ITag>, Iterator<ITag>, Closeable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TagReader.class);
 
+	private static final String OPENING_TAG = "<";
+
+	private static final String CLOSING_TAG = ">";
+
 	private static final int BUFFER_SIZE = 4096;
 
-	private static final int BLOCK_SIZE = 256;
+	private static final int BLOCK_SIZE = 1024;
 
 	private final Reader source;
 
@@ -134,7 +138,7 @@ public class TagReader implements Iterable<ITag>, Iterator<ITag>, Closeable {
 			}
 
 			if (tagStarted) {
-				int endTagIndex = currentTextPiece.indexOf(">");
+				int endTagIndex = currentTextPiece.indexOf(CLOSING_TAG);
 
 				if (endTagIndex >= 0) {
 					textCollector.append(currentTextPiece.subSequence(0, endTagIndex + 1));
@@ -148,7 +152,7 @@ public class TagReader implements Iterable<ITag>, Iterator<ITag>, Closeable {
 					needMoreData = true;
 				}
 			} else {
-				int startTagIndex = currentTextPiece.indexOf("<");
+				int startTagIndex = currentTextPiece.indexOf(OPENING_TAG);
 
 				if (startTagIndex < 0) {
 					textCollector.append(currentTextPiece);
