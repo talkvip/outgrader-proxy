@@ -24,6 +24,8 @@ class AdvertismentRuleVault implements IAdvertismentRuleVault {
 
 	private Map<String, AdvertismentRuleVault> subVaults;
 
+	private boolean isEmpty;
+
 	public AdvertismentRuleVault() {
 		this(EMPTY_RULE_LIST);
 	}
@@ -42,7 +44,7 @@ class AdvertismentRuleVault implements IAdvertismentRuleVault {
 		if (subVaults == null) {
 			return null;
 		}
-		return subVaults.get(key);
+		return subVaults.get(key.toLowerCase());
 	}
 
 	public AdvertismentRuleVault createSubVault(final String key) {
@@ -54,7 +56,7 @@ class AdvertismentRuleVault implements IAdvertismentRuleVault {
 			if (subVaults == null) {
 				subVaults = new HashMap<>();
 			}
-			subVaults.put(key, newVault);
+			subVaults.put(key.toLowerCase(), newVault);
 
 			result = newVault;
 		}
@@ -77,10 +79,21 @@ class AdvertismentRuleVault implements IAdvertismentRuleVault {
 		ruleList.clear();
 		ruleList = null;
 
+		isEmpty = rules.length == 0;
+
 		if (subVaults != null) {
 			for (AdvertismentRuleVault subVault : subVaults.values()) {
 				subVault.close();
+
+				if (!subVault.isEmpty()) {
+					isEmpty = false;
+				}
 			}
 		}
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return isEmpty;
 	}
 }

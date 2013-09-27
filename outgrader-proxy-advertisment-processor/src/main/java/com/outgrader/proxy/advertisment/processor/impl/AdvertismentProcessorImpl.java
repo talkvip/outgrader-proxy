@@ -60,7 +60,7 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 		byte[] result = ArrayUtils.EMPTY_BYTE_ARRAY;
 
 		IAdvertismentRuleVault mainVault = ruleStorage.getIncludingRulesVault();
-		IAdvertismentRuleVault urlVault = mainVault.getSubVault(uri);
+		IAdvertismentRuleVault urlVault = mainVault.getSubVault(uri.toLowerCase());
 		mainVault = urlVault == null ? mainVault : urlVault;
 
 		try (TagReader reader = createTagReader(stream, charset)) {
@@ -68,11 +68,11 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 				if (isAnalysable(tag)) {
 					boolean isRewritten = false;
 
-					IAdvertismentRuleVault tagVault = mainVault.getSubVault(tag.getName());
-					mainVault = tagVault == null ? mainVault : tagVault;
+					IAdvertismentRuleVault tagVault = mainVault.getSubVault(tag.getName().toLowerCase());
+					IAdvertismentRuleVault currentVault = tagVault == null ? mainVault : tagVault;
 
-					for (IAdvertismentRule includingRule : mainVault.getRules()) {
-						if (includingRule.matches(uri, tag)) {
+					for (IAdvertismentRule includingRule : currentVault.getRules()) {
+						if (((includingRule.getSubRules().length > 0) && (currentVault == tagVault)) || includingRule.matches(uri, tag)) {
 							boolean stillIncluding = true;
 
 							ITag advertismentTag = tag;

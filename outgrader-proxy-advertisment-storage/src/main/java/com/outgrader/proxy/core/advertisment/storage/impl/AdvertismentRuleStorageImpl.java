@@ -56,6 +56,10 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 			this(filter, new ArrayList<String>(0));
 		}
 
+		public FilterResult(final IFilter filter, final String tag) {
+			this(filter, new ArrayList<String>(0), new ArrayList<IFilter>(0), tag);
+		}
+
 		public FilterResult(final IFilter filter, final List<String> domains) {
 			this(filter, domains, new ArrayList<IFilter>(0));
 		}
@@ -339,10 +343,12 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 		IFilterSource cssFilterSource = null;
 		String cssFilterBase = null;
 		String tagName = null;
+		boolean shouldBeEquals = false;
 
 		if (cssPart.startsWith("###") || cssPart.startsWith("##*#")) {
 			cssFilterSource = FilterBuilderUtils.CSS_ID_FILTER_SOURCE;
 			cssFilterBase = cssPart.replaceAll("###", StringUtils.EMPTY).replaceAll("##*#", StringUtils.EMPTY);
+			shouldBeEquals = true;
 		} else if (cssPart.startsWith("##.")) {
 			cssFilterSource = FilterBuilderUtils.CSS_SELECTOR_FILTER_SOURCE;
 			cssFilterBase = cssPart.replace("##", StringUtils.EMPTY);
@@ -359,7 +365,11 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 
 		IFilter cssFilter = null;
 		if ((cssFilterBase != null) && (cssFilterSource != null)) {
-			cssFilter = FilterBuilderUtils.build(cssFilterBase, cssFilterSource);
+			if (shouldBeEquals) {
+				cssFilter = FilterBuilderUtils.buildEqualsFilter(cssFilterBase, cssFilterSource);
+			} else {
+				cssFilter = FilterBuilderUtils.buildContainsFilter(cssFilterBase, cssFilterSource);
+			}
 		}
 
 		List<IFilter> attributeFilters = new ArrayList<>();
@@ -457,7 +467,11 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 
 			subResult = tryDomainFilter(parameter);
 			if (subResult == null) {
-				// subResult =
+				subResult = tryThirdPartyFilter(parameter);
+
+				if (subResult == null) {
+					subResult = tryExtendedTagNameParameterFilter(parameter, "object");
+				}
 			}
 
 			if (result == null) {
@@ -468,6 +482,22 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 		}
 
 		return result;
+	}
+
+	private FilterResult tryThirdPartyFilter(final String parametersLine) {
+		if (parametersLine.contains("third-party")) {
+			IFilterSource filterSource = FilterBuilderUtils.BASIC_FILTER_SOURCE;
+
+			IFilter filter = FilterBuilderUtils.buildContainsDomainFilter(filterSource);
+
+			if (!parametersLine.contains("~")) {
+				filter = FilterBuilderUtils.not(filter);
+			}
+
+			return new FilterResult(filter);
+		}
+
+		return null;
 	}
 
 	private FilterResult tryDomainFilter(final String parameterLine) {
@@ -492,6 +522,25 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 			}
 
 			return new FilterResult(FilterBuilderUtils.joinAnd(excludingDomains), domains);
+		}
+
+		return null;
+	}
+
+	private FilterResult tryExtendedTagNameParameterFilter(final String parameterLine, final String tagName) {
+		if (parameterLine.contains(tagName)) {
+			IFilterSource filterSource = FilterBuilderUtils.TAG_NAME_FILTER_SOURCE;
+			IFilter filter = null;
+			String tag = null;
+
+			if (parameterLine.startsWith("~")) {
+				filter = FilterBuilderUtils.buildEqualsFilter(tagName, filterSource);
+				filter = FilterBuilderUtils.not(filter);
+			} else {
+				tag = tagName;
+			}
+
+			return new FilterResult(filter, tag);
 		}
 
 		return null;

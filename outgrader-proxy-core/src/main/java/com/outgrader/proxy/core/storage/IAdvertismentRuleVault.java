@@ -13,4 +13,6 @@ public interface IAdvertismentRuleVault {
 
 	IAdvertismentRuleVault getSubVault(String key);
 
+	boolean isEmpty();
+
 }

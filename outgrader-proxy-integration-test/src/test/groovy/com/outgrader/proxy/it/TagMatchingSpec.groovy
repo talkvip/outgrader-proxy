@@ -1,9 +1,8 @@
 package com.outgrader.proxy.it
 
-import io.netty.buffer.Unpooled
-
 import org.apache.commons.io.Charsets
 import org.apache.commons.io.IOUtils
+import org.apache.commons.lang3.ArrayUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
 
@@ -34,8 +33,8 @@ class TagMatchingSpec extends Specification {
 	IAdvertismentRewriter rewriter = Mock(IAdvertismentRewriter)
 
 	def setup() {
-		rewriter.rewrite(_, _) >> Unpooled.EMPTY_BUFFER
-		rewriter.rewrite(_, _, _, _) >> Unpooled.EMPTY_BUFFER
+		rewriter.rewrite(_, _) >> ArrayUtils.EMPTY_BYTE_ARRAY
+		rewriter.rewrite(_, _, _, _) >> ArrayUtils.EMPTY_BYTE_ARRAY
 	}
 
 	@Unroll("check a matching result of line #uri:#line and rule <#rule> is #result")
@@ -48,7 +47,7 @@ class TagMatchingSpec extends Specification {
 		processor.process(uri, IOUtils.toInputStream(line), Charsets.UTF_8)
 
 		then:
-		ruleStorage.includingRules.size() > 0
+		ruleStorage.includingRulesVault.isEmpty() == false
 		if (result) {
 			1 * statistics.onAdvertismentCandidateFound(uri, rule)
 		} else {
