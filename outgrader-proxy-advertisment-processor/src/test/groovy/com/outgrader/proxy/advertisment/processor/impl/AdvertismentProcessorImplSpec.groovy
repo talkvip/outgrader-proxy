@@ -5,6 +5,7 @@ import io.netty.buffer.Unpooled
 import java.nio.charset.Charset
 
 import org.apache.commons.io.Charsets
+import org.apache.commons.lang3.ArrayUtils
 
 import spock.lang.Specification
 
@@ -17,6 +18,7 @@ import com.outgrader.proxy.core.model.ITag.TagType
 import com.outgrader.proxy.core.properties.IOutgraderProperties
 import com.outgrader.proxy.core.statistics.IStatisticsHandler
 import com.outgrader.proxy.core.storage.IAdvertismentRuleStorage
+import com.outgrader.proxy.core.storage.IAdvertismentRuleVault
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
@@ -49,6 +51,8 @@ class AdvertismentProcessorImplSpec extends Specification {
 
 	TagReader tagReader
 
+	IAdvertismentRuleVault ruleVault = Mock(IAdvertismentRuleVault)
+
 	def setup() {
 		processor = Spy(AdvertismentProcessorImpl, constructorArgs: [
 			ruleStorage,
@@ -64,12 +68,13 @@ class AdvertismentProcessorImplSpec extends Specification {
 
 		processor.createTagReader(stream, CHARSET) >> tagReader
 
-		ruleStorage.getIncludingRules() >> [includingRule]
+		ruleStorage.getIncludingRulesVault() >> ruleVault
+		ruleVault.getRules() >> [includingRule]
 		ruleStorage.getExcludingRules() >> [excludingRule]
 
-		rewriter.rewrite(_, _) >> Unpooled.EMPTY_BUFFER
-		rewriter.rewrite(_, _, _) >> Unpooled.EMPTY_BUFFER
-		rewriter.rewrite(tag, includingRule, _, _) >> Unpooled.EMPTY_BUFFER
+		rewriter.rewrite(_, _) >> ArrayUtils.EMPTY_BYTE_ARRAY
+		rewriter.rewrite(_, _, _) >> ArrayUtils.EMPTY_BYTE_ARRAY
+		rewriter.rewrite(tag, includingRule, _, _) >> ArrayUtils.EMPTY_BYTE_ARRAY
 
 		includingRule.subRules >> []
 	}
@@ -155,7 +160,7 @@ class AdvertismentProcessorImplSpec extends Specification {
 		processor.process(URI, stream, CHARSET)
 
 		then:
-		1 * rewriter.rewrite(tag, CHARSET) >> Unpooled.EMPTY_BUFFER
+		1 * rewriter.rewrite(tag, CHARSET) >> ArrayUtils.EMPTY_BYTE_ARRAY
 	}
 
 	def "check rewriter on non-matched tag"() {
@@ -167,7 +172,7 @@ class AdvertismentProcessorImplSpec extends Specification {
 		processor.process(URI, stream, CHARSET)
 
 		then:
-		1 * rewriter.rewrite(tag, CHARSET) >> Unpooled.EMPTY_BUFFER
+		1 * rewriter.rewrite(tag, CHARSET) >> ArrayUtils.EMPTY_BYTE_ARRAY
 	}
 
 	def "check rewriter on matched tag"() {
@@ -180,7 +185,7 @@ class AdvertismentProcessorImplSpec extends Specification {
 		processor.process(URI, stream, CHARSET)
 
 		then:
-		1 * rewriter.rewrite(tag, includingRule, CHARSET, tagReader) >> Unpooled.EMPTY_BUFFER
+		1 * rewriter.rewrite(tag, includingRule, CHARSET, tagReader) >> ArrayUtils.EMPTY_BYTE_ARRAY
 	}
 
 	def "check tag not analasyable if it's not anylysable by property"() {

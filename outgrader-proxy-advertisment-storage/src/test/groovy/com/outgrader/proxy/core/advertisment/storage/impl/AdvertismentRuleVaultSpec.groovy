@@ -31,10 +31,11 @@ class AdvertismentRuleVaultSpec extends Specification {
 
 		when:
 		vault.addRule(rule)
+		vault.close()
 
 		then:
-		vault.getIncludingRules().contains(rule)
-		subVault.getIncludingRules().contains(rule)
+		vault.getRules().contains(rule)
+		subVault.getRules().contains(rule)
 	}
 
 	def "check rule added to vault available only in this vault but not in parent"() {
@@ -43,10 +44,11 @@ class AdvertismentRuleVaultSpec extends Specification {
 
 		when:
 		subVault.addRule(rule)
+		vault.close()
 
 		then:
-		subVault.getIncludingRules().contains(rule)
-		!vault.getIncludingRules().contains(rule)
+		subVault.getRules().contains(rule)
+		!vault.getRules().contains(rule)
 	}
 
 	def "check rules or parent vault copied to newly added"() {
@@ -55,9 +57,18 @@ class AdvertismentRuleVaultSpec extends Specification {
 
 		when:
 		def subVault = vault.createSubVault('key')
+		vault.close()
 
 		then:
-		subVault.getIncludingRules().size() == 10
-		subVault.getIncludingRules().contains(rule)
+		subVault.getRules().size() == 10
+		subVault.getRules().contains(rule)
+	}
+
+	def "check not rules available on non-closed vault"() {
+		when:
+		vault.addRule(rule)
+
+		then:
+		vault.rules.size() == 0
 	}
 }

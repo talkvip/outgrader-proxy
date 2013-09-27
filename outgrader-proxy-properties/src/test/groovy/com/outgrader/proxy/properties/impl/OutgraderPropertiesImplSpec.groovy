@@ -107,7 +107,6 @@ class OutgraderPropertiesImplSpec extends Specification {
 		where:
 		method << [
 			'port',
-			'bossThreadNumber',
 			'workerThreadNumber',
 			'statisticsThreadNumber',
 			'statisticsExportPeriod',

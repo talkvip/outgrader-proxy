@@ -33,7 +33,7 @@ class AdvertismentRuleVault implements IAdvertismentRuleVault {
 	}
 
 	@Override
-	public IAdvertismentRule[] getIncludingRules() {
+	public IAdvertismentRule[] getRules() {
 		return rules;
 	}
 

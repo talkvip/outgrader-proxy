@@ -9,7 +9,7 @@ import com.outgrader.proxy.core.model.IAdvertismentRule;
  */
 public interface IAdvertismentRuleVault {
 
-	IAdvertismentRule[] getIncludingRules();
+	IAdvertismentRule[] getRules();
 
 	IAdvertismentRuleVault getSubVault(String key);
 

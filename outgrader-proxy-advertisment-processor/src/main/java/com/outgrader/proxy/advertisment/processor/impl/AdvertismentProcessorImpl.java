@@ -71,7 +71,7 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 					IAdvertismentRuleVault tagVault = mainVault.getSubVault(tag.getName());
 					mainVault = tagVault == null ? mainVault : tagVault;
 
-					for (IAdvertismentRule includingRule : mainVault.getIncludingRules()) {
+					for (IAdvertismentRule includingRule : mainVault.getRules()) {
 						if (includingRule.matches(uri, tag)) {
 							boolean stillIncluding = true;
 

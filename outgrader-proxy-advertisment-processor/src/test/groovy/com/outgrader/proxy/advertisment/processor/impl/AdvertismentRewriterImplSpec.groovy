@@ -47,7 +47,7 @@ class AdvertismentRewriterImplSpec extends Specification {
 
 		then:
 		result != null
-		result.toString(CHARSET) == TAG_TEXT
+		new String(result, Charsets.UTF_8) == TAG_TEXT
 	}
 
 	def "check no adv. rewrite if rewrite mode is OFF"() {

@@ -298,7 +298,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 		return result;
 	}
 
-	private FilterResult getHidingElementFilter(final String line, final boolean isMainFilter) {
+	protected FilterResult getHidingElementFilter(final String line, final boolean isMainFilter) {
 		String current = line;
 		int domainsPartIndex = current.indexOf("#");
 
@@ -353,7 +353,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 				tagName = cssPart.substring(2, cssIdPartIndex);
 				cssFilterBase = cssPart.substring(cssIdPartIndex);
 			} else {
-				tagName = cssPart;
+				tagName = cssPart.replace("##", StringUtils.EMPTY);
 			}
 		}
 
@@ -433,7 +433,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 		}
 	}
 
-	private FilterResult getExtendedFilter(final String line) {
+	protected FilterResult getExtendedFilter(final String line) {
 		int parametersIndex = line.indexOf(PARAMETERS_SEPARATOR);
 
 		String parametersBlock = line.substring(parametersIndex + 1);
@@ -449,7 +449,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 		return null;
 	}
 
-	private FilterResult getParametersFilter(final String line) {
+	protected FilterResult getParametersFilter(final String line) {
 		FilterResult result = null;
 
 		for (String parameter : line.split(",")) {
@@ -497,7 +497,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 		return null;
 	}
 
-	private FilterResult getBasicFilter(final String line) {
+	protected FilterResult getBasicFilter(final String line) {
 		IFilterSource filterSource = FilterBuilderUtils.BASIC_FILTER_SOURCE;
 		IFilter filter = FilterBuilderUtils.build(line, filterSource);
 

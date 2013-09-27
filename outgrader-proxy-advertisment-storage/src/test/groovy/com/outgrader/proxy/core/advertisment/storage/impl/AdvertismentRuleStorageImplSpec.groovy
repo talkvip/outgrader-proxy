@@ -49,8 +49,9 @@ class AdvertismentRuleStorageImplSpec extends Specification {
 		storage.initializeRuleSet()
 
 		then:
-		storage.includingRules != null
-		storage.includingRules.size() == 1
+		storage.includingRulesVault != null
+		storage.includingRulesVault.rules != null
+		storage.includingRulesVault.rules.size() == 1
 		1 * storage.getBasicFilter(_ as String)
 	}
 
@@ -75,8 +76,9 @@ class AdvertismentRuleStorageImplSpec extends Specification {
 		storage.initializeRuleSet()
 
 		then:
-		storage.includingRules != null
-		storage.includingRules.size() == 0
+		storage.includingRulesVault != null
+		storage.includingRulesVault.rules != null
+		storage.includingRulesVault.rules.size() == 0
 	}
 
 	def "check extended rule parsed"() {
@@ -87,8 +89,9 @@ class AdvertismentRuleStorageImplSpec extends Specification {
 		storage.initializeRuleSet()
 
 		then:
-		storage.includingRules != null
-		storage.includingRules.size() == 1
+		storage.includingRulesVault != null
+		storage.includingRulesVault.rules != null
+		!storage.includingRulesVault.subVaults.empty
 		1 * storage.getExtendedFilter('rule$domain=some.net')
 		1 * storage.getParametersFilter('domain=some.net')
 		1 * storage.getBasicFilter('rule')
@@ -103,8 +106,8 @@ class AdvertismentRuleStorageImplSpec extends Specification {
 
 		then:
 		result != null
-		result.filters.size() == 2
-		result.filters[1].pattern == 'rule'
+		result.filter.filters.size() == 2
+		result.filter.filters[1].pattern == 'rule'
 	}
 
 	@Unroll("check rule parsing from #line")
@@ -116,9 +119,9 @@ class AdvertismentRuleStorageImplSpec extends Specification {
 		storage.initializeRuleSet()
 
 		then:
-		1 * storage.getHidingElementFilter(line)
-		storage.includingRules != null
-		storage.includingRules.size() == 1
+		1 * storage.getHidingElementFilter(line, true)
+		storage.includingRulesVault != null
+		storage.includingRulesVault.rules.size() == 1 || storage.includingRulesVault.subVaults.size() == 1
 
 		where:
 		line << [
@@ -140,10 +143,9 @@ class AdvertismentRuleStorageImplSpec extends Specification {
 		storage.initializeRuleSet()
 
 		then:
-		2 * storage.getHidingElementFilter(_)
-		1 * storage.createDomainFilter(_, _)
-		storage.includingRules != null
-		storage.includingRules.size() == 1
+		1 * storage.getHidingElementFilter(_, true)
+		storage.includingRulesVault != null
+		!storage.includingRulesVault.subVaults.empty
 
 		where:
 		line << [
@@ -174,9 +176,9 @@ class AdvertismentRuleStorageImplSpec extends Specification {
 		storage.initializeRuleSet()
 
 		then:
-		1 * storage.getHidingElementFilter(line)
-		storage.includingRules != null
-		storage.includingRules.size() == 1
+		1 * storage.getHidingElementFilter(line, true)
+		storage.includingRulesVault != null
+		storage.includingRulesVault.subVaults.size() == 1
 
 		where:
 		line << [
