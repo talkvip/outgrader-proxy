@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -48,6 +50,8 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 
 		private final List<String> domains;
 
+		private final List<String> tags = new ArrayList<>();
+
 		public FilterResult(final IFilter filter) {
 			this(filter, new ArrayList<String>(0));
 		}
@@ -57,9 +61,21 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 		}
 
 		public FilterResult(final IFilter filter, final List<String> domains, final List<IFilter> subRules) {
+			this(filter, domains, subRules, (String) null);
+		}
+
+		public FilterResult(final IFilter filter, final List<String> domains, final List<IFilter> subRules, final String tag) {
 			this.filter = filter;
 			this.domains = domains;
 			this.subRules = subRules;
+			if (tag != null) {
+				this.tags.add(tag);
+			}
+		}
+
+		public FilterResult(final IFilter filter, final List<String> domains, final List<IFilter> subRules, final List<String> tags) {
+			this(filter, domains, subRules);
+			this.tags.addAll(tags);
 		}
 
 		public List<String> getDomains() {
@@ -72,6 +88,10 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 
 		public List<IFilter> getSubRules() {
 			return subRules;
+		}
+
+		public List<String> getTags() {
+			return tags;
 		}
 
 		public static FilterResult mergeAnd(final FilterResult first, final FilterResult second) {
@@ -90,7 +110,10 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 				}
 			}
 
-			return new FilterResult(filter, domains, subRules);
+			List<String> tags = first.getTags();
+			tags.addAll(second.getTags());
+
+			return new FilterResult(filter, domains, subRules, tags);
 		}
 	}
 
@@ -244,7 +267,21 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 		for (String domain : filterResult.getDomains()) {
 			AdvertismentRuleVault domainVault = includingRulesVault.createSubVault(domain);
 
+			for (String tag : filterResult.getTags()) {
+				AdvertismentRuleVault tagVault = domainVault.createSubVault(tag);
+
+				result.add(tagVault);
+			}
+
 			result.add(domainVault);
+		}
+
+		if (result.isEmpty()) {
+			for (String tag : filterResult.getTags()) {
+				AdvertismentRuleVault tagVault = includingRulesVault.createSubVault(tag);
+
+				result.add(tagVault);
+			}
 		}
 
 		if (result.isEmpty()) {
@@ -255,8 +292,138 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 	}
 
 	private FilterResult getHidingElementFilter(final String line, final boolean isMainFilter) {
+		String current = line;
+		int domainsPartIndex = current.indexOf("#");
 
-		return null;
+		List<String> domains = new ArrayList<>();
+		IFilter domainFilter = null;
+
+		if (domainsPartIndex > 0) {
+			String domainPart = current.substring(0, domainsPartIndex);
+			current = current.substring(domainsPartIndex);
+
+			List<IFilter> filters = new ArrayList<>();
+
+			IFilterSource filterSource = FilterBuilderUtils.DOMAIN_FILTER_SOURCE;
+
+			for (String domain : domainPart.split(",")) {
+				if (domain.startsWith("~")) {
+					filters.add(FilterBuilderUtils.build(domain, filterSource));
+				} else {
+					domains.add(domain);
+				}
+			}
+
+			domainFilter = FilterBuilderUtils.joinAnd(filters);
+		}
+
+		int attributesPartIndex = current.indexOf("[");
+
+		String cssPart = null;
+		String attributePart = null;
+
+		if (attributesPartIndex != StringUtils.INDEX_NOT_FOUND) {
+			cssPart = current.substring(0, attributesPartIndex);
+			attributePart = current.substring(attributesPartIndex);
+		} else {
+			cssPart = current;
+		}
+
+		IFilterSource cssFilterSource = null;
+		String cssFilterBase = null;
+		String tagName = null;
+
+		if (cssPart.startsWith("###") || cssPart.startsWith("##*#")) {
+			cssFilterSource = FilterBuilderUtils.CSS_ID_FILTER_SOURCE;
+			cssFilterBase = cssPart.replaceAll("###", StringUtils.EMPTY).replaceAll("##*#", StringUtils.EMPTY);
+		} else if (cssPart.startsWith("##.")) {
+			cssFilterSource = FilterBuilderUtils.CSS_SELECTOR_FILTER_SOURCE;
+			cssFilterBase = cssPart.replace("##", StringUtils.EMPTY);
+		} else {
+			int cssIdPartIndex = cssPart.indexOf(".");
+
+			if (cssIdPartIndex != StringUtils.INDEX_NOT_FOUND) {
+				tagName = cssPart.substring(2, cssIdPartIndex);
+				cssFilterBase = cssPart.substring(cssIdPartIndex);
+			} else {
+				tagName = cssPart;
+			}
+		}
+
+		IFilter cssFilter = null;
+		if ((cssFilterBase != null) && (cssFilterSource != null)) {
+			cssFilter = FilterBuilderUtils.build(cssFilterBase, cssFilterSource);
+		}
+
+		List<IFilter> attributeFilters = new ArrayList<>();
+
+		if (!StringUtils.isEmpty(attributePart)) {
+			StringTokenizer tokenizer = new StringTokenizer(attributePart, "[]", false);
+
+			while (tokenizer.hasMoreTokens()) {
+				String token = tokenizer.nextToken();
+
+				int attributeIndex = token.indexOf("=");
+
+				IFilter attributeFilter = null;
+
+				if (attributeIndex != StringUtils.INDEX_NOT_FOUND) {
+					String attribute = token.substring(0, attributeIndex);
+					String value = token.substring(attributeIndex + 1);
+					value = value.substring(1, value.length() - 1);
+
+					IFilterSource attributeFilterSource = FilterBuilderUtils.getTagAttributeFilterSource(attribute);
+
+					if (attribute.endsWith("*")) {
+						attribute = attribute.replace("*", StringUtils.EMPTY);
+
+						attributeFilterSource = FilterBuilderUtils.getTagAttributeFilterSource(attribute);
+
+						attributeFilter = FilterBuilderUtils.buildContainsFilter(value, attributeFilterSource);
+					} else if (attribute.endsWith("^")) {
+						attribute = attribute.replace("^", StringUtils.EMPTY);
+
+						attributeFilterSource = FilterBuilderUtils.getTagAttributeFilterSource(attribute);
+
+						attributeFilter = FilterBuilderUtils.buildStartsWithFilter(value, attributeFilterSource);
+					} else if (attribute.endsWith("$")) {
+						attribute = attribute.replace("$", StringUtils.EMPTY);
+
+						attributeFilterSource = FilterBuilderUtils.getTagAttributeFilterSource(attribute);
+
+						attributeFilter = FilterBuilderUtils.buildEndsWithFilter(value, attributeFilterSource);
+					} else {
+						attributeFilter = FilterBuilderUtils.buildEqualsFilter(value, attributeFilterSource);
+					}
+				} else {
+					IFilterSource attributeFilterSource = FilterBuilderUtils.getTagAttributeFilterSource(token);
+					attributeFilter = FilterBuilderUtils.buildTrueFilter(attributeFilterSource);
+				}
+
+				attributeFilters.add(attributeFilter);
+			}
+		}
+
+		if (cssFilter != null) {
+			attributeFilters.add(cssFilter);
+			Collections.rotate(attributeFilters, 1);
+		}
+
+		if (domainFilter != null) {
+			attributeFilters.add(domainFilter);
+			Collections.rotate(attributeFilters, 1);
+		}
+
+		IFilter mainFilter = FilterBuilderUtils.joinAnd(attributeFilters);
+
+		if (isMainFilter) {
+			return new FilterResult(mainFilter, domains, new ArrayList<IFilter>(), tagName);
+		} else {
+			List<IFilter> filters = new ArrayList<>();
+			filters.add(mainFilter);
+
+			return new FilterResult(null, domains, filters, tagName);
+		}
 	}
 
 	private FilterResult getExtendedFilter(final String line) {
