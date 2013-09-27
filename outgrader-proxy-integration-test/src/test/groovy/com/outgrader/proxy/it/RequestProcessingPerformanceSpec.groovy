@@ -11,10 +11,10 @@ import org.apache.http.client.HttpClient
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.DefaultHttpClient
 import org.apache.http.util.EntityUtils
-import org.junit.Ignore
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
 
+import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -68,8 +68,14 @@ class RequestProcessingPerformanceSpec extends Specification {
 
 		where:
 		uri << [
-			'http://www.tut.by',
-			'http://www.onliner.by'
+			'http://www.onliner.by',
+			'http://charter97.org',
+			'http://habrahabr.ru',
+			'http://darkside.ru',
+			'http://bash.im',
+			'http://www.interfax.by',
+			'http://www.google.by',
+			'http://www.tut.by'
 		]
 	}
 
@@ -83,15 +89,21 @@ class RequestProcessingPerformanceSpec extends Specification {
 		def averageOutgrader = outgraderTimes.sum() / outgraderTimes.size() / 1000000
 		def averageClean = cleanTimes.sum() / cleanTimes.size() / 1000000
 		def delayFactor = averageOutgrader/averageClean
-		println "delay factor is <$delayFactory>"
+		println "delay factor is <$delayFactor>"
 
 		then:
 		delayFactor <= FACTOR
 
 		where:
 		uri << [
-			'http://www.tut.by',
-			'http://www.onliner.by'
+			'http://www.onliner.by',
+			'http://charter97.org',
+			'http://habrahabr.ru',
+			'http://darkside.ru',
+			'http://bash.im',
+			'http://www.interfax.by',
+			'http://www.google.by',
+			'http://www.tut.by'
 		]
 	}
 
