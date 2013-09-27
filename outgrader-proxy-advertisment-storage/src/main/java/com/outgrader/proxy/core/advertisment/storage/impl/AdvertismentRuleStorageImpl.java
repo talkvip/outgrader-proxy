@@ -118,7 +118,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 	}
 
 	private enum LineType {
-		COMMENT("!", true), BASIC(null), ELEMENT_HIDING("#"), EXCLUDING("@@", true), EXTENDED(PARAMETERS_SEPARATOR);
+		COMMENT("!", true), BASIC(null), ELEMENT_HIDING("##"), EXCLUDING("@@", true), EXTENDED(PARAMETERS_SEPARATOR);
 
 		private String symbol;
 
@@ -190,66 +190,72 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 				while (lineIterator.hasNext()) {
 					String line = lineIterator.next();
 
-					LineType type = LineType.getLineType(line);
+					try {
+						LineType type = LineType.getLineType(line);
 
-					FilterResult includingFilterResult = null;
-					FilterResult excludingFilterResult = null;
+						FilterResult includingFilterResult = null;
+						FilterResult excludingFilterResult = null;
 
-					if (type != LineType.COMMENT) {
-						switch (type) {
-						case BASIC:
-							includingFilterResult = getBasicFilter(line);
-							break;
-						case ELEMENT_HIDING:
-							if (!line.contains(" + ")) {
-								boolean first = true;
-								for (String component : line.split(" > ")) {
-									if (!first) {
-										component = "##" + component.trim();
-									}
+						if (type != LineType.COMMENT) {
+							switch (type) {
+							case BASIC:
+								includingFilterResult = getBasicFilter(line);
+								break;
+							case ELEMENT_HIDING:
+								if (!line.contains(" + ")) {
+									boolean first = true;
+									for (String component : line.split(" > ")) {
+										if (!first) {
+											component = "##" + component.trim();
+										}
 
-									FilterResult componentResult = getHidingElementFilter(component.trim(), first);
+										FilterResult componentResult = getHidingElementFilter(component.trim(), first);
 
-									first = false;
+										first = false;
 
-									if (includingFilterResult == null) {
-										includingFilterResult = componentResult;
-									} else {
-										includingFilterResult = FilterResult.mergeAnd(includingFilterResult, componentResult);
+										if (includingFilterResult == null) {
+											includingFilterResult = componentResult;
+										} else {
+											includingFilterResult = FilterResult.mergeAnd(includingFilterResult, componentResult);
+										}
 									}
 								}
+								break;
+							case EXCLUDING:
+								excludingFilterResult = getBasicFilter(line);
+								break;
+							case EXTENDED:
+								includingFilterResult = getExtendedFilter(line);
+								break;
+							default:
+								break;
 							}
-							break;
-						case EXCLUDING:
-							excludingFilterResult = getBasicFilter(line);
-							break;
-						case EXTENDED:
-							includingFilterResult = getExtendedFilter(line);
-							break;
-						default:
-							break;
-						}
-						ruleCount++;
-					}
-
-					if (excludingFilterResult != null) {
-						excludingRules.add(new AdvertismentRuleImpl(line, excludingFilterResult.getFilter()));
-					}
-					if (includingFilterResult != null) {
-						AdvertismentRuleImpl rule = new AdvertismentRuleImpl(line, includingFilterResult.getFilter());
-						for (IFilter filter : includingFilterResult.getSubRules()) {
-							rule.addSubRule(new AdvertismentRuleImpl(line, filter));
+							ruleCount++;
 						}
 
-						mainRules.add(rule);
-
-						for (AdvertismentRuleVault vault : getVaults(includingFilterResult)) {
-							vault.addRule(rule);
+						if (excludingFilterResult != null) {
+							excludingRules.add(new AdvertismentRuleImpl(line, excludingFilterResult.getFilter()));
 						}
-					}
+						if (includingFilterResult != null) {
+							AdvertismentRuleImpl rule = new AdvertismentRuleImpl(line, includingFilterResult.getFilter());
+							for (IFilter filter : includingFilterResult.getSubRules()) {
+								rule.addSubRule(new AdvertismentRuleImpl(line, filter));
+							}
 
-					if ((ruleCount % 1000) == 0) {
-						LOGGER.debug("It was processed <" + ruleCount + "> rules.");
+							mainRules.add(rule);
+
+							for (AdvertismentRuleVault vault : getVaults(includingFilterResult)) {
+								vault.addRule(rule);
+							}
+						}
+
+						if ((ruleCount % 1000) == 0) {
+							LOGGER.debug("It was processed <" + ruleCount + "> rules.");
+						}
+					} catch (Exception e) {
+						LOGGER.error("An error occured during processing rule <" + line + ">", e);
+
+						throw e;
 					}
 				}
 			} catch (IOException e) {

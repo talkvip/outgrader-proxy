@@ -1,9 +1,10 @@
 package com.outgrader.proxy.core.advertisment.storage.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.outgrader.proxy.core.model.IAdvertismentRule;
 import com.outgrader.proxy.core.storage.IAdvertismentRuleVault;
@@ -15,14 +16,16 @@ import com.outgrader.proxy.core.storage.IAdvertismentRuleVault;
  */
 class AdvertismentRuleVault implements IAdvertismentRuleVault {
 
+	private static final List<IAdvertismentRule> EMPTY_RULE_LIST = Collections.emptyList();
+
 	private IAdvertismentRule rules[] = IAdvertismentRule.EMPTY_RULES;
 
 	private List<IAdvertismentRule> ruleList = new ArrayList<>();
 
-	private final Map<String, AdvertismentRuleVault> subVaults = new ConcurrentHashMap<>();
+	private Map<String, AdvertismentRuleVault> subVaults;
 
 	public AdvertismentRuleVault() {
-		this(new ArrayList<IAdvertismentRule>());
+		this(EMPTY_RULE_LIST);
 	}
 
 	private AdvertismentRuleVault(final List<IAdvertismentRule> rules) {
@@ -36,6 +39,9 @@ class AdvertismentRuleVault implements IAdvertismentRuleVault {
 
 	@Override
 	public IAdvertismentRuleVault getSubVault(final String key) {
+		if (subVaults == null) {
+			return null;
+		}
 		return subVaults.get(key);
 	}
 
@@ -45,6 +51,9 @@ class AdvertismentRuleVault implements IAdvertismentRuleVault {
 		if (result == null) {
 			AdvertismentRuleVault newVault = new AdvertismentRuleVault(ruleList);
 
+			if (subVaults == null) {
+				subVaults = new HashMap<>();
+			}
 			subVaults.put(key, newVault);
 
 			result = newVault;
@@ -56,8 +65,10 @@ class AdvertismentRuleVault implements IAdvertismentRuleVault {
 	public void addRule(final IAdvertismentRule rule) {
 		ruleList.add(rule);
 
-		for (AdvertismentRuleVault subVault : subVaults.values()) {
-			subVault.addRule(rule);
+		if (subVaults != null) {
+			for (AdvertismentRuleVault subVault : subVaults.values()) {
+				subVault.addRule(rule);
+			}
 		}
 	}
 
@@ -66,8 +77,10 @@ class AdvertismentRuleVault implements IAdvertismentRuleVault {
 		ruleList.clear();
 		ruleList = null;
 
-		for (AdvertismentRuleVault subVault : subVaults.values()) {
-			subVault.close();
+		if (subVaults != null) {
+			for (AdvertismentRuleVault subVault : subVaults.values()) {
+				subVault.close();
+			}
 		}
 	}
 }
