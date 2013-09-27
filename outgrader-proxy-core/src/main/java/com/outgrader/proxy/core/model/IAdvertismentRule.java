@@ -7,7 +7,7 @@ package com.outgrader.proxy.core.model;
  */
 public interface IAdvertismentRule {
 
-	public static final IAdvertismentRule[] EMPTY_SUB_RULES = new IAdvertismentRule[0];
+	public static final IAdvertismentRule[] EMPTY_RULES = new IAdvertismentRule[0];
 
 	boolean matches(String uri, ITag tag);
 

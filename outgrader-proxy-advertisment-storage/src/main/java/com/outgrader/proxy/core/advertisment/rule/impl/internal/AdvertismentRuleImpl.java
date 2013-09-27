@@ -21,7 +21,7 @@ public class AdvertismentRuleImpl implements IAdvertismentRule {
 
 	private final IFilter filter;
 
-	private IAdvertismentRule[] subRules = EMPTY_SUB_RULES;
+	private IAdvertismentRule[] subRules = EMPTY_RULES;
 
 	public AdvertismentRuleImpl(final String text, final IFilter filter) {
 		this.text = text;

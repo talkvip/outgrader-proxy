@@ -247,6 +247,10 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 							vault.addRule(rule);
 						}
 					}
+
+					if ((ruleCount % 1000) == 0) {
+						LOGGER.debug("It was processed <" + ruleCount + "> rules.");
+					}
 				}
 			} catch (IOException e) {
 				LOGGER.error("An error occured during reading Advertisment list file", e);
@@ -254,6 +258,8 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 				throw e;
 			}
 		}
+
+		includingRulesVault.close();
 
 		LOGGER.info("It was loaded <" + (mainRules.size() + excludingRules.size()) + "> from <" + ruleCount + "> existing rule");
 

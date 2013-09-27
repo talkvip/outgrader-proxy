@@ -24,6 +24,7 @@ import com.outgrader.proxy.core.model.ITag.TagType;
 import com.outgrader.proxy.core.properties.IOutgraderProperties;
 import com.outgrader.proxy.core.statistics.IStatisticsHandler;
 import com.outgrader.proxy.core.storage.IAdvertismentRuleStorage;
+import com.outgrader.proxy.core.storage.IAdvertismentRuleVault;
 
 /**
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
@@ -58,12 +59,19 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 	public ByteBuf process(final String uri, final InputStream stream, final Charset charset) throws AbstractOutgraderException {
 		ByteBuf result = Unpooled.EMPTY_BUFFER;
 
+		IAdvertismentRuleVault mainVault = ruleStorage.getIncludingRulesVault();
+		IAdvertismentRuleVault urlVault = mainVault.getSubVault(uri);
+		mainVault = urlVault == null ? mainVault : urlVault;
+
 		try (TagReader reader = createTagReader(stream, charset)) {
 			for (ITag tag : reader) {
 				if (isAnalysable(tag)) {
 					boolean isRewritten = false;
 
-					for (IAdvertismentRule includingRule : ruleStorage.getIncludingRules()) {
+					IAdvertismentRuleVault tagVault = mainVault.getSubVault(tag.getName());
+					mainVault = tagVault == null ? mainVault : tagVault;
+
+					for (IAdvertismentRule includingRule : mainVault.getIncludingRules()) {
 						if (includingRule.matches(uri, tag)) {
 							boolean stillIncluding = true;
 

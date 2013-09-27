@@ -1,9 +1,9 @@
 package com.outgrader.proxy.core.advertisment.storage.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.commons.lang3.ArrayUtils;
 
 import com.outgrader.proxy.core.model.IAdvertismentRule;
 import com.outgrader.proxy.core.storage.IAdvertismentRuleVault;
@@ -15,16 +15,18 @@ import com.outgrader.proxy.core.storage.IAdvertismentRuleVault;
  */
 class AdvertismentRuleVault implements IAdvertismentRuleVault {
 
-	private IAdvertismentRule[] rules = IAdvertismentRule.EMPTY_SUB_RULES;
+	private IAdvertismentRule rules[] = IAdvertismentRule.EMPTY_RULES;
+
+	private List<IAdvertismentRule> ruleList = new ArrayList<>();
 
 	private final Map<String, AdvertismentRuleVault> subVaults = new ConcurrentHashMap<>();
 
 	public AdvertismentRuleVault() {
-		this(IAdvertismentRule.EMPTY_SUB_RULES);
+		this(new ArrayList<IAdvertismentRule>());
 	}
 
-	private AdvertismentRuleVault(final IAdvertismentRule[] rules) {
-		this.rules = rules;
+	private AdvertismentRuleVault(final List<IAdvertismentRule> rules) {
+		this.ruleList.addAll(rules);
 	}
 
 	@Override
@@ -41,7 +43,7 @@ class AdvertismentRuleVault implements IAdvertismentRuleVault {
 		AdvertismentRuleVault result = (AdvertismentRuleVault) getSubVault(key);
 
 		if (result == null) {
-			AdvertismentRuleVault newVault = new AdvertismentRuleVault(getIncludingRules());
+			AdvertismentRuleVault newVault = new AdvertismentRuleVault(ruleList);
 
 			subVaults.put(key, newVault);
 
@@ -52,10 +54,20 @@ class AdvertismentRuleVault implements IAdvertismentRuleVault {
 	}
 
 	public void addRule(final IAdvertismentRule rule) {
-		rules = ArrayUtils.add(rules, rule);
+		ruleList.add(rule);
 
 		for (AdvertismentRuleVault subVault : subVaults.values()) {
 			subVault.addRule(rule);
+		}
+	}
+
+	public void close() {
+		rules = ruleList.toArray(new IAdvertismentRule[ruleList.size()]);
+		ruleList.clear();
+		ruleList = null;
+
+		for (AdvertismentRuleVault subVault : subVaults.values()) {
+			subVault.close();
 		}
 	}
 }

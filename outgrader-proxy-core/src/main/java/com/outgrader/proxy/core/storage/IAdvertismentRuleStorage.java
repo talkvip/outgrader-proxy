@@ -9,6 +9,7 @@ import com.outgrader.proxy.core.model.IAdvertismentRule;
  */
 public interface IAdvertismentRuleStorage {
 
+	@Deprecated
 	IAdvertismentRule[] getIncludingRules();
 
 	IAdvertismentRule[] getExcludingRules();

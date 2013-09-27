@@ -14,7 +14,6 @@ import org.apache.http.util.EntityUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
 
-import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -25,7 +24,6 @@ import com.outgrader.proxy.core.external.IExternalSender
  * @since 0.4.10-SNAPSHOT
  *
  */
-@Ignore
 @ContextConfiguration(locations = 'classpath*:META-INF/*/applicationContext.xml')
 class RequestProcessingPerformanceSpec extends Specification {
 
@@ -60,6 +58,8 @@ class RequestProcessingPerformanceSpec extends Specification {
 		def averageOutgrader = outgraderTimes.sum() / outgraderTimes.size() / 1000000
 		def averageClean = cleanTimes.sum() / cleanTimes.size() / 1000000
 		def delayDifference = averageOutgrader - averageClean
+		println "average for outgrader is <$averageOutgrader>"
+		println "average for clean is <$averageClean>"
 
 		then:
 		delayDifference <= DELAY
@@ -81,6 +81,7 @@ class RequestProcessingPerformanceSpec extends Specification {
 		def averageOutgrader = outgraderTimes.sum() / outgraderTimes.size() / 1000000
 		def averageClean = cleanTimes.sum() / cleanTimes.size() / 1000000
 		def delayFactor = averageOutgrader/averageClean
+		println "delay factor is <$delayFactory>"
 
 		then:
 		delayFactor <= FACTOR
