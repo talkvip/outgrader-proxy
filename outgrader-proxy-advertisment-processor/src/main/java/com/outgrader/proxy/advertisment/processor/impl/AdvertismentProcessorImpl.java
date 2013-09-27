@@ -114,7 +114,7 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 
 								isRewritten = true;
 
-								result = Unpooled.copiedBuffer(result, rewriter.rewrite(advertismentTag, includingRule, charset, reader));
+								result = Unpooled.wrappedBuffer(result, rewriter.rewrite(advertismentTag, includingRule, charset, reader));
 
 								break;
 							}
@@ -138,7 +138,7 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 	}
 
 	private ByteBuf append(final ByteBuf original, final ITag tag, final Charset charset) {
-		return Unpooled.copiedBuffer(original, rewriter.rewrite(tag, charset));
+		return Unpooled.wrappedBuffer(original, rewriter.rewrite(tag, charset));
 	}
 
 	protected TagReader createTagReader(final InputStream stream, final Charset charset) {

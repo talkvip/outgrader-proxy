@@ -162,7 +162,7 @@ public class ExternalSenderImpl implements IExternalSender {
 
 				content = responseProcessor.process(uri, stream, charset);
 			} else {
-				content = Unpooled.copiedBuffer(IOUtils.toByteArray(response.getEntity().getContent()));
+				content = Unpooled.wrappedBuffer(IOUtils.toByteArray(response.getEntity().getContent()));
 			}
 
 			EntityUtils.consume(response.getEntity());
