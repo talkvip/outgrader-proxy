@@ -11,6 +11,7 @@ import org.apache.http.client.HttpClient
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.DefaultHttpClient
 import org.apache.http.util.EntityUtils
+import org.junit.Ignore
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
 
@@ -24,6 +25,7 @@ import com.outgrader.proxy.core.external.IExternalSender
  * @since 0.4.10-SNAPSHOT
  *
  */
+@Ignore
 @ContextConfiguration(locations = 'classpath*:META-INF/*/applicationContext.xml')
 class RequestProcessingPerformanceSpec extends Specification {
 
