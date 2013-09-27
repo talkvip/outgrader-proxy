@@ -21,12 +21,6 @@ public interface IOutgraderProperties {
 	int getPort();
 
 	/**
-	 * Number of Boss Threads for netty.io
-	 */
-	@Deprecated
-	int getBossThreadNumber();
-
-	/**
 	 * Number of Worker Threads for netty.io
 	 */
 	int getWorkerThreadNumber();

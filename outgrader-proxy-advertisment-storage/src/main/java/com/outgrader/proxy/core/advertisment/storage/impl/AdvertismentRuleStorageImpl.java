@@ -150,8 +150,6 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 
 	private final IOutgraderProperties properties;
 
-	private IAdvertismentRule[] includingRuleSet;
-
 	private IAdvertismentRule[] excludingRuleSet;
 
 	private final AdvertismentRuleVault includingRulesVault = new AdvertismentRuleVault();
@@ -159,11 +157,6 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 	@Inject
 	public AdvertismentRuleStorageImpl(final IOutgraderProperties properties) throws Exception {
 		this.properties = properties;
-	}
-
-	@Override
-	public IAdvertismentRule[] getIncludingRules() {
-		return includingRuleSet;
 	}
 
 	protected InputStream openRuleFileStream(final String location) {
@@ -179,6 +172,7 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 		Collection<IAdvertismentRule> mainRules = new ArrayList<>();
 		Collection<IAdvertismentRule> excludingRules = new ArrayList<>();
 
+		int lineCount = 0;
 		int ruleCount = 0;
 
 		for (String location : properties.getAdvertismentListLocations()) {
@@ -230,11 +224,12 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 							default:
 								break;
 							}
-							ruleCount++;
+							lineCount++;
 						}
 
 						if (excludingFilterResult != null) {
 							excludingRules.add(new AdvertismentRuleImpl(line, excludingFilterResult.getFilter()));
+							ruleCount++;
 						}
 						if (includingFilterResult != null) {
 							AdvertismentRuleImpl rule = new AdvertismentRuleImpl(line, includingFilterResult.getFilter());
@@ -247,10 +242,11 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 							for (AdvertismentRuleVault vault : getVaults(includingFilterResult)) {
 								vault.addRule(rule);
 							}
+							ruleCount++;
 						}
 
-						if ((ruleCount % 1000) == 0) {
-							LOGGER.debug("It was processed <" + ruleCount + "> rules.");
+						if ((lineCount % 1000) == 0) {
+							LOGGER.debug("It was processed <" + lineCount + "> rules.");
 						}
 					} catch (Exception e) {
 						LOGGER.error("An error occured during processing rule <" + line + ">", e);
@@ -267,9 +263,8 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 
 		includingRulesVault.close();
 
-		LOGGER.info("It was loaded <" + (mainRules.size() + excludingRules.size()) + "> from <" + ruleCount + "> existing rule");
+		LOGGER.info("It was loaded <" + ruleCount + "> from <" + lineCount + "> existing rule");
 
-		includingRuleSet = mainRules.toArray(new IAdvertismentRule[mainRules.size()]);
 		excludingRuleSet = excludingRules.toArray(new IAdvertismentRule[excludingRules.size()]);
 	}
 
