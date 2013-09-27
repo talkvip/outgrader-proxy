@@ -2,8 +2,6 @@ package com.outgrader.proxy.advertisment.processor;
 
 import java.nio.charset.Charset;
 
-import io.netty.buffer.ByteBuf;
-
 import com.outgrader.proxy.advertisment.processor.internal.TagReader;
 import com.outgrader.proxy.core.model.IAdvertismentRule;
 import com.outgrader.proxy.core.model.ITag;
@@ -15,8 +13,8 @@ import com.outgrader.proxy.core.model.ITag;
  */
 public interface IAdvertismentRewriter {
 
-	ByteBuf rewrite(ITag tag, IAdvertismentRule rule, Charset charset, TagReader tagReader);
+	byte[] rewrite(ITag tag, IAdvertismentRule rule, Charset charset, TagReader tagReader);
 
-	ByteBuf rewrite(ITag tag, Charset charset);
+	byte[] rewrite(ITag tag, Charset charset);
 
 }
