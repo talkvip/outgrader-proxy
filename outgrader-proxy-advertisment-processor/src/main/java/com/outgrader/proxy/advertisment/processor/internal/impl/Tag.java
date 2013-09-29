@@ -175,6 +175,9 @@ public class Tag implements ITag {
 
 	@Override
 	public String getName() {
+		if (name == null) {
+			name = StringUtils.EMPTY;
+		}
 		return name;
 	}
 

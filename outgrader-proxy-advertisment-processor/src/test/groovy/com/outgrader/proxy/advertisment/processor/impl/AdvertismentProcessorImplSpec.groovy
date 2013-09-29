@@ -65,6 +65,7 @@ class AdvertismentProcessorImplSpec extends Specification {
 		processor.createTagReader(stream, CHARSET) >> tagReader
 
 		tagReader.iterator() >> [tag].iterator()
+		tag.name >> 'tag'
 
 		processor.createTagReader(stream, CHARSET) >> tagReader
 
@@ -209,6 +210,7 @@ class AdvertismentProcessorImplSpec extends Specification {
 
 	def "check tag not analysable if it's not in supported tags"() {
 		setup:
+		tag = Mock(ITag)
 		tag.analysable >> true
 		tag.tagType >> TagType.OPENING
 
