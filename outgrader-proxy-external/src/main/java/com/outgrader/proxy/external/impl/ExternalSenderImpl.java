@@ -1,6 +1,7 @@
 package com.outgrader.proxy.external.impl;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufHolder;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.HttpMethod;
@@ -25,6 +26,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
+import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
@@ -39,6 +41,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpTrace;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -89,6 +92,7 @@ public class ExternalSenderImpl implements IExternalSender {
 		HttpRequestBase externalRequest = getRequest(request.getMethod(), uri);
 
 		copyHeaders(externalRequest, request);
+		copyContent(externalRequest, request);
 
 		org.apache.http.HttpResponse response = null;
 		HttpResponse result = null;
@@ -129,6 +133,21 @@ public class ExternalSenderImpl implements IExternalSender {
 	protected void copyHeaders(final org.apache.http.HttpResponse external, final HttpResponse target) {
 		for (Header header : external.getAllHeaders()) {
 			target.headers().add(header.getName(), header.getValue());
+		}
+	}
+
+	protected void copyContent(final HttpRequestBase externalRequest, final HttpRequest request) {
+		ByteBufHolder byteBufHolder = null;
+		HttpEntityEnclosingRequest entityRequest = null;
+		if (request instanceof ByteBufHolder) {
+			byteBufHolder = (ByteBufHolder) request;
+		}
+		if (externalRequest instanceof HttpEntityEnclosingRequest) {
+			entityRequest = (HttpEntityEnclosingRequest) externalRequest;
+		}
+
+		if ((byteBufHolder != null) && (entityRequest != null)) {
+			entityRequest.setEntity(new ByteArrayEntity(byteBufHolder.content().array()));
 		}
 	}
 
@@ -224,7 +243,7 @@ public class ExternalSenderImpl implements IExternalSender {
 		if (method.equals(HttpMethod.GET)) {
 			result = new HttpGet();
 		} else if (method.equals(HttpMethod.POST)) {
-			result = new HttpPost(uri);
+			result = new HttpPost();
 		} else if (method.equals(HttpMethod.DELETE)) {
 			result = new HttpDelete();
 		} else if (method.equals(HttpMethod.HEAD)) {

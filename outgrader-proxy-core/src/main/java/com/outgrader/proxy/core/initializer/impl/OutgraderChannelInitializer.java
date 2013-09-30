@@ -3,6 +3,7 @@ package com.outgrader.proxy.core.initializer.impl;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 
 import javax.inject.Inject;
@@ -37,6 +38,7 @@ public class OutgraderChannelInitializer extends ChannelInitializer<SocketChanne
 		ChannelPipeline pipeline = ch.pipeline();
 
 		pipeline.addLast("http-codec", new HttpServerCodec());
+		pipeline.addLast("http-aggregator", new HttpObjectAggregator(4086));
 		pipeline.addLast("http-compressor", new OutgraderHttpContentCompressor());
 		pipeline.addLast("handler", frontendHandler);
 
