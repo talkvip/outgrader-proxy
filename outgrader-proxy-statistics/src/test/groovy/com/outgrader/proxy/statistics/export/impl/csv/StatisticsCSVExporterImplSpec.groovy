@@ -8,6 +8,7 @@ import spock.lang.Specification
 import com.outgrader.proxy.core.properties.IOutgraderProperties
 import com.outgrader.proxy.statistics.exceptions.StatisticsExportException
 import com.outgrader.proxy.statistics.impl.StatisticsEntry
+import com.outgrader.proxy.statistics.impl.StatisticsEntry.StatisticsEntryBuilder
 import com.outgrader.proxy.statistics.manager.IStatisticsManager
 
 /**
@@ -25,6 +26,8 @@ class StatisticsCSVExporterImplSpec extends Specification {
 
 	File exportDirectory = new File("/tmp/outgrader")
 
+	StatisticsEntry firstEntry = new StatisticsEntryBuilder('uri', System.currentTimeMillis()).build()
+
 	def setup() {
 		exporter = Spy(StatisticsCSVExporterImpl, constructorArgs: [properties, manager])
 
@@ -37,7 +40,7 @@ class StatisticsCSVExporterImplSpec extends Specification {
 
 	def "check writer was created"() {
 		when:
-		def writer = exporter.getWriter()
+		def writer = exporter.getWriter(firstEntry)
 
 		then:
 		writer != null
@@ -45,7 +48,7 @@ class StatisticsCSVExporterImplSpec extends Specification {
 
 	def "check exception occured on writer creation"() {
 		when:
-		exporter.getWriter() >> {throw new IOException() }
+		exporter.getWriter(firstEntry) >> {throw new IOException() }
 
 		and:
 		exporter.exportEntry(new StatisticsEntry())
@@ -58,7 +61,7 @@ class StatisticsCSVExporterImplSpec extends Specification {
 		when:
 		ICsvBeanWriter writer = Mock(ICsvBeanWriter)
 		writer.write(_, _) >> {throw new IOException() }
-		exporter.getWriter() >> writer
+		exporter.getWriter(firstEntry) >> writer
 		and:
 		exporter.exportEntry(new StatisticsEntry())
 
@@ -70,7 +73,8 @@ class StatisticsCSVExporterImplSpec extends Specification {
 		ICsvBeanWriter writer = Mock(ICsvBeanWriter)
 
 		when:
-		exporter.getWriter() >> writer
+		exporter.createWriter(firstEntry) >> writer
+		exporter.getWriter(firstEntry)
 		and:
 		exporter.finish()
 
@@ -84,7 +88,8 @@ class StatisticsCSVExporterImplSpec extends Specification {
 		when:
 		writer.close() >> {throw new IOException() }
 		and:
-		exporter.getWriter() >> writer
+		exporter.createWriter(firstEntry) >> writer
+		exporter.getWriter(firstEntry)
 		and:
 		exporter.finish()
 
@@ -94,18 +99,18 @@ class StatisticsCSVExporterImplSpec extends Specification {
 
 	def "check file created in corresponding directory"() {
 		when:
-		exporter.getWriter()
+		exporter.getWriter(firstEntry)
 
 		then:
 		exportDirectory.exists()
-		new File(exportDirectory, "statistics.csv").exists()
+		exportDirectory.listFiles().size() > 0
 	}
 
 	def "check bean written on export"() {
 		setup:
 		def entry = new StatisticsEntry()
 		ICsvBeanWriter writer = Mock(ICsvBeanWriter)
-		exporter.getWriter() >> writer
+		exporter.getWriter(firstEntry) >> writer
 
 		when:
 		exporter.exportEntry(entry)

@@ -2,6 +2,7 @@ package com.outgrader.proxy.statistics.manager.impl
 
 import spock.lang.Specification
 
+import com.outgrader.proxy.core.properties.IOutgraderProperties
 import com.outgrader.proxy.statistics.events.IStatisticsEvent
 import com.outgrader.proxy.statistics.events.StatisticsEventType
 import com.outgrader.proxy.statistics.events.impl.AdvertismentCandidateEvent
@@ -29,21 +30,28 @@ class StatisticsManagerSpec extends Specification {
 
 	InternalStatisticsEntry entry = Mock(InternalStatisticsEntry)
 
-
+	IOutgraderProperties properties = Mock(IOutgraderProperties)
 
 	IStatisticsManager manager
 
 	def setup() {
-		manager = new StatisticsManager()
+		properties.statisticsExportPeriod >> 1
+
+		manager = new StatisticsManager(properties)
 	}
 
 	def cleanup() {
 		manager.statistics.clear()
 	}
 
+	def addKey(def uri, def entry) {
+		RequestEvent event = new RequestEvent(uri)
+		manager.statistics.put(manager.getKey(event), entry)
+	}
+
 	def "check statistics entry updated on RequestEvent"() {
 		when:
-		manager.statistics.put(URI, entry)
+		addKey(URI, entry)
 		and:
 		manager.updateStatistics(new RequestEvent(URI))
 
@@ -53,7 +61,7 @@ class StatisticsManagerSpec extends Specification {
 
 	def "check statistics entry updated on ResponseEvent"() {
 		when:
-		manager.statistics.put(URI, entry)
+		addKey(URI, entry)
 		and:
 		manager.updateStatistics(new ResponseEvent(URI, DURATION))
 
@@ -63,7 +71,7 @@ class StatisticsManagerSpec extends Specification {
 
 	def "check statistics entry updated on ErrorEvent"() {
 		when:
-		manager.statistics.put(URI, entry)
+		addKey(URI, entry)
 		and:
 		manager.updateStatistics(new ErrorEvent(URI, this, MESSAGE, ERROR))
 
@@ -73,7 +81,7 @@ class StatisticsManagerSpec extends Specification {
 
 	def "check statistics entry updated on AdvertismentCandidateEvent"() {
 		when:
-		manager.statistics.put(URI, entry)
+		addKey(URI, entry)
 		and:
 		manager.updateStatistics(new AdvertismentCandidateEvent(URI, MESSAGE))
 
@@ -87,12 +95,11 @@ class StatisticsManagerSpec extends Specification {
 
 		then:
 		manager.statistics.size() == 1
-		manager.statistics.containsKey(URI)
 	}
 
 	def "check manager supports statistics of any type"() {
 		when:
-		manager.statistics.put(URI, entry)
+		addKey(URI, entry)
 		and:
 		StatisticsEventType.each { type ->
 			IStatisticsEvent event = null
@@ -124,7 +131,7 @@ class StatisticsManagerSpec extends Specification {
 		updateStatistics(URI + 2)
 
 		and:
-		def statistics = manager.exportStatistics()
+		def statistics = manager.exportStatistics(true)
 
 		then:
 		statistics.toList().size() == 2

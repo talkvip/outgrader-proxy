@@ -48,7 +48,7 @@ public class StatisticsManager implements IStatisticsManager {
 		}
 	};
 
-	private final Map<StatisticsKey, InternalStatisticsEntry> periodStatistics = new ConcurrentHashMap<>();
+	private final Map<StatisticsKey, InternalStatisticsEntry> statistics = new ConcurrentHashMap<>();
 
 	private final long statisticsPeriod;
 
@@ -61,10 +61,10 @@ public class StatisticsManager implements IStatisticsManager {
 	public void updateStatistics(final IStatisticsEvent event) {
 		StatisticsKey key = getKey(event);
 
-		InternalStatisticsEntry entry = periodStatistics.get(key);
+		InternalStatisticsEntry entry = statistics.get(key);
 		if (entry == null) {
 			entry = new InternalStatisticsEntry();
-			periodStatistics.put(key, entry);
+			statistics.put(key, entry);
 		}
 
 		switch (event.getType()) {
@@ -117,13 +117,17 @@ public class StatisticsManager implements IStatisticsManager {
 	}
 
 	@Override
-	public Iterable<StatisticsEntry> exportStatistics() {
+	public Iterable<StatisticsEntry> exportStatistics(final boolean full) {
 		Map<StatisticsKey, InternalStatisticsEntry> exportedEntries = new HashMap<>();
-		long statisticsTimestamp = getPeriodTimestamp(System.currentTimeMillis()) - statisticsPeriod;
+		if (full) {
+			exportedEntries = new HashMap<>(statistics);
+		} else {
+			long statisticsTimestamp = getPeriodTimestamp(System.currentTimeMillis()) - statisticsPeriod;
 
-		for (StatisticsKey key : periodStatistics.keySet()) {
-			if (key.getTimestamp() == statisticsTimestamp) {
-				exportedEntries.put(key, periodStatistics.remove(key));
+			for (StatisticsKey key : statistics.keySet()) {
+				if (key.getTimestamp() == statisticsTimestamp) {
+					exportedEntries.put(key, statistics.remove(key));
+				}
 			}
 		}
 

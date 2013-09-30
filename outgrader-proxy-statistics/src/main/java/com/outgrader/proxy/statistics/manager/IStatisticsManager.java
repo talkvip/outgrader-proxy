@@ -12,6 +12,6 @@ public interface IStatisticsManager {
 
 	void updateStatistics(IStatisticsEvent event);
 
-	Iterable<StatisticsEntry> exportStatistics();
+	Iterable<StatisticsEntry> exportStatistics(boolean full);
 
 }

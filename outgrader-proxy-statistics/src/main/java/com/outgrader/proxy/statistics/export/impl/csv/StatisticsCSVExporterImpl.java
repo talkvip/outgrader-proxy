@@ -58,18 +58,22 @@ public class StatisticsCSVExporterImpl extends AbstractStatisticsExporter {
 		}
 	}
 
+	protected ICsvBeanWriter createWriter(final StatisticsEntry entry) throws IOException {
+		File output = new File(properties.getStatisticsExportDirectory(), collectName(entry.getPeriodTimestamp()));
+
+		if (!output.exists()) {
+			FileUtils.forceMkdir(output.getParentFile());
+			output.createNewFile();
+		}
+
+		return new CsvBeanWriter(new FileWriter(output), CsvPreference.STANDARD_PREFERENCE);
+	}
+
 	protected ICsvBeanWriter getWriter(final StatisticsEntry entry) throws IOException {
 		ICsvBeanWriter writer = writers.get(entry.getPeriodTimestamp());
 
 		if (writer == null) {
-			File output = new File(properties.getStatisticsExportDirectory(), collectName(entry.getPeriodTimestamp()));
-
-			if (!output.exists()) {
-				FileUtils.forceMkdir(output.getParentFile());
-				output.createNewFile();
-			}
-
-			writer = new CsvBeanWriter(new FileWriter(output), CsvPreference.STANDARD_PREFERENCE);
+			writer = createWriter(entry);
 
 			writer.writeHeader(HEADERS);
 

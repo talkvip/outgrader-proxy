@@ -62,7 +62,7 @@ public abstract class AbstractStatisticsExporter implements IStatisticsExporter 
 	}
 
 	protected Iterable<StatisticsEntry> getStatistics() {
-		List<StatisticsEntry> result = Lists.newArrayList(manager.exportStatistics());
+		List<StatisticsEntry> result = Lists.newArrayList(manager.exportStatistics(false));
 
 		Collections.sort(result);
 
