@@ -9,14 +9,13 @@ import java.nio.charset.Charset;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.outgrader.proxy.advertisment.processor.IAdvertismentRewriter;
 import com.outgrader.proxy.advertisment.processor.internal.TagReader;
-import com.outgrader.proxy.advertisment.processor.internal.impl.utils.ByteUtils;
+import com.outgrader.proxy.advertisment.processor.internal.impl.utils.ByteArrayBuilder;
 import com.outgrader.proxy.core.advertisment.processor.IAdvertismentProcessor;
 import com.outgrader.proxy.core.exceptions.AbstractOutgraderException;
 import com.outgrader.proxy.core.model.IAdvertismentRule;
@@ -57,7 +56,7 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 
 	@Override
 	public ByteBuf process(final String uri, final InputStream stream, final Charset charset) throws AbstractOutgraderException {
-		byte[] result = ArrayUtils.EMPTY_BYTE_ARRAY;
+		ByteArrayBuilder result = new ByteArrayBuilder();
 
 		IAdvertismentRuleVault mainVault = ruleStorage.getIncludingRulesVault();
 		IAdvertismentRuleVault urlVault = mainVault.getSubVault(uri.toLowerCase());
@@ -81,7 +80,7 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 							int lastSubRuleIndex = subRuleLength - 1;
 
 							if (subRuleLength > 0) {
-								result = append(result, tag, charset);
+								append(result, tag, charset);
 								isRewritten = true;
 							}
 
@@ -93,7 +92,7 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 								boolean last = i == lastSubRuleIndex;
 
 								if (!last || (last && !matches)) {
-									result = append(result, advertismentTag, charset);
+									append(result, advertismentTag, charset);
 								}
 
 								if (!matches) {
@@ -114,7 +113,7 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 
 								isRewritten = true;
 
-								result = append(result, advertismentTag, includingRule, charset, reader);
+								append(result, advertismentTag, includingRule, charset, reader);
 
 								break;
 							}
@@ -122,10 +121,10 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 					}
 
 					if (!isRewritten) {
-						result = append(result, tag, charset);
+						append(result, tag, charset);
 					}
 				} else {
-					result = append(result, tag, charset);
+					append(result, tag, charset);
 				}
 			}
 		} catch (IOException e) {
@@ -134,20 +133,20 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 			LOGGER.error("An exception occured during processing response", e);
 		}
 
-		return Unpooled.wrappedBuffer(result);
+		return Unpooled.wrappedBuffer(result.build());
 	}
 
-	private byte[] append(final byte[] original, final ITag tag, final IAdvertismentRule rule, final Charset charset,
+	private void append(final ByteArrayBuilder builder, final ITag tag, final IAdvertismentRule rule, final Charset charset,
 			final TagReader tagReader) {
 		byte[] tagBuffer = rewriter.rewrite(tag, rule, charset, tagReader);
 
-		return ByteUtils.append(original, tagBuffer);
+		builder.append(tagBuffer);
 	}
 
-	private byte[] append(final byte[] original, final ITag tag, final Charset charset) {
+	private void append(final ByteArrayBuilder builder, final ITag tag, final Charset charset) {
 		byte[] tagBuffer = rewriter.rewrite(tag, charset);
 
-		return ByteUtils.append(original, tagBuffer);
+		builder.append(tagBuffer);
 	}
 
 	protected TagReader createTagReader(final InputStream stream, final Charset charset) {
