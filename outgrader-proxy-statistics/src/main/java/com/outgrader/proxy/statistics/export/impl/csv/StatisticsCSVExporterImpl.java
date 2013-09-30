@@ -3,6 +3,12 @@ package com.outgrader.proxy.statistics.export.impl.csv;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -29,9 +35,13 @@ public class StatisticsCSVExporterImpl extends AbstractStatisticsExporter {
 	private static final String[] HEADERS = { "uri", "requestCount", "advertismentCandidateCount", "responseCount", "minDuration",
 			"averageDuration", "maxDuration", "errorCount" };
 
-	private ICsvBeanWriter writer;
+	private static final String FILE_NAME_PATTERN = "statictics {0}.csv";
+
+	private final Map<Long, ICsvBeanWriter> writers = new HashMap<>();
 
 	private final IOutgraderProperties properties;
+
+	private final DateFormat periodDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
 	@Inject
 	public StatisticsCSVExporterImpl(final IOutgraderProperties properties, final IStatisticsManager manager) {
@@ -42,15 +52,17 @@ public class StatisticsCSVExporterImpl extends AbstractStatisticsExporter {
 	@Override
 	protected void exportEntry(final StatisticsEntry entry) throws StatisticsExportException {
 		try {
-			getWriter().write(entry, HEADERS);
+			getWriter(entry).write(entry, HEADERS);
 		} catch (IOException e) {
 			throw new StatisticsExportException("An exception occured during writing statistics entry", e);
 		}
 	}
 
-	protected ICsvBeanWriter getWriter() throws IOException {
+	protected ICsvBeanWriter getWriter(final StatisticsEntry entry) throws IOException {
+		ICsvBeanWriter writer = writers.get(entry.getPeriodTimestamp());
+
 		if (writer == null) {
-			File output = new File(properties.getStatisticsExportDirectory(), "statistics.csv");
+			File output = new File(properties.getStatisticsExportDirectory(), collectName(entry.getPeriodTimestamp()));
 
 			if (!output.exists()) {
 				FileUtils.forceMkdir(output.getParentFile());
@@ -60,19 +72,27 @@ public class StatisticsCSVExporterImpl extends AbstractStatisticsExporter {
 			writer = new CsvBeanWriter(new FileWriter(output), CsvPreference.STANDARD_PREFERENCE);
 
 			writer.writeHeader(HEADERS);
+
+			writers.put(entry.getPeriodTimestamp(), writer);
 		}
 
 		return writer;
 	}
 
+	private String collectName(final long period) {
+		return MessageFormat.format(FILE_NAME_PATTERN, periodDateFormat.format(new Date(period)));
+	}
+
 	@Override
 	protected void finish() throws StatisticsExportException {
 		try {
-			getWriter().close();
+			for (ICsvBeanWriter writer : writers.values()) {
+				writer.close();
+			}
 		} catch (IOException e) {
 			throw new StatisticsExportException("An exception occured during closing Writer", e);
 		} finally {
-			writer = null;
+			writers.clear();
 		}
 	}
 }

@@ -2,15 +2,20 @@ package com.outgrader.proxy.statistics.manager.impl;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.inject.Inject;
+
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.client.utils.URIUtils;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
+import com.outgrader.proxy.core.properties.IOutgraderProperties;
 import com.outgrader.proxy.statistics.events.IStatisticsEvent;
 import com.outgrader.proxy.statistics.events.impl.ResponseEvent;
 import com.outgrader.proxy.statistics.impl.StatisticsEntry;
@@ -25,10 +30,10 @@ import com.outgrader.proxy.statistics.manager.IStatisticsManager;
 @Component
 public class StatisticsManager implements IStatisticsManager {
 
-	private static final Function<Entry<String, InternalStatisticsEntry>, StatisticsEntry> STATISTICS_CONVERTER = new Function<Entry<String, InternalStatisticsEntry>, StatisticsEntry>() {
+	private static final Function<Entry<StatisticsKey, InternalStatisticsEntry>, StatisticsEntry> STATISTICS_CONVERTER = new Function<Entry<StatisticsKey, InternalStatisticsEntry>, StatisticsEntry>() {
 		@Override
-		public StatisticsEntry apply(final Entry<String, InternalStatisticsEntry> input) {
-			StatisticsEntryBuilder builder = new StatisticsEntryBuilder(input.getKey());
+		public StatisticsEntry apply(final Entry<StatisticsKey, InternalStatisticsEntry> input) {
+			StatisticsEntryBuilder builder = new StatisticsEntryBuilder(input.getKey().getURL(), input.getKey().getTimestamp());
 
 			InternalStatisticsEntry entry = input.getValue();
 			builder.withAverageDuration(entry.getAverageDuration().get());
@@ -43,24 +48,23 @@ public class StatisticsManager implements IStatisticsManager {
 		}
 	};
 
-	private final ConcurrentHashMap<String, InternalStatisticsEntry> statistics = new ConcurrentHashMap<>();
+	private final Map<StatisticsKey, InternalStatisticsEntry> periodStatistics = new ConcurrentHashMap<>();
+
+	private final long statisticsPeriod;
+
+	@Inject
+	public StatisticsManager(final IOutgraderProperties properties) {
+		statisticsPeriod = properties.getStatisticsExportPeriod() * DateUtils.MILLIS_PER_MINUTE;
+	}
 
 	@Override
 	public void updateStatistics(final IStatisticsEvent event) {
-		String uri = event.getURI();
+		StatisticsKey key = getKey(event);
 
-		HttpHost httpHost = URIUtils.extractHost(URI.create(uri));
-		String host = null;
-		if (httpHost == null) {
-			host = uri;
-		} else {
-			host = httpHost.getHostName();
-		}
-
-		InternalStatisticsEntry entry = statistics.get(host);
+		InternalStatisticsEntry entry = periodStatistics.get(key);
 		if (entry == null) {
 			entry = new InternalStatisticsEntry();
-			statistics.put(host, entry);
+			periodStatistics.put(key, entry);
 		}
 
 		switch (event.getType()) {
@@ -83,8 +87,46 @@ public class StatisticsManager implements IStatisticsManager {
 		}
 	}
 
+	protected String getHost(final String uri) {
+		HttpHost httpHost = URIUtils.extractHost(URI.create(uri));
+		String host = null;
+		if (httpHost == null) {
+			host = uri;
+		} else {
+			host = httpHost.getHostName();
+		}
+
+		return host;
+	}
+
+	protected long getPeriodTimestamp(final IStatisticsEvent event) {
+		long timestamp = event.getTimestamp();
+
+		return getPeriodTimestamp(timestamp);
+	}
+
+	protected long getPeriodTimestamp(final long currentTime) {
+		long offset = currentTime % statisticsPeriod;
+
+		return currentTime - offset;
+
+	}
+
+	protected StatisticsKey getKey(final IStatisticsEvent event) {
+		return new StatisticsKey(getHost(event.getURI()), getPeriodTimestamp(event));
+	}
+
 	@Override
 	public Iterable<StatisticsEntry> exportStatistics() {
-		return Iterables.transform(new HashMap<String, InternalStatisticsEntry>(statistics).entrySet(), STATISTICS_CONVERTER);
+		Map<StatisticsKey, InternalStatisticsEntry> exportedEntries = new HashMap<>();
+		long statisticsTimestamp = getPeriodTimestamp(System.currentTimeMillis()) - statisticsPeriod;
+
+		for (StatisticsKey key : periodStatistics.keySet()) {
+			if (key.getTimestamp() == statisticsTimestamp) {
+				exportedEntries.put(key, periodStatistics.remove(key));
+			}
+		}
+
+		return Iterables.transform(exportedEntries.entrySet(), STATISTICS_CONVERTER);
 	}
 }

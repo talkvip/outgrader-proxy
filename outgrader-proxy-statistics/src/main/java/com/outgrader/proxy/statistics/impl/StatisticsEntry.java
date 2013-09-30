@@ -11,9 +11,16 @@ public final class StatisticsEntry implements Comparable<StatisticsEntry> {
 
 		private final StatisticsEntry result;
 
-		public StatisticsEntryBuilder(final String uri) {
+		public StatisticsEntryBuilder(final String uri, final long periodTimestamp) {
 			result = new StatisticsEntry();
 			withURI(uri);
+			withPeriodTimestamp(periodTimestamp);
+		}
+
+		private StatisticsEntryBuilder withPeriodTimestamp(final long periodTimestamp) {
+			result.periodTimestamp = periodTimestamp;
+
+			return this;
 		}
 
 		private StatisticsEntryBuilder withURI(final String uri) {
@@ -90,6 +97,8 @@ public final class StatisticsEntry implements Comparable<StatisticsEntry> {
 
 	private long averageDuration;
 
+	private long periodTimestamp;
+
 	public String getUri() {
 		return uri;
 	}
@@ -120,6 +129,10 @@ public final class StatisticsEntry implements Comparable<StatisticsEntry> {
 
 	public long getErrorCount() {
 		return errorCount;
+	}
+
+	public long getPeriodTimestamp() {
+		return periodTimestamp;
 	}
 
 	@Override
