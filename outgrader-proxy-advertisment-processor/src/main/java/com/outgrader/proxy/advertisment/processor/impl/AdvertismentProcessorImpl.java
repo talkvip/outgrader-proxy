@@ -17,7 +17,7 @@ import com.outgrader.proxy.advertisment.processor.IAdvertismentRewriter;
 import com.outgrader.proxy.advertisment.processor.internal.TagReader;
 import com.outgrader.proxy.advertisment.processor.internal.impl.utils.ByteArrayBuilder;
 import com.outgrader.proxy.core.advertisment.processor.IAdvertismentProcessor;
-import com.outgrader.proxy.core.exceptions.AbstractOutgraderException;
+import com.outgrader.proxy.core.exceptions.AbstractOutgraderRequestException;
 import com.outgrader.proxy.core.model.IAdvertismentRule;
 import com.outgrader.proxy.core.model.ITag;
 import com.outgrader.proxy.core.model.ITag.TagType;
@@ -55,7 +55,7 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 	}
 
 	@Override
-	public ByteBuf process(final String uri, final InputStream stream, final Charset charset) throws AbstractOutgraderException {
+	public ByteBuf process(final String uri, final InputStream stream, final Charset charset) throws AbstractOutgraderRequestException {
 		ByteArrayBuilder result = new ByteArrayBuilder();
 
 		IAdvertismentRuleVault mainVault = ruleStorage.getIncludingRulesVault();

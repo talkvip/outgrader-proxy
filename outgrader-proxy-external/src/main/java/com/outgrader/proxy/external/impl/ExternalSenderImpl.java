@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.outgrader.proxy.core.advertisment.processor.IAdvertismentProcessor;
-import com.outgrader.proxy.core.exceptions.AbstractOutgraderException;
+import com.outgrader.proxy.core.exceptions.AbstractOutgraderRequestException;
 import com.outgrader.proxy.core.external.IExternalSender;
 import com.outgrader.proxy.core.statistics.IStatisticsHandler;
 import com.outgrader.proxy.external.impl.exceptions.ExternalSenderException;
@@ -82,7 +82,7 @@ public class ExternalSenderImpl implements IExternalSender {
 	}
 
 	@Override
-	public HttpResponse send(final HttpRequest request) throws AbstractOutgraderException {
+	public HttpResponse send(final HttpRequest request) throws AbstractOutgraderRequestException {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("start send(<" + request + ">)");
 		}
@@ -104,11 +104,11 @@ public class ExternalSenderImpl implements IExternalSender {
 				result = convertResponse(uri, response, request.getProtocolVersion());
 			} else {
 				LOGGER.error("HttpClient returned NULL for URI <" + uri + ">");
-				throw new ExternalSenderException("Got a NULL response");
+				throw new ExternalSenderException(uri, "Got a NULL response");
 			}
 		} catch (IOException e) {
 			LOGGER.error("HttpClient throwed exception for URI <" + uri + ">");
-			throw new ExternalSenderException("An exception occured during connection to external host", e);
+			throw new ExternalSenderException(uri, "An exception occured during connection to external host", e);
 		} finally {
 			externalRequest.releaseConnection();
 		}
@@ -121,7 +121,7 @@ public class ExternalSenderImpl implements IExternalSender {
 	}
 
 	private HttpResponse convertResponse(final String uri, final org.apache.http.HttpResponse response, final HttpVersion httpVersion)
-			throws IOException, AbstractOutgraderException {
+			throws IOException, AbstractOutgraderRequestException {
 		HttpResponse result = new DefaultFullHttpResponse(httpVersion, convertStatus(response.getStatusLine()), processContent(uri,
 				response));
 
@@ -156,7 +156,7 @@ public class ExternalSenderImpl implements IExternalSender {
 	}
 
 	protected ByteBuf processContent(final String uri, final org.apache.http.HttpResponse response) throws IOException,
-			AbstractOutgraderException {
+			AbstractOutgraderRequestException {
 		if (response.getEntity() != null) {
 			int code = response.getStatusLine().getStatusCode();
 			ContentType contentType = ContentType.get(response.getEntity());

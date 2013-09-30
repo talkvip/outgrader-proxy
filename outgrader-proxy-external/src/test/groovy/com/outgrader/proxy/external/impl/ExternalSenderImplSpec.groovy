@@ -274,7 +274,7 @@ class ExternalSenderImplSpec extends Specification {
 
 		httpResponse.setEntity(entity)
 
-		processor.process(_, _, _) >> { throw new ExternalSenderException("test") }
+		processor.process(_, _, _) >> { throw new ExternalSenderException('url', 'test') }
 
 		when:
 		sender.processContent(_ as String, httpResponse)
