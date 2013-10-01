@@ -65,8 +65,7 @@ import com.outgrader.proxy.external.impl.exceptions.ExternalSenderException;
 @Component
 public class ExternalSenderImpl implements IExternalSender {
 
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(ExternalSenderImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ExternalSenderImpl.class);
 
 	private final IAdvertismentProcessor responseProcessor;
 
@@ -75,15 +74,13 @@ public class ExternalSenderImpl implements IExternalSender {
 	private final IStatisticsHandler statisticsHandler;
 
 	@Inject
-	public ExternalSenderImpl(final IAdvertismentProcessor responseProcessor,
-			final IStatisticsHandler statisticsHandler) {
+	public ExternalSenderImpl(final IAdvertismentProcessor responseProcessor, final IStatisticsHandler statisticsHandler) {
 		this.responseProcessor = responseProcessor;
 		this.statisticsHandler = statisticsHandler;
 	}
 
 	@Override
-	public HttpResponse send(final HttpRequest request)
-			throws AbstractOutgraderRequestException {
+	public HttpResponse send(final HttpRequest request) throws AbstractOutgraderRequestException {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("start send(<" + request + ">)");
 		}
@@ -102,17 +99,14 @@ public class ExternalSenderImpl implements IExternalSender {
 			response = getClient().execute(externalRequest);
 
 			if (response != null) {
-				result = convertResponse(uri, response,
-						request.getProtocolVersion());
+				result = convertResponse(uri, response, request.getProtocolVersion());
 			} else {
 				LOGGER.error("HttpClient returned NULL for URI <" + uri + ">");
 				throw new ExternalSenderException(uri, "Got a NULL response");
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			LOGGER.error("HttpClient throwed exception for URI <" + uri + ">");
-			throw new ExternalSenderException(uri,
-					"An exception occured during connection to external host",
-					e);
+			throw new ExternalSenderException(uri, "An exception occured during connection to external host", e);
 		} finally {
 			externalRequest.releaseConnection();
 		}
@@ -124,28 +118,23 @@ public class ExternalSenderImpl implements IExternalSender {
 		return result;
 	}
 
-	private HttpResponse convertResponse(final String uri,
-			final org.apache.http.HttpResponse response,
-			final HttpVersion httpVersion) throws IOException,
-			AbstractOutgraderRequestException {
-		HttpResponse result = new DefaultFullHttpResponse(httpVersion,
-				convertStatus(response.getStatusLine()), processContent(uri,
-						response));
+	private HttpResponse convertResponse(final String uri, final org.apache.http.HttpResponse response, final HttpVersion httpVersion)
+			throws IOException, AbstractOutgraderRequestException {
+		HttpResponse result = new DefaultFullHttpResponse(httpVersion, convertStatus(response.getStatusLine()), processContent(uri,
+				response));
 
 		copyHeaders(response, result);
 
 		return result;
 	}
 
-	protected void copyHeaders(final org.apache.http.HttpResponse external,
-			final HttpResponse target) {
+	protected void copyHeaders(final org.apache.http.HttpResponse external, final HttpResponse target) {
 		for (Header header : external.getAllHeaders()) {
 			target.headers().add(header.getName(), header.getValue());
 		}
 	}
 
-	protected void copyContent(final HttpRequestBase externalRequest,
-			final HttpRequest request) {
+	protected void copyContent(final HttpRequestBase externalRequest, final HttpRequest request) {
 		ByteBufHolder byteBufHolder = null;
 		HttpEntityEnclosingRequest entityRequest = null;
 		if (request instanceof ByteBufHolder) {
@@ -156,18 +145,15 @@ public class ExternalSenderImpl implements IExternalSender {
 		}
 
 		if ((byteBufHolder != null) && (entityRequest != null)) {
-			entityRequest.setEntity(new ByteArrayEntity(byteBufHolder.content()
-					.array()));
+			entityRequest.setEntity(new ByteArrayEntity(byteBufHolder.content().array()));
 		}
 	}
 
-	protected InputStream gzipWrapper(final InputStream stream)
-			throws IOException {
+	protected InputStream gzipWrapper(final InputStream stream) throws IOException {
 		return new GZIPInputStream(stream);
 	}
 
-	protected ByteBuf processContent(final String uri,
-			final org.apache.http.HttpResponse response) throws IOException,
+	protected ByteBuf processContent(final String uri, final org.apache.http.HttpResponse response) throws IOException,
 			AbstractOutgraderRequestException {
 		if (response.getEntity() != null) {
 			int code = response.getStatusLine().getStatusCode();
@@ -176,11 +162,8 @@ public class ExternalSenderImpl implements IExternalSender {
 
 			ByteBuf content = null;
 
-			if ((code == HttpStatus.SC_OK)
-					&& contentType.getMimeType().equals(
-							ContentType.TEXT_HTML.getMimeType())) {
-				boolean zipped = (contentEncoding != null)
-						&& contentEncoding.getValue().contains("gzip");
+			if ((code == HttpStatus.SC_OK) && contentType.getMimeType().equals(ContentType.TEXT_HTML.getMimeType())) {
+				boolean zipped = (contentEncoding != null) && contentEncoding.getValue().contains("gzip");
 
 				InputStream stream = response.getEntity().getContent();
 				if (zipped) {
@@ -194,8 +177,7 @@ public class ExternalSenderImpl implements IExternalSender {
 
 				content = responseProcessor.process(uri, stream, charset);
 			} else {
-				content = Unpooled.wrappedBuffer(IOUtils.toByteArray(response
-						.getEntity().getContent()));
+				content = Unpooled.wrappedBuffer(IOUtils.toByteArray(response.getEntity().getContent()));
 			}
 
 			EntityUtils.consume(response.getEntity());
@@ -207,8 +189,7 @@ public class ExternalSenderImpl implements IExternalSender {
 	}
 
 	protected HttpResponseStatus convertStatus(final StatusLine status) {
-		return new HttpResponseStatus(status.getStatusCode(),
-				status.getReasonPhrase());
+		return new HttpResponseStatus(status.getStatusCode(), status.getReasonPhrase());
 	}
 
 	@PreDestroy
@@ -235,19 +216,16 @@ public class ExternalSenderImpl implements IExternalSender {
 		return httpClient;
 	}
 
-	protected void copyHeaders(final HttpRequestBase external,
-			final HttpRequest original) {
+	protected void copyHeaders(final HttpRequestBase external, final HttpRequest original) {
 		for (Map.Entry<String, String> header : original.headers().entries()) {
 
-			if (!header.getKey().equals(HTTP.CONTENT_LEN)
-					&& !header.getKey().equals(HTTP.TRANSFER_ENCODING)) {
+			if (!header.getKey().equals(HTTP.CONTENT_LEN) && !header.getKey().equals(HTTP.TRANSFER_ENCODING)) {
 				external.addHeader(header.getKey(), header.getValue());
 			}
 		}
 	}
 
-	protected HttpRequestBase getRequest(final HttpMethod method,
-			final String uri) {
+	protected HttpRequestBase getRequest(final HttpMethod method, final String uri) {
 		HttpRequestBase result = null;
 
 		if (method.equals(HttpMethod.GET)) {
@@ -267,16 +245,14 @@ public class ExternalSenderImpl implements IExternalSender {
 		} else if (method.equals(HttpMethod.TRACE)) {
 			result = new HttpTrace();
 		} else {
-			throw new IllegalArgumentException("Unsupported HTTP Method <"
-					+ method + "> for <" + uri + ">");
+			throw new IllegalArgumentException("Unsupported HTTP Method <" + method + "> for <" + uri + ">");
 		}
 
 		try {
 			URL url = new URL(uri);
 
-			result.setURI(new URI(url.getProtocol(), url.getUserInfo(), url
-					.getHost(), url.getPort(), url.getPath(), url.getQuery(),
-					url.getRef()));
+			result.setURI(new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url
+					.getRef()));
 		} catch (URISyntaxException | MalformedURLException e) {
 			statisticsHandler.onError(uri, this, e.getMessage(), e);
 		}

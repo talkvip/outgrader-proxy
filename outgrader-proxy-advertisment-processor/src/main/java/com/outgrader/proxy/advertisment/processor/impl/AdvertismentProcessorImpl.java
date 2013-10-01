@@ -3,7 +3,6 @@ package com.outgrader.proxy.advertisment.processor.impl;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
@@ -14,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.outgrader.proxy.advertisment.processor.IAdvertismentRewriter;
+import com.outgrader.proxy.advertisment.processor.exceptions.AdvertismentProcessorException;
 import com.outgrader.proxy.advertisment.processor.internal.TagReader;
 import com.outgrader.proxy.advertisment.processor.internal.impl.utils.ByteArrayBuilder;
 import com.outgrader.proxy.core.advertisment.processor.IAdvertismentProcessor;
@@ -127,10 +127,10 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 					append(result, tag, charset);
 				}
 			}
-		} catch (IOException e) {
-			statisticsHandler.onError(uri, this, "An exception occured during processing response", e);
-
+		} catch (Exception e) {
 			LOGGER.error("An exception occured during processing response", e);
+
+			throw new AdvertismentProcessorException(uri, "An exception occured during processing response", e);
 		}
 
 		return Unpooled.wrappedBuffer(result.build());

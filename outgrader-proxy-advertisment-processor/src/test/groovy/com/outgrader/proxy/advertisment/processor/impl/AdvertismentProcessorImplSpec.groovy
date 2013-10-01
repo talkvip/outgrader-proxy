@@ -10,6 +10,7 @@ import org.apache.commons.lang3.ArrayUtils
 import spock.lang.Specification
 
 import com.outgrader.proxy.advertisment.processor.IAdvertismentRewriter
+import com.outgrader.proxy.advertisment.processor.exceptions.AdvertismentProcessorException
 import com.outgrader.proxy.advertisment.processor.internal.TagReader
 import com.outgrader.proxy.core.advertisment.processor.IAdvertismentProcessor
 import com.outgrader.proxy.core.model.IAdvertismentRule
@@ -150,7 +151,7 @@ class AdvertismentProcessorImplSpec extends Specification {
 		processor.process(URI, stream, CHARSET)
 
 		then:
-		1 * statisticsHandler.onError(URI, processor, _ as String, exception)
+		thrown(AdvertismentProcessorException)
 	}
 
 	def "check rewriter on empty tag"() {

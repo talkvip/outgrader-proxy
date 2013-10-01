@@ -9,10 +9,12 @@ import io.netty.handler.codec.http.LastHttpContent;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.outgrader.proxy.core.exceptions.AbstractOutgraderRequestException;
 import com.outgrader.proxy.core.external.IExternalSender;
 import com.outgrader.proxy.core.handler.IOutgraderFrontendHandler;
 import com.outgrader.proxy.core.statistics.IStatisticsHandler;
@@ -72,7 +74,12 @@ public class OutgraderFrontendHandler extends SimpleChannelInboundHandler<Object
 
 	@Override
 	public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
-		statisticsHandler.onError("", this, cause.getMessage(), cause);
+		String uri = StringUtils.EMPTY;
+		if (cause instanceof AbstractOutgraderRequestException) {
+			uri = ((AbstractOutgraderRequestException) cause).getURL();
+		}
+
+		statisticsHandler.onError(uri, this, cause.getMessage(), cause);
 
 		super.exceptionCaught(ctx, cause);
 	}
