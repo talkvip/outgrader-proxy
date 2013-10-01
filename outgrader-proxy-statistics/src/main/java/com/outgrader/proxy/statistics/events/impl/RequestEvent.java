@@ -10,8 +10,7 @@ import com.outgrader.proxy.statistics.events.impl.internal.AbstractStatisticsEve
  */
 public class RequestEvent extends AbstractStatisticsEvent {
 
-	public RequestEvent(final String uri) {
-		super(StatisticsEventType.REQUEST, uri);
+	public RequestEvent(final String uri, final long timestamp) {
+		super(StatisticsEventType.REQUEST, uri, timestamp);
 	}
-
 }

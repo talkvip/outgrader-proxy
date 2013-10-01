@@ -16,8 +16,8 @@ public class ErrorEvent extends AbstractStatisticsEvent {
 
 	private final Throwable error;
 
-	public ErrorEvent(final String uri, final Object source, final String message, final Throwable e) {
-		super(StatisticsEventType.ERROR, uri);
+	public ErrorEvent(final String uri, final Object source, final String message, final Throwable e, final long timestamp) {
+		super(StatisticsEventType.ERROR, uri, timestamp);
 
 		this.source = source;
 		this.message = message;

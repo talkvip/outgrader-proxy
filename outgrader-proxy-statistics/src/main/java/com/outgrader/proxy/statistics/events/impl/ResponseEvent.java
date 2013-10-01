@@ -12,8 +12,8 @@ public class ResponseEvent extends AbstractStatisticsEvent {
 
 	private final long duration;
 
-	public ResponseEvent(final String uri, final long duration) {
-		super(StatisticsEventType.RESPONSE, uri);
+	public ResponseEvent(final String uri, final long duration, final long timestamp) {
+		super(StatisticsEventType.RESPONSE, uri, timestamp);
 
 		this.duration = duration;
 	}

@@ -64,12 +64,15 @@ public class OutgraderFrontendHandler extends SimpleChannelInboundHandler<Object
 		statisticsHandler.onRequestHandled(uri);
 
 		long before = System.currentTimeMillis();
-		HttpResponse response = externalSender.send(request);
-		long after = System.currentTimeMillis();
+		try {
+			HttpResponse response = externalSender.send(request);
 
-		statisticsHandler.onResponseHandled(uri, after - before);
+			ctx.writeAndFlush(response);
+		} finally {
+			long after = System.currentTimeMillis();
 
-		ctx.writeAndFlush(response);
+			statisticsHandler.onResponseHandled(uri, after - before);
+		}
 	}
 
 	@Override

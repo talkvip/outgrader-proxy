@@ -46,14 +46,19 @@ public class StatisticsHandlerImpl implements IStatisticsHandler {
 
 	private ScheduledExecutorService exportExecutor;
 
+	private final ThreadLocal<Long> currentTimestamps = new ThreadLocal<>();
+
 	@Override
 	public void onRequestHandled(final String uri) {
-		handleEvent(new RequestEvent(uri));
+		currentTimestamps.set(System.currentTimeMillis());
+
+		handleEvent(new RequestEvent(uri, currentTimestamps.get()));
 	}
 
 	@Override
 	public void onResponseHandled(final String uri, final long duration) {
-		handleEvent(new ResponseEvent(uri, duration));
+		handleEvent(new ResponseEvent(uri, duration, currentTimestamps.get()));
+		currentTimestamps.remove();
 	}
 
 	private void handleEvent(final IStatisticsEvent event) {
@@ -111,12 +116,12 @@ public class StatisticsHandlerImpl implements IStatisticsHandler {
 
 	@Override
 	public void onAdvertismentCandidateFound(final String uri, final String ruleText) {
-		handleEvent(new AdvertismentCandidateEvent(uri, ruleText));
+		handleEvent(new AdvertismentCandidateEvent(uri, ruleText, currentTimestamps.get()));
 	}
 
 	@Override
 	public void onError(final String uri, final Object source, final String errorText, final Throwable error) {
-		handleEvent(new ErrorEvent(uri, source, errorText, error));
+		handleEvent(new ErrorEvent(uri, source, errorText, error, currentTimestamps.get()));
 
 	}
 }

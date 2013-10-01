@@ -12,8 +12,8 @@ public class AdvertismentCandidateEvent extends AbstractStatisticsEvent {
 
 	private final String rule;
 
-	public AdvertismentCandidateEvent(final String uri, final String rule) {
-		super(StatisticsEventType.ADVERTISMENT_CANDIDATE, uri);
+	public AdvertismentCandidateEvent(final String uri, final String rule, final long timestamp) {
+		super(StatisticsEventType.ADVERTISMENT_CANDIDATE, uri, timestamp);
 
 		this.rule = rule;
 	}

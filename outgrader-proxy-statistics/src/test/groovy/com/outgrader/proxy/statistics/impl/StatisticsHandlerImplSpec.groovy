@@ -46,6 +46,7 @@ class StatisticsHandlerImplSpec extends Specification {
 
 		handler.properties = properties
 		handler.exporter = exporter
+		handler.currentTimestamps.set(System.currentTimeMillis())
 	}
 
 	def "check update executor created on initialize"() {

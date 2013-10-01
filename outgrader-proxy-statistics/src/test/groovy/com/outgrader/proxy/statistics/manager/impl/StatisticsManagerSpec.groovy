@@ -34,6 +34,8 @@ class StatisticsManagerSpec extends Specification {
 
 	IStatisticsManager manager
 
+	long currentTimestamp = System.currentTimeMillis()
+
 	def setup() {
 		properties.statisticsExportPeriod >> 1
 
@@ -45,7 +47,7 @@ class StatisticsManagerSpec extends Specification {
 	}
 
 	def addKey(def uri, def entry) {
-		RequestEvent event = new RequestEvent(uri)
+		RequestEvent event = new RequestEvent(uri, currentTimestamp)
 		manager.statistics.put(manager.getKey(event), entry)
 	}
 
@@ -53,7 +55,7 @@ class StatisticsManagerSpec extends Specification {
 		when:
 		addKey(URI, entry)
 		and:
-		manager.updateStatistics(new RequestEvent(URI))
+		manager.updateStatistics(new RequestEvent(URI, currentTimestamp))
 
 		then:
 		1 * entry.updateRequest()
@@ -63,7 +65,7 @@ class StatisticsManagerSpec extends Specification {
 		when:
 		addKey(URI, entry)
 		and:
-		manager.updateStatistics(new ResponseEvent(URI, DURATION))
+		manager.updateStatistics(new ResponseEvent(URI, DURATION, currentTimestamp))
 
 		then:
 		1 * entry.updateResponse(DURATION)
@@ -73,7 +75,7 @@ class StatisticsManagerSpec extends Specification {
 		when:
 		addKey(URI, entry)
 		and:
-		manager.updateStatistics(new ErrorEvent(URI, this, MESSAGE, ERROR))
+		manager.updateStatistics(new ErrorEvent(URI, this, MESSAGE, ERROR, currentTimestamp))
 
 		then:
 		1 * entry.updateError()
@@ -83,7 +85,7 @@ class StatisticsManagerSpec extends Specification {
 		when:
 		addKey(URI, entry)
 		and:
-		manager.updateStatistics(new AdvertismentCandidateEvent(URI, MESSAGE))
+		manager.updateStatistics(new AdvertismentCandidateEvent(URI, MESSAGE, currentTimestamp))
 
 		then:
 		1 * entry.updateAdvertismentCandidateCount()
@@ -91,7 +93,7 @@ class StatisticsManagerSpec extends Specification {
 
 	def "check new statistics entry added if uri not exists"() {
 		when:
-		manager.updateStatistics(new ResponseEvent(URI, DURATION))
+		manager.updateStatistics(new ResponseEvent(URI, DURATION, currentTimestamp))
 
 		then:
 		manager.statistics.size() == 1
@@ -106,16 +108,16 @@ class StatisticsManagerSpec extends Specification {
 
 			switch (type){
 				case StatisticsEventType.REQUEST:
-					event = new RequestEvent(URI)
+					event = new RequestEvent(URI, currentTimestamp)
 					break
 				case StatisticsEventType.RESPONSE:
-					event = new ResponseEvent(URI, DURATION)
+					event = new ResponseEvent(URI, DURATION, currentTimestamp)
 					break
 				case StatisticsEventType.ADVERTISMENT_CANDIDATE:
-					event = new AdvertismentCandidateEvent(URI, RULE)
+					event = new AdvertismentCandidateEvent(URI, RULE, currentTimestamp)
 					break
 				case StatisticsEventType.ERROR:
-					event = new ErrorEvent(URI, this, MESSAGE, ERROR)
+					event = new ErrorEvent(URI, this, MESSAGE, ERROR, currentTimestamp)
 					break
 			}
 			manager.updateStatistics(event)
@@ -150,11 +152,11 @@ class StatisticsManagerSpec extends Specification {
 	}
 
 	private void updateStatistics(String uri) {
-		manager.updateStatistics(new RequestEvent(uri))
-		manager.updateStatistics(new ResponseEvent(uri, DURATION))
-		manager.updateStatistics(new RequestEvent(uri))
-		manager.updateStatistics(new ResponseEvent(uri, DURATION * 2))
-		manager.updateStatistics(new ErrorEvent(uri, this, MESSAGE, ERROR))
-		manager.updateStatistics(new AdvertismentCandidateEvent(uri, MESSAGE))
+		manager.updateStatistics(new RequestEvent(uri, currentTimestamp))
+		manager.updateStatistics(new ResponseEvent(uri, DURATION, currentTimestamp))
+		manager.updateStatistics(new RequestEvent(uri, currentTimestamp))
+		manager.updateStatistics(new ResponseEvent(uri, DURATION * 2, currentTimestamp))
+		manager.updateStatistics(new ErrorEvent(uri, this, MESSAGE, ERROR, currentTimestamp))
+		manager.updateStatistics(new AdvertismentCandidateEvent(uri, MESSAGE, currentTimestamp))
 	}
 }

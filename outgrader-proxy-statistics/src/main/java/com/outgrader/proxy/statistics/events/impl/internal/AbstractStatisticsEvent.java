@@ -16,10 +16,10 @@ public abstract class AbstractStatisticsEvent implements IStatisticsEvent, Compa
 
 	private final long timestamp;
 
-	protected AbstractStatisticsEvent(final StatisticsEventType type, final String uri) {
+	protected AbstractStatisticsEvent(final StatisticsEventType type, final String uri, final long timestamp) {
 		this.type = type;
 		this.uri = uri;
-		this.timestamp = System.currentTimeMillis();
+		this.timestamp = timestamp;
 	}
 
 	@Override
