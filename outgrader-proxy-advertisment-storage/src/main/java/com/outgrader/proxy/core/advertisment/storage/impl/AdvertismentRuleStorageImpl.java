@@ -42,6 +42,8 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 
 	private static final String PARAMETERS_SEPARATOR = "$";
 
+	private static final String[] EXTENDED_FILTER_TAG_NAMES = { "object", "script" };
+
 	private static class FilterResult {
 
 		private final IFilter filter;
@@ -470,7 +472,13 @@ public class AdvertismentRuleStorageImpl implements IAdvertismentRuleStorage {
 				subResult = tryThirdPartyFilter(parameter);
 
 				if (subResult == null) {
-					subResult = tryExtendedTagNameParameterFilter(parameter, "object");
+					for (String tagName : EXTENDED_FILTER_TAG_NAMES) {
+						subResult = tryExtendedTagNameParameterFilter(parameter, tagName);
+
+						if (subResult != null) {
+							break;
+						}
+					}
 				}
 			}
 

@@ -113,6 +113,17 @@ class TagMatchingSpec extends Specification {
 		'/ad_click/*$object' | 'some.uri' | '<object data="http://another.uri/ad_click/1" />' | true
 		'/ad_click/*$object' | 'some.uri' | '<img src="http://another.uri/ad_click/" />'      | false
 		'/ad_click/*$object' | 'some.uri' | '<object data="http://another.uri/ad_click" />'   | false
+
+		'/amcu_$script' | 'some.uri' | '<script data="http://some/amcu_adv" /> ' | true
+		'/amcu_$script' | 'some.uri' | '<script data="http://some/amcu" />'     | false
+		'/amcu_$script' | 'some.uri' | '<object data="http://some/amcu_adv" />' | false
+
+		'^clickunder-' | 'some.uri' | '<script data="http://uri.com/clickunder-adv" />'         | true
+		'^clickunder-' | 'some.uri' | '<script data="http://uri.com?clickunder-adv" />'         | true
+		'^clickunder-' | 'some.uri' | '<script data="http://uri.com?request&clickunder-adv" />' | true
+		'^clickunder-' | 'some.uri' | '<script data="http://some.clickunder-adv" />'            | false
+		'^clickunder-' | 'some.uri' | '<script data="http://uri.com/clickunder" />'             | false
+		'^clickunder-' | 'some.uri' | '<script data="http://notclickunder-adv" />' 				| false
 	}
 
 	private IAdvertismentProcessor createProcessor(IAdvertismentRuleStorage storage) {
