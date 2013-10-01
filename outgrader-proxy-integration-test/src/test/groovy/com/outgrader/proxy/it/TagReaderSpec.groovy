@@ -5,7 +5,7 @@ import org.apache.commons.io.IOUtils
 import org.apache.http.HttpResponse
 import org.apache.http.client.HttpClient
 import org.apache.http.client.methods.HttpGet
-import org.apache.http.impl.client.DefaultHttpClient
+import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
 
 import spock.lang.Specification
@@ -23,11 +23,11 @@ class TagReaderSpec extends Specification {
 	HttpClient httpClient
 
 	def setup() {
-		httpClient = new DefaultHttpClient()
+		httpClient = HttpClients.createDefault()
 	}
 
 	def cleanup() {
-		httpClient.getConnectionManager().shutdown()
+		httpClient.close()
 	}
 
 	@Unroll("check tag reader didn't change html content for #uri")

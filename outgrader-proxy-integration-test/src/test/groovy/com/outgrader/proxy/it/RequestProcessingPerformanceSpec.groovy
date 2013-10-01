@@ -9,7 +9,7 @@ import io.netty.handler.codec.http.HttpVersion
 import org.apache.http.HttpResponse
 import org.apache.http.client.HttpClient
 import org.apache.http.client.methods.HttpGet
-import org.apache.http.impl.client.DefaultHttpClient
+import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
@@ -43,11 +43,11 @@ class RequestProcessingPerformanceSpec extends Specification {
 	HttpClient httpClient
 
 	def setup() {
-		httpClient = new DefaultHttpClient()
+		httpClient = HttpClients.createMinimal()
 	}
 
 	def cleanup() {
-		httpClient.getConnectionManager().shutdown()
+		httpClient.close()
 	}
 
 	@Unroll('#featureName for #uri')
