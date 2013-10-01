@@ -68,6 +68,10 @@ public class OutgraderFrontendHandler extends SimpleChannelInboundHandler<Object
 			HttpResponse response = externalSender.send(request);
 
 			ctx.writeAndFlush(response);
+		} catch (Throwable e) {
+			handleException(e);
+
+			throw e;
 		} finally {
 			long after = System.currentTimeMillis();
 
@@ -75,15 +79,12 @@ public class OutgraderFrontendHandler extends SimpleChannelInboundHandler<Object
 		}
 	}
 
-	@Override
-	public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
+	private void handleException(final Throwable cause) {
 		String uri = StringUtils.EMPTY;
 		if (cause instanceof AbstractOutgraderRequestException) {
 			uri = ((AbstractOutgraderRequestException) cause).getURL();
 		}
 
 		statisticsHandler.onError(uri, this, cause.getMessage(), cause);
-
-		super.exceptionCaught(ctx, cause);
 	}
 }
