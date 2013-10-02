@@ -1,7 +1,5 @@
 package com.outgrader.proxy.advertisment.processor.impl
 
-import io.netty.buffer.Unpooled
-
 import java.nio.charset.Charset
 
 import org.apache.commons.io.Charsets
@@ -249,7 +247,24 @@ class AdvertismentProcessorImplSpec extends Specification {
 		processor.process(URI, stream, CHARSET)
 
 		then:
-		0 * rewriter.rewrite(tag, includingRule, CHARSET, tagReader) >> Unpooled.EMPTY_BUFFER
+		0 * rewriter.rewrite(tag, includingRule, CHARSET, tagReader) >> ArrayUtils.EMPTY_BYTE_ARRAY
+	}
+
+	def "check processing didn't fall down on exception during rule matching"() {
+		setup:
+		processor.isAnalysable(tag) >> true
+		tag.tagType >> TagType.OPEN_AND_CLOSING
+
+		Exception e = new IllegalArgumentException('some error')
+		includingRule.matches(URI, tag) >> {throw e }
+
+		when:
+		processor.process(URI, stream, CHARSET)
+
+		then:
+		1 * rewriter.rewrite(tag, CHARSET) >> ArrayUtils.EMPTY_BYTE_ARRAY
+		1 * statisticsHandler.onError(URI, processor, _ as String, e)
+		noExceptionThrown()
 	}
 }
 
