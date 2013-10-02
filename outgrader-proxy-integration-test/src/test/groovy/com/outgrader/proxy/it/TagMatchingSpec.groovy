@@ -124,6 +124,12 @@ class TagMatchingSpec extends Specification {
 		'^clickunder-' | 'some.uri' | '<script data="http://some.clickunder-adv" />'            | false
 		'^clickunder-' | 'some.uri' | '<script data="http://uri.com/clickunder" />'             | false
 		'^clickunder-' | 'some.uri' | '<script data="http://notclickunder-adv" />' 				| false
+
+		'2krota.ru###dle-content > TABLE:first-child CENTER' | '2krota.ru' | "<div id='dle-content'><table cellpadding=0 cellspacing=0 width=100%><tr><td><center><a href=\"http://2krota2.ru/\" target=\"_blank\"><img src=\"/rekla/866-80.jpg\" style=\"border:none;\" /></a></center></td></tr></table>" | true
+
+		'###center_col > div[style="font-size:14px;margin-right:0;min-height:5px"] > div[style="font-size:14px;margin:0 4px;padding:1px 5px;background:#fff8e7"]' | '' | ''| true
+
+		'###mn #center_col > div > h2.spon:first-child + ol:last-child' | '' | ''| true
 	}
 
 	private IAdvertismentProcessor createProcessor(IAdvertismentRuleStorage storage) {

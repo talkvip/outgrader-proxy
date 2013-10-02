@@ -23,6 +23,8 @@ public class AdvertismentRuleImpl implements IAdvertismentRule {
 
 	private IAdvertismentRule[] subRules = EMPTY_RULES;
 
+	private SubRuleType subRuleType = SubRuleType.NONE;
+
 	public AdvertismentRuleImpl(final String text, final IFilter filter) {
 		this.text = text;
 		this.filter = filter;
@@ -43,9 +45,12 @@ public class AdvertismentRuleImpl implements IAdvertismentRule {
 	}
 
 	@Override
-	public boolean isRuleRewriteContinues(final ITag ruleRewriteStartTag, final ITag currentTag) {
-		return !ObjectUtils.equals(currentTag.getOpeningTag(), ruleRewriteStartTag)
-				&& !((ruleRewriteStartTag.getTagType() == TagType.OPENING) && ruleRewriteStartTag.getName().equals(EMBED_TAG));
+	public boolean isRuleRewriteContinues(final ITag ruleRewriteStartTag,
+			final ITag currentTag) {
+		return !ObjectUtils.equals(currentTag.getOpeningTag(),
+				ruleRewriteStartTag)
+				&& !((ruleRewriteStartTag.getTagType() == TagType.OPENING) && ruleRewriteStartTag
+						.getName().equals(EMBED_TAG));
 	}
 
 	public void addSubRule(final IAdvertismentRule subRule) {
@@ -55,5 +60,14 @@ public class AdvertismentRuleImpl implements IAdvertismentRule {
 	@Override
 	public IAdvertismentRule[] getSubRules() {
 		return subRules;
+	}
+
+	@Override
+	public SubRuleType getSubRuleType() {
+		return subRuleType;
+	}
+
+	public void setSubRuleType(final SubRuleType subRuleType) {
+		this.subRuleType = subRuleType;
 	}
 }

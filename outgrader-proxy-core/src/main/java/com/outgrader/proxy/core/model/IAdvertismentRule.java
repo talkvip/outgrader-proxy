@@ -9,10 +9,16 @@ public interface IAdvertismentRule {
 
 	public static final IAdvertismentRule[] EMPTY_RULES = new IAdvertismentRule[0];
 
+	public enum SubRuleType {
+		NEXT_CHILD, FIRST_CHILD, NEXT_ELEMENT, ANY_CHILD, NONE;
+	}
+
 	boolean matches(String uri, ITag tag);
 
 	boolean isRuleRewriteContinues(ITag ruleRewriteStartTag, ITag currentTag);
 
 	IAdvertismentRule[] getSubRules();
+
+	SubRuleType getSubRuleType();
 
 }
