@@ -17,6 +17,21 @@ import com.outgrader.proxy.core.model.ITag;
  */
 public final class FilterBuilderUtils {
 
+	/**
+	 * 
+	 */
+	private static final String ATTRIBUTE_SEPARATOR = "\"";
+
+	/**
+	 * 
+	 */
+	private static final String DOMAIN_SEPARATOR = ".";
+
+	/**
+	 * 
+	 */
+	private static final String PROTOCOL_PREFIX = "://";
+
 	private static final String NOT_SYMBOL = "~";
 
 	private static final String TOKEN_SEPARATOR = "*";
@@ -82,8 +97,8 @@ public final class FilterBuilderUtils {
 				}
 
 				OrFilter protocolFilter = new OrFilter();
-				protocolFilter.addSubFilter(new ContainsFilter(rule.replace(PROTOCOL_SYMBOL, "://"), source));
-				protocolFilter.addSubFilter(new ContainsFilter(rule.replace(PROTOCOL_SYMBOL, "."), source));
+				protocolFilter.addSubFilter(new ContainsFilter(rule.replace(PROTOCOL_SYMBOL, PROTOCOL_PREFIX), source));
+				protocolFilter.addSubFilter(new ContainsFilter(rule.replace(PROTOCOL_SYMBOL, DOMAIN_SEPARATOR), source));
 
 				if (subFilter == null) {
 					return protocolFilter;
@@ -101,7 +116,7 @@ public final class FilterBuilderUtils {
 		@Override
 		public IFilter build(final String rule, final IFilterSource source, final boolean supportsNot) {
 			if (rule.endsWith(EDGE_SYMBOL)) {
-				return new ContainsFilter(rule.replace(EDGE_SYMBOL, "\""), source);
+				return new ContainsFilter(rule.replace(EDGE_SYMBOL, ATTRIBUTE_SEPARATOR), source);
 			}
 
 			return null;
@@ -113,7 +128,7 @@ public final class FilterBuilderUtils {
 		@Override
 		public IFilter build(final String rule, final IFilterSource source, final boolean supportsNot) {
 			if (rule.startsWith(EDGE_SYMBOL)) {
-				return new ContainsFilter(rule.replace(EDGE_SYMBOL, "\""), source);
+				return new ContainsFilter(rule.replace(EDGE_SYMBOL, ATTRIBUTE_SEPARATOR), source);
 			}
 
 			return null;
