@@ -7,6 +7,8 @@ dependencies {
 	compile project(':outgrader-proxy-statistics')
 	compile project(':outgrader-proxy-advertisment-processor')
 	compile project(':outgrader-proxy-advertisment-storage')
+	
+	compile group: 'commons-daemon', name: 'commons-daemon', version: commonsDaemonVersion
 }
 
 mainClassName = 'com.outgrader.proxy.Outgrader'

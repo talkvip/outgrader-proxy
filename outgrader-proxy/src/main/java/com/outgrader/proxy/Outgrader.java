@@ -1,8 +1,12 @@
 package com.outgrader.proxy;
 
+import org.apache.commons.daemon.Daemon;
+import org.apache.commons.daemon.DaemonContext;
+import org.apache.commons.daemon.DaemonInitException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.outgrader.proxy.core.IOutgraderProxy;
@@ -13,7 +17,7 @@ import com.outgrader.proxy.core.IOutgraderProxy;
  * @author Nikolay Lagutko (nikolay.lagutko@mail.com)
  * @since 0.1.0
  */
-public final class Outgrader {
+public final class Outgrader implements Daemon {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Outgrader.class);
 
@@ -21,7 +25,7 @@ public final class Outgrader {
 
 	private ApplicationContext context;
 
-	private Outgrader() {
+	public Outgrader() {
 
 	}
 
@@ -34,8 +38,12 @@ public final class Outgrader {
 
 	public void run() {
 		LOGGER.info("Creating instance of Outgrader Proxy and start it");
-		IOutgraderProxy proxy = getApplicationContext().getBean(IOutgraderProxy.class);
+		IOutgraderProxy proxy = getOutgraderProxy();
 		proxy.run();
+	}
+
+	private IOutgraderProxy getOutgraderProxy() {
+		return getApplicationContext().getBean(IOutgraderProxy.class);
 	}
 
 	protected ApplicationContext getApplicationContext() {
@@ -48,6 +56,26 @@ public final class Outgrader {
 		return context;
 	}
 
+	@Override
+	public void init(final DaemonContext context) throws DaemonInitException, Exception {
+		getApplicationContext();
+	}
+
+	@Override
+	public void start() throws Exception {
+		getOutgraderProxy().run();
+	}
+
+	@Override
+	public void stop() throws Exception {
+		getOutgraderProxy().stop();
+	}
+
+	@Override
+	public void destroy() {
+		((AbstractApplicationContext) getApplicationContext()).close();
+	}
+
 	public static void main(final String[] args) {
 		LOGGER.info("Starting Ougrader-Runner application");
 
@@ -55,4 +83,5 @@ public final class Outgrader {
 
 		LOGGER.info("Closing Outgrader-Runner application");
 	}
+
 }
