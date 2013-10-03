@@ -56,8 +56,7 @@ public class OutgraderProxyImpl implements IOutgraderProxy {
 		} catch (InterruptedException e) {
 			LOGGER.error("An exception occured during Proxy work", e);
 		} finally {
-			bossGroup.shutdownGracefully();
-			workerGroup.shutdownGracefully();
+			stop();
 		}
 	}
 
