@@ -44,6 +44,10 @@ subprojects {
 	}
 }
 
+release {
+	scm = 'git'
+}
+
 task wrapper(type: Wrapper) {
 	gradleVersion = gradleWrapperVersion
 }
