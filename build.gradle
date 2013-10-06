@@ -2,7 +2,7 @@ buildscript {
 	repositories {
 		mavenCentral()
 		maven { 
-			url "https://oss.sonatype.org/content/groups/public"
+			url "http://maven.tmatesoft.com/content/repositories/snapshots/"
 		}
 		maven {
 			url gsRepoURL
@@ -10,9 +10,9 @@ buildscript {
 	}
 	
 	dependencies {		
-		classpath group: 'com.gersis-software.gradle',	name: 'gs-jacoco',		version: gsJacocoVersion
-		classpath group: 'com.gersis-software.gradle',	name: 'gs-ide',			version: gsIDEVersion
-		classpath group: 'com.github.townsfolk',		name: 'gradle-release',	version: gradleReleaseVersion			
+		classpath group: 'com.gersis-software.gradle',	name: 'gs-jacoco',	version: gsJacocoVersion
+		classpath group: 'com.gersis-software.gradle',	name: 'gs-ide',		version: gsIDEVersion
+		classpath group: 'au.com.ish.gradle',			name: 'release',	version: gradleReleaseVersion			
 	}
 }
 
