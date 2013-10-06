@@ -62,6 +62,8 @@ public class OutgraderProxyImpl implements IOutgraderProxy {
 
 	@Override
 	public void stop() {
+		LOGGER.info("Stopping Outgrader server");
+
 		if (bossGroup != null) {
 			bossGroup.shutdownGracefully();
 			bossGroup = null;
@@ -70,5 +72,7 @@ public class OutgraderProxyImpl implements IOutgraderProxy {
 			workerGroup.shutdownGracefully();
 			workerGroup = null;
 		}
+
+		LOGGER.info("Outgrader server stopped");
 	}
 }

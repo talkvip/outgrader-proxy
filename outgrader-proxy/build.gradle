@@ -1,3 +1,5 @@
+import org.gradle.api.internal.plugins.StartScriptGenerator
+
 apply plugin: 'application'
 
 dependencies {
@@ -19,6 +21,19 @@ startScripts {
 	//TODO: LN: 12.09.2013, will work for *nix only for now
 	defaultJvmOpts = ['-server', '-XX:+AggressiveOpts', '-XX:+OptimizeStringConcat', '-Doutgrader.home=$APP_HOME']
 	
+	//TODO: LN: 06.10.2013, a big hack on Gradle Application plugin
+	//hacking getResource method to return own script (with jscv run) instead of original one
+	doFirst {
+		def method = StartScriptGenerator.metaClass.getStaticMetaMethod('getResource', [String] as Class[])
+		StartScriptGenerator.metaClass.static.getResource << { String resource ->
+			if (resource.endsWith('unixStartScript.txt')) {
+				file 'src/build/resources/unixJsvcTemplate.txt'
+			} else {
+				method.doMethodInvoke(delegate, resource)
+			}
+		}
+	}
+	
 	doLast {
 		def windowsScriptFile = file getWindowsScript()
 		def unixScriptFile    = file getUnixScript()
@@ -26,5 +41,7 @@ startScripts {
 		//fixing classpath problem and problem with escaping $
 		windowsScriptFile.text = windowsScriptFile.text.replace('%APP_HOME%\\lib\\config', '%APP_HOME%\\config')
 		unixScriptFile.text    = unixScriptFile.text.replace('$APP_HOME/lib/config', '$APP_HOME/config').replace('=\\$', '=$')
+		
+		unixScriptFile.text = unixScriptFile.text.replace('"$1"', '$1')
 	}
 }

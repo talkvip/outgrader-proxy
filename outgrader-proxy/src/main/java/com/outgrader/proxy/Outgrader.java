@@ -1,5 +1,7 @@
 package com.outgrader.proxy;
 
+import java.util.concurrent.Executors;
+
 import org.apache.commons.daemon.Daemon;
 import org.apache.commons.daemon.DaemonContext;
 import org.apache.commons.daemon.DaemonInitException;
@@ -47,9 +49,8 @@ public final class Outgrader implements Daemon {
 	}
 
 	protected ApplicationContext getApplicationContext() {
-		LOGGER.info("Initializing Spring environment");
-
 		if (context == null) {
+			LOGGER.info("Initializing Spring environment");
 			context = new ClassPathXmlApplicationContext(CONTEXT_LOCATION);
 		}
 
@@ -63,7 +64,13 @@ public final class Outgrader implements Daemon {
 
 	@Override
 	public void start() throws Exception {
-		getOutgraderProxy().run();
+		Executors.newSingleThreadExecutor().execute(new Runnable() {
+
+			@Override
+			public void run() {
+				getOutgraderProxy().run();
+			}
+		});
 	}
 
 	@Override
@@ -73,7 +80,11 @@ public final class Outgrader implements Daemon {
 
 	@Override
 	public void destroy() {
+		LOGGER.info("Destroying Outgrader");
+
 		((AbstractApplicationContext) getApplicationContext()).close();
+
+		LOGGER.info("Outgrader destroyed");
 	}
 
 	public static void main(final String[] args) {
