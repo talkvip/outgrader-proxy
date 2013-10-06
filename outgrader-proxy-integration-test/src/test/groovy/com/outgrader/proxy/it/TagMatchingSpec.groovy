@@ -75,9 +75,9 @@ class TagMatchingSpec extends Specification {
 		'###ads_iframe' | 'some.uri' | '<a id="ads_iframe" />'    | true
 		'###ads_iframe' | 'some.uri' | '<a id="no_ads_iframe" />' | false
 
-		'##.advblock' | 'some.uri' | '<a id="advblock" />'     | true
-		'##.advblock' | 'some.uri' | '<div id="advblock" />'   | true
-		'##.advblock' | 'some.uri' | '<a id="not_advblock" />' | false
+		'##.advblock' | 'some.uri' | '<a class="advblock" />'     | true
+		'##.advblock' | 'some.uri' | '<div class="advblock" />'   | true
+		'##.advblock' | 'some.uri' | '<a class="not_adblock" />'  | false
 
 		'##DIV[id^="cpa_rotator_block"]' | 'some.uri' | '<a id="cpa_rotator_block" />'            | false
 		'##DIV[id^="cpa_rotator_block"]' | 'some.uri' | '<div id="cpa_rotator_block" />'          | true
@@ -93,12 +93,12 @@ class TagMatchingSpec extends Specification {
 		'##BODY > #flydiv' | 'some.uri' | '<body><a id="something" />'     | false
 		'##BODY > #flydiv' | 'some.uri' | '<body></body><a id="flydiv" />' | false
 
-		'##NOINDEX > .search_result[class*="search_result_"]' | 'some.uri' | '<noindex><a id="search_result" class="search_result_" />'          | true
-		'##NOINDEX > .search_result[class*="search_result_"]' | 'some.uri' | '<noindex><a id="search_result" class="start_search_result_end" />' | true
-		'##NOINDEX > .search_result[class*="search_result_"]' | 'some.uri' | '<noindex><div id="search_result" class="search_result_" />'        | true
-		'##NOINDEX > .search_result[class*="search_result_"]' | 'some.uri' | '<noindex><a id="not_search_result" class="search_result_" />'      | false
-		'##NOINDEX > .search_result[class*="search_result_"]' | 'some.uri' | '<start><a id="search_result" class="search_result_" />'            | false
-		'##NOINDEX > .search_result[class*="search_result_"]' | 'some.uri' | '<noindex><a id="search_result" type="search_result_" />' 			 | false
+		'##NOINDEX > .search_result[class*="search_result_"]' | 'some.uri' | '<noindex><a class="search_result_" />'          | true
+		'##NOINDEX > .search_result[class*="search_result_"]' | 'some.uri' | '<noindex><a class="start_search_result_end" />' | true
+		'##NOINDEX > .search_result[class*="search_result_"]' | 'some.uri' | '<noindex><div class="search_result_" />'        | true
+		'##NOINDEX > .search_result[class*="search_result_"]' | 'some.uri' | '<noindex><a id="search_resul" />'               | false
+		'##NOINDEX > .search_result[class*="search_result_"]' | 'some.uri' | '<start><a class="search_result_" />'            | false
+		'##NOINDEX > .search_result[class*="search_result_"]' | 'some.uri' | '<noindex><a type="search_result" />' 		      | false
 
 		'www.google.com,www.google.ru##BODY > TABLE[style="border: 1px solid #369"]' | 'www.google.com' | '<body><table style="border: 1px solid #369" />' | true
 		'www.google.com,www.google.ru##BODY > TABLE[style="border: 1px solid #369"]' | 'www.google.ru'  | '<body><table style="border: 1px solid #369" />' | true
@@ -130,6 +130,11 @@ class TagMatchingSpec extends Specification {
 		'###center_col > div[style="font-size:14px;margin-right:0;min-height:5px"] > div[style="font-size:14px;margin:0 4px;padding:1px 5px;background:#fff8e7"]' | '' | ''| true
 
 		'###mn #center_col > div > h2.spon:first-child + ol:last-child' | '' | ''| true
+
+		'##div#adv_id' | 'some.uri' | '<div id="adv_id" />'    | true
+		'##div#adv_id' | 'some.uri' | '<div class="adv_id" />' | false
+		'##div.adv_id' | 'some.uri' | '<div id="adv_id" />'    | false
+		'##div.adv_id' | 'some.uri' | '<div class="adv_id" />' | true
 	}
 
 	private IAdvertismentProcessor createProcessor(IAdvertismentRuleStorage storage) {

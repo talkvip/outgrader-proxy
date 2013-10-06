@@ -35,4 +35,6 @@ public interface ITag {
 
 	String getCSSId();
 
+	String getCSSClass();
+
 }

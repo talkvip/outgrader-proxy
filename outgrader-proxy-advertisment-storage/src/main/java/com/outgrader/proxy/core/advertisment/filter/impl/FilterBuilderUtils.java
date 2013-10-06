@@ -137,8 +137,7 @@ public final class FilterBuilderUtils {
 
 	private static final IFilterBuilder MAIN_FILTER_BUILDER = new IFilterBuilder() {
 
-		private final IFilterBuilder[] SUB_BUILDERS = new IFilterBuilder[] { PROTOCOL_FILTER_BUILDER, STARTS_WITH_FILTER_BUILDER,
-				ENDS_WITH_FILTER_BUILDER, SEPARATOR_FILTER_BUILDER };
+		private final IFilterBuilder[] SUB_BUILDERS = new IFilterBuilder[] { PROTOCOL_FILTER_BUILDER, STARTS_WITH_FILTER_BUILDER, ENDS_WITH_FILTER_BUILDER, SEPARATOR_FILTER_BUILDER };
 
 		@Override
 		public IFilter build(final String rule, final IFilterSource source, final boolean supportsNot) {
@@ -182,6 +181,14 @@ public final class FilterBuilderUtils {
 		@Override
 		public String getFilterSource(final String uri, final ITag tag) {
 			return tag.getCSSId();
+		}
+	};
+
+	public static final IFilterSource CSS_CLASS_FILTER_SOURCE = new AbstractFilterSource(true) {
+
+		@Override
+		public String getFilterSource(final String uri, final ITag tag) {
+			return tag.getCSSClass();
 		}
 	};
 
