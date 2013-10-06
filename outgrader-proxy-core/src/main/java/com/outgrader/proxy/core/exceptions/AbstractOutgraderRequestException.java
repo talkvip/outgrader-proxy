@@ -21,6 +21,11 @@ public class AbstractOutgraderRequestException extends AbstractOutgraderExceptio
 		this.url = url;
 	}
 
+	protected AbstractOutgraderRequestException(final String url, final Exception e) {
+		super(e);
+		this.url = url;
+	}
+
 	protected AbstractOutgraderRequestException(final String url) {
 		super();
 		this.url = url;

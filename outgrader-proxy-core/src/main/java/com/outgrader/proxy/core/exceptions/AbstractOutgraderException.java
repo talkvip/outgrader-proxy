@@ -17,6 +17,10 @@ public class AbstractOutgraderException extends Exception {
 		super(message);
 	}
 
+	protected AbstractOutgraderException(final Exception e) {
+		super(e);
+	}
+
 	protected AbstractOutgraderException() {
 		super();
 	}
