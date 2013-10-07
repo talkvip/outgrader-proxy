@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufHolder;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
@@ -27,6 +28,7 @@ import javax.inject.Inject;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
@@ -88,6 +90,10 @@ public class ExternalSenderImpl implements IExternalSender {
 		String uri = request.getUri();
 
 		HttpRequestBase externalRequest = getRequest(request.getMethod(), uri);
+		HttpHost host = null;
+		if (!externalRequest.getURI().isAbsolute()) {
+			host = new HttpHost(request.headers().get(HttpHeaders.Names.HOST));
+		}
 
 		copyHeaders(externalRequest, request);
 		copyContent(externalRequest, request);
@@ -96,7 +102,11 @@ public class ExternalSenderImpl implements IExternalSender {
 		HttpResponse result = null;
 
 		try {
-			response = getClient().execute(externalRequest);
+			if (host == null) {
+				response = getClient().execute(externalRequest);
+			} else {
+				response = getClient().execute(host, externalRequest);
+			}
 
 			if (response != null) {
 				result = convertResponse(uri, response, request.getProtocolVersion());
@@ -249,12 +259,16 @@ public class ExternalSenderImpl implements IExternalSender {
 		}
 
 		try {
-			URL url = new URL(uri);
+			result.setURI(URI.create(uri));
+		} catch (IllegalArgumentException e) {
+			try {
+				URL url = new URL(uri);
 
-			result.setURI(new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url
-					.getRef()));
-		} catch (URISyntaxException | MalformedURLException e) {
-			statisticsHandler.onError(uri, this, e.getMessage(), e);
+				result.setURI(new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(),
+						url.getRef()));
+			} catch (URISyntaxException | MalformedURLException e1) {
+				statisticsHandler.onError(uri, this, e.getMessage(), e1);
+			}
 		}
 
 		return result;

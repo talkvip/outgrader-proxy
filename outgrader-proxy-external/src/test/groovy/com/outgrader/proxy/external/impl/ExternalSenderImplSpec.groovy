@@ -48,7 +48,7 @@ class ExternalSenderImplSpec extends Specification {
 
 	ExternalSenderImpl sender
 
-	HttpRequest nettyRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "uri")
+	HttpRequest nettyRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://example.uri")
 
 	org.apache.http.HttpRequest httpRequest = new HttpGet()
 
@@ -340,7 +340,7 @@ class ExternalSenderImplSpec extends Specification {
 
 	def "check exception handled on bad uri"() {
 		when:
-		sender.getRequest(HttpMethod.GET, "blablabla")
+		sender.getRequest(HttpMethod.GET, "incorrect symbol %")
 
 		then:
 		noExceptionThrown()
