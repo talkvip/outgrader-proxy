@@ -9,4 +9,6 @@ public interface IOutgraderProxy {
 
 	void run();
 
+	void stop();
+
 }

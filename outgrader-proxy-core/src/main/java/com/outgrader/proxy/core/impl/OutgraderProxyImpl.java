@@ -32,12 +32,16 @@ public class OutgraderProxyImpl implements IOutgraderProxy {
 	@Inject
 	private IOutgraderChannelInitializer channelInitializer;
 
+	private EventLoopGroup bossGroup;
+
+	private EventLoopGroup workerGroup;
+
 	@Override
 	public void run() {
 		LOGGER.info("Starting netty.io server");
 
-		EventLoopGroup bossGroup = new NioEventLoopGroup();
-		EventLoopGroup workerGroup = new NioEventLoopGroup(properties.getWorkerThreadNumber());
+		bossGroup = new NioEventLoopGroup();
+		workerGroup = new NioEventLoopGroup(properties.getWorkerThreadNumber());
 
 		try {
 			ServerBootstrap server = new ServerBootstrap();
@@ -52,8 +56,23 @@ public class OutgraderProxyImpl implements IOutgraderProxy {
 		} catch (InterruptedException e) {
 			LOGGER.error("An exception occured during Proxy work", e);
 		} finally {
-			bossGroup.shutdownGracefully();
-			workerGroup.shutdownGracefully();
+			stop();
 		}
+	}
+
+	@Override
+	public void stop() {
+		LOGGER.info("Stopping Outgrader server");
+
+		if (bossGroup != null) {
+			bossGroup.shutdownGracefully();
+			bossGroup = null;
+		}
+		if (workerGroup != null) {
+			workerGroup.shutdownGracefully();
+			workerGroup = null;
+		}
+
+		LOGGER.info("Outgrader server stopped");
 	}
 }

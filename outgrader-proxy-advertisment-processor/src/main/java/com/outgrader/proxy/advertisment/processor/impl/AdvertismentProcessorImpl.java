@@ -70,58 +70,66 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 					IAdvertismentRuleVault tagVault = mainVault.getSubVault(tag.getName().toLowerCase());
 					IAdvertismentRuleVault currentVault = tagVault == null ? mainVault : tagVault;
 
+					ITag currentTag = tag;
+
 					for (IAdvertismentRule includingRule : currentVault.getRules()) {
-						if (((includingRule.getSubRules().length > 0) && (currentVault == tagVault)) || includingRule.matches(uri, tag)) {
-							boolean stillIncluding = true;
+						try {
+							if (((includingRule.getSubRules().length > 0) && (currentVault == tagVault)) || includingRule.matches(uri, currentTag)) {
+								boolean stillIncluding = true;
 
-							ITag advertismentTag = tag;
+								int subRuleLength = includingRule.getSubRules().length;
+								int lastSubRuleIndex = subRuleLength - 1;
 
-							int subRuleLength = includingRule.getSubRules().length;
-							int lastSubRuleIndex = subRuleLength - 1;
-
-							if (subRuleLength > 0) {
-								append(result, tag, charset);
-								isRewritten = true;
-							}
-
-							for (int i = 0; (i < subRuleLength) && reader.hasNext(); i++) {
-								IAdvertismentRule subRule = includingRule.getSubRules()[i];
-								advertismentTag = reader.next();
-
-								boolean matches = subRule.matches(uri, advertismentTag);
-								boolean last = i == lastSubRuleIndex;
-
-								if (!last || (last && !matches)) {
-									append(result, advertismentTag, charset);
+								if (subRuleLength > 0) {
+									append(result, tag, charset);
+									isRewritten = true;
 								}
 
-								if (!matches) {
-									stillIncluding = false;
+								for (int i = 0; (i < subRuleLength) && reader.hasNext(); i++) {
+									IAdvertismentRule subRule = includingRule.getSubRules()[i];
+									currentTag = reader.next();
+
+									boolean matches = subRule.matches(uri, currentTag);
+									boolean last = i == lastSubRuleIndex;
+
+									if (!last || (last && !matches)) {
+										append(result, currentTag, charset);
+									}
+
+									if (!matches) {
+										stillIncluding = false;
+										break;
+									}
+								}
+
+								for (IAdvertismentRule excludingRule : ruleStorage.getExcludingRules()) {
+									if (excludingRule.matches(uri, currentTag)) {
+										stillIncluding = false;
+										break;
+									}
+
+								}
+
+								if (stillIncluding) {
+									statisticsHandler.onAdvertismentCandidateFound(uri, includingRule.toString());
+
+									isRewritten = true;
+
+									append(result, currentTag, includingRule, charset, reader);
+
 									break;
 								}
 							}
+						} catch (Exception e) {
+							LOGGER.error("An error occured during parsing rule matching for rule <" + includingRule + "> and tag <" + tag.getText() + ">.", e);
 
-							for (IAdvertismentRule excludingRule : ruleStorage.getExcludingRules()) {
-								if (excludingRule.matches(uri, advertismentTag)) {
-									stillIncluding = false;
-									break;
-								}
-							}
-
-							if (stillIncluding) {
-								statisticsHandler.onAdvertismentCandidateFound(uri, includingRule.toString());
-
-								isRewritten = true;
-
-								append(result, advertismentTag, includingRule, charset, reader);
-
-								break;
-							}
+							statisticsHandler.onError(uri, this, "An error occured during parsing rule matching for rule <" + includingRule + "> and tag <"
+									+ tag.getText() + ">.", e);
 						}
 					}
 
 					if (!isRewritten) {
-						append(result, tag, charset);
+						append(result, currentTag, charset);
 					}
 				} else {
 					append(result, tag, charset);
@@ -136,8 +144,7 @@ public class AdvertismentProcessorImpl implements IAdvertismentProcessor {
 		return Unpooled.wrappedBuffer(result.build());
 	}
 
-	private void append(final ByteArrayBuilder builder, final ITag tag, final IAdvertismentRule rule, final Charset charset,
-			final TagReader tagReader) {
+	private void append(final ByteArrayBuilder builder, final ITag tag, final IAdvertismentRule rule, final Charset charset, final TagReader tagReader) {
 		byte[] tagBuffer = rewriter.rewrite(tag, rule, charset, tagReader);
 
 		builder.append(tagBuffer);

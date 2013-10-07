@@ -1,19 +1,24 @@
 buildscript {
 	repositories {
 		mavenCentral()
+		maven { 
+			url "http://maven.tmatesoft.com/content/repositories/snapshots/"
+		}
 		maven {
 			url gsRepoURL
 		}
 	}
 	
 	dependencies {		
-		classpath group: 'com.gersis-software.gradle', name: 'gs-jacoco',	version: gsJacocoVersion
-		classpath group: 'com.gersis-software.gradle', name: 'gs-ide',		version: gsIDEVersion		
+		classpath group: 'com.gersis-software.gradle',	name: 'gs-jacoco',	version: gsJacocoVersion
+		classpath group: 'com.gersis-software.gradle',	name: 'gs-ide',		version: gsIDEVersion
+		classpath group: 'au.com.ish.gradle',			name: 'release',	version: gradleReleaseVersion			
 	}
 }
 
 apply plugin: 'gs-eclipse'
 apply plugin: 'gs-jacoco'
+apply plugin: 'release'
 
 subprojects {
 	apply plugin: 'groovy'	
@@ -37,6 +42,10 @@ subprojects {
 	configurations {
 		compile.exclude module: 'commons-logging'
 	}
+}
+
+release {
+	scm = 'git'
 }
 
 task wrapper(type: Wrapper) {
