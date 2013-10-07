@@ -168,7 +168,7 @@ eval splitJvmOpts \$DEFAULT_JVM_OPTS \$JAVA_OPTS \$${optsEnvironmentVar}
 
 do_exec()
 {
-"\$EXEC" "\${JVM_OPTS[@]}" -home "\$JAVA_HOME" -cp "\$CLASSPATH" -outfile "\$LOG_OUT" -errfile "\$LOG_ERR" -pidfile "\$PID" "\$1" ${mainClassName}
+"\$EXEC" "\${JVM_OPTS[@]}" -cp "\$CLASSPATH" -outfile "\$LOG_OUT" -errfile "\$LOG_ERR" -pidfile "\$PID" "\$1" ${mainClassName}
 }
 
 case "\$1" in
