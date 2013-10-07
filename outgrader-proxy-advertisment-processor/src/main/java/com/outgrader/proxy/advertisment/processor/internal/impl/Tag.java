@@ -14,6 +14,8 @@ import com.outgrader.proxy.core.model.ITag;
  */
 public class Tag implements ITag {
 
+	private static final String CLASS_ATTRIBUTE = "class";
+
 	private static final String PATH_SEPARATOR = ">";
 
 	private static final String POINT_SYMBOL = ".";
@@ -122,6 +124,8 @@ public class Tag implements ITag {
 
 	private String cssId;
 
+	private String cssClass;
+
 	protected Tag() {
 
 	}
@@ -186,6 +190,19 @@ public class Tag implements ITag {
 	}
 
 	@Override
+	public String getCSSClass() {
+		if (cssClass == null) {
+			cssClass = getAttribute(CLASS_ATTRIBUTE);
+
+			if (cssClass == null) {
+				cssClass = StringUtils.EMPTY;
+			}
+		}
+
+		return cssClass;
+	}
+
+	@Override
 	public String getId() {
 		if (id == null) {
 			id = getAttribute(ID_ATTRIBUTE);
@@ -203,7 +220,7 @@ public class Tag implements ITag {
 		if (cssId == null) {
 			StringBuilder builder = new StringBuilder(getName());
 
-			builder.append(POINT_SYMBOL).append(getId());
+			builder.append(POINT_SYMBOL).append(getCSSClass());
 
 			cssId = builder.toString();
 		}
