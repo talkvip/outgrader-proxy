@@ -3,9 +3,15 @@ package com.outgrader.proxy.core.handler.impl;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.LastHttpContent;
+
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import javax.inject.Inject;
 
@@ -60,12 +66,12 @@ public class OutgraderFrontendHandler extends SimpleChannelInboundHandler<Object
 	}
 
 	protected void handleHttpRequest(final ChannelHandlerContext ctx, final HttpRequest request) throws Exception {
-		String uri = request.getUri();
+		String uri = getRequestURI(request);
 		statisticsHandler.onRequestHandled(uri);
 
 		long before = System.currentTimeMillis();
 		try {
-			HttpResponse response = externalSender.send(request);
+			HttpResponse response = externalSender.send(uri, request);
 
 			ctx.writeAndFlush(response);
 		} catch (Throwable e) {
@@ -77,6 +83,29 @@ public class OutgraderFrontendHandler extends SimpleChannelInboundHandler<Object
 
 			statisticsHandler.onResponseHandled(uri, after - before);
 		}
+	}
+
+	protected String getRequestURI(final HttpRequest request) {
+		URI uri = null;
+		String requestURI = request.getUri();
+		try {
+			uri = URI.create(requestURI);
+		} catch (IllegalArgumentException e) {
+			try {
+				URL url = new URL(requestURI);
+
+				uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(),
+						url.getRef());
+			} catch (URISyntaxException | MalformedURLException e1) {
+				statisticsHandler.onError(request.getUri(), this, e.getMessage(), e1);
+			}
+		}
+
+		if ((uri != null) && uri.isAbsolute()) {
+			return uri.getHost();
+		}
+
+		return request.headers().get(HttpHeaders.Names.HOST);
 	}
 
 	private void handleException(final Throwable cause) {

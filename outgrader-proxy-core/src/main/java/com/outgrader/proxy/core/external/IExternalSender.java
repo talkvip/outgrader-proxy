@@ -12,6 +12,6 @@ import io.netty.handler.codec.http.HttpResponse;
  */
 public interface IExternalSender {
 
-	HttpResponse send(HttpRequest request) throws AbstractOutgraderRequestException;
+	HttpResponse send(String hostName, HttpRequest request) throws AbstractOutgraderRequestException;
 
 }

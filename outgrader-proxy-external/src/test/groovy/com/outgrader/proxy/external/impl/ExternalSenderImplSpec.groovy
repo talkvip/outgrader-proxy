@@ -44,6 +44,8 @@ class ExternalSenderImplSpec extends Specification {
 
 	static final HEADERS = ['header1' : 'value1', 'header2' : 'value2', 'header3' : 'value3']
 
+	static final HOST = 'onliner.by'
+
 	HttpClient httpClient = Mock(HttpClient)
 
 	ExternalSenderImpl sender
@@ -72,7 +74,7 @@ class ExternalSenderImplSpec extends Specification {
 		when:
 		httpClient.execute(_) >> { throw new IOException() }
 		and:
-		sender.send(nettyRequest)
+		sender.send(HOST, nettyRequest)
 
 		then:
 		thrown(ExternalSenderException)
@@ -82,7 +84,7 @@ class ExternalSenderImplSpec extends Specification {
 		when:
 		httpClient.execute(_) >> null
 		and:
-		sender.send(nettyRequest)
+		sender.send(HOST, nettyRequest)
 
 		then:
 		thrown(ExternalSenderException)
@@ -92,7 +94,7 @@ class ExternalSenderImplSpec extends Specification {
 		when:
 		httpClient.execute(_) >> httpResponse
 		and:
-		def result = sender.send(nettyRequest)
+		def result = sender.send(HOST, nettyRequest)
 
 		then:
 		noExceptionThrown()

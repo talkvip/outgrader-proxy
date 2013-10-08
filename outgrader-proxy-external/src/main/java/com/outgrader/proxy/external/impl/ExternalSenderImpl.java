@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufHolder;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
@@ -82,7 +81,7 @@ public class ExternalSenderImpl implements IExternalSender {
 	}
 
 	@Override
-	public HttpResponse send(final HttpRequest request) throws AbstractOutgraderRequestException {
+	public HttpResponse send(final String hostName, final HttpRequest request) throws AbstractOutgraderRequestException {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("start send(<" + request + ">)");
 		}
@@ -92,7 +91,7 @@ public class ExternalSenderImpl implements IExternalSender {
 		HttpRequestBase externalRequest = getRequest(request.getMethod(), uri);
 		HttpHost host = null;
 		if (!externalRequest.getURI().isAbsolute()) {
-			host = new HttpHost(request.headers().get(HttpHeaders.Names.HOST));
+			host = new HttpHost(hostName);
 		}
 
 		copyHeaders(externalRequest, request);
@@ -106,11 +105,10 @@ public class ExternalSenderImpl implements IExternalSender {
 				response = getClient().execute(externalRequest);
 			} else {
 				response = getClient().execute(host, externalRequest);
-				uri = host.getHostName();
 			}
 
 			if (response != null) {
-				result = convertResponse(uri, response, request.getProtocolVersion());
+				result = convertResponse(hostName, response, request.getProtocolVersion());
 			} else {
 				LOGGER.error("HttpClient returned NULL for URI <" + uri + ">");
 				throw new ExternalSenderException(uri, "Got a NULL response");
