@@ -12,7 +12,7 @@ buildscript {
 	dependencies {		
 		classpath group: 'com.gersis-software.gradle',	name: 'gs-jacoco',	version: gsJacocoVersion
 		classpath group: 'com.gersis-software.gradle',	name: 'gs-ide',		version: gsIDEVersion
-		classpath group: 'au.com.ish.gradle',			name: 'release',	version: gradleReleaseVersion			
+		classpath group: 'au.com.ish.gradle',			name: 'release',	version: gradleReleaseVersion				
 	}
 }
 

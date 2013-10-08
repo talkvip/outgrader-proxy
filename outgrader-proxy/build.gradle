@@ -1,6 +1,18 @@
 import org.gradle.api.internal.plugins.StartScriptGenerator
 
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+	
+	dependencies {
+		classpath group: 'com.kenshoo',					name: 'gradle-fpm',	version: gradleFpmVersion
+	}
+}
+
+
 apply plugin: 'application'
+apply plugin: 'fpm-packaging'
 
 dependencies {
 	compile project(':outgrader-proxy-core')
@@ -45,3 +57,10 @@ startScripts {
 		unixScriptFile.text = unixScriptFile.text.replace('"$1"', '$1')
 	}
 }
+
+packaging {
+	dependencies = ['java-jsvc', 'openjdk-7-jdk']	
+}
+
+debian.dependsOn installApp
+

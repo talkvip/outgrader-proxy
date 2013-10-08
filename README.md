@@ -3,6 +3,12 @@ outgrader
 
 ## Release notes
 
+### 0.5.2.alpha
+
+* fixing bug with empty request content
+* fixing bug with statistics for relative-path-request
+* packaging app as Debian pkg
+
 ### 0.5.1.alpha (7 October 2013)
 
 * support relative paths in HTTP request
