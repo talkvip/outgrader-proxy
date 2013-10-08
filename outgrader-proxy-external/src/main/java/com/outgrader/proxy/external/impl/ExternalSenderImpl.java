@@ -106,6 +106,7 @@ public class ExternalSenderImpl implements IExternalSender {
 				response = getClient().execute(externalRequest);
 			} else {
 				response = getClient().execute(host, externalRequest);
+				uri = host.getHostName();
 			}
 
 			if (response != null) {
@@ -154,7 +155,7 @@ public class ExternalSenderImpl implements IExternalSender {
 			entityRequest = (HttpEntityEnclosingRequest) externalRequest;
 		}
 
-		if ((byteBufHolder != null) && (entityRequest != null)) {
+		if ((byteBufHolder != null) && (entityRequest != null) && (byteBufHolder.content().hasArray())) {
 			entityRequest.setEntity(new ByteArrayEntity(byteBufHolder.content().array()));
 		}
 	}
