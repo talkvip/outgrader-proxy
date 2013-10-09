@@ -59,7 +59,10 @@ startScripts {
 }
 
 packaging {
-	dependencies = ['java-jsvc', 'openjdk-7-jdk']	
+	dependencies = ['jsvc', 'openjdk-7-jdk']
+	baseDir = new File(project.buildDir, '/install/outgrader-proxy')
+	prefix = "/etc/outgrader-proxy-${version}"	
+	extraOptions = ['-a': 'all']
 }
 
 debian.dependsOn installApp
